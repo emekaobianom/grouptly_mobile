@@ -1,0 +1,7 @@
+{
+  "name": "grouptly_mobile",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react-vite"
+}
