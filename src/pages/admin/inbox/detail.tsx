@@ -24,7 +24,7 @@ const AdminInboxDetail: React.FC<AdminInboxDetailProps> = ({match}) => {
           <IonButtons slot="start">
             <IonBackButton></IonBackButton>
           </IonButtons>
-          <IonTitle>Page Two {match.params.id}</IonTitle>
+          <IonTitle>New Member {match.params.id}</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent class="ion-padding">

@@ -48,7 +48,7 @@ const AdminInbox: React.FC<RouteComponentProps> = ({match}) => {
           <IonRefresherContent></IonRefresherContent>
         </IonRefresher>
         <IonList inset={true}>
-          <IonItem button={true} detail={false} routerLink='/member/inbox/456'>
+          <IonItem button={true} detail={false} routerLink='/admin/inbox/456'>
             <div className="unread-indicator-wrapper" slot="start"></div>
             <IonLabel>
               <strong>Ionitron</strong>
@@ -63,14 +63,14 @@ const AdminInbox: React.FC<RouteComponentProps> = ({match}) => {
               <IonIcon color="medium" icon={chevronForward}></IonIcon>
             </div>
           </IonItem>
-          <IonItem button={true} detail={false} routerLink='/member/inbox/456'>
+          <IonItem button={true} detail={false} routerLink='/admin/inbox/456'>
             <div className="unread-indicator-wrapper" slot="start"></div>
             <IonLabel>
-              <strong>Ionitron</strong>
-              <IonText>I have become sentient</IonText>
+              <strong>New Member</strong>
+              <IonText>Emeka Obianom</IonText>
               <br />
               <IonNote color="medium" className="ion-text-wrap">
-                That is all.
+                Requesting Activation
               </IonNote>
             </IonLabel>
             <div className="metadata-end-wrapper" slot="end">
@@ -79,7 +79,7 @@ const AdminInbox: React.FC<RouteComponentProps> = ({match}) => {
             </div>
           </IonItem>
 
-          <IonItem button={true} detail={false} routerLink='/member/inbox/456'>
+          <IonItem button={true} detail={false} routerLink='/admin/inbox/456'>
             <div className="unread-indicator-wrapper" slot="start"></div>
             <IonLabel>
               <strong>Ionitron</strong>
@@ -94,7 +94,7 @@ const AdminInbox: React.FC<RouteComponentProps> = ({match}) => {
               <IonIcon color="medium" icon={chevronForward}></IonIcon>
             </div>
           </IonItem>
-          <IonItem button={true} detail={false} routerLink='/member/inbox/456'>
+          <IonItem button={true} detail={false} routerLink='/admin/inbox/456'>
             <div className="unread-indicator-wrapper" slot="start">
               <div className="unread-indicator"></div>
             </div>
@@ -111,7 +111,7 @@ const AdminInbox: React.FC<RouteComponentProps> = ({match}) => {
               <IonIcon color="medium" icon={chevronForward}></IonIcon>
             </div>
           </IonItem>
-          <IonItem button={true} detail={false} routerLink='/member/inbox/456'>
+          <IonItem button={true} detail={false} routerLink='/admin/inbox/456'>
             <div className="unread-indicator-wrapper" slot="start"></div>
             <IonLabel>
               <strong>Ionitron</strong>
@@ -126,7 +126,7 @@ const AdminInbox: React.FC<RouteComponentProps> = ({match}) => {
               <IonIcon color="medium" icon={chevronForward}></IonIcon>
             </div>
           </IonItem>
-          <IonItem button={true} detail={false} routerLink='/member/inbox/456'>
+          <IonItem button={true} detail={false} routerLink='/admin/inbox/456'>
             <div className="unread-indicator-wrapper" slot="start"></div>
             <IonLabel>
               <strong>Ionitron</strong>
@@ -141,7 +141,7 @@ const AdminInbox: React.FC<RouteComponentProps> = ({match}) => {
               <IonIcon color="medium" icon={chevronForward}></IonIcon>
             </div>
           </IonItem>
-          <IonItem button={true} detail={false} routerLink='/member/inbox/456'>
+          <IonItem button={true} detail={false} routerLink='/admin/inbox/456'>
             <div className="unread-indicator-wrapper" slot="start"></div>
             <IonLabel>
               <strong>Ionitron</strong>
@@ -156,7 +156,7 @@ const AdminInbox: React.FC<RouteComponentProps> = ({match}) => {
               <IonIcon color="medium" icon={chevronForward}></IonIcon>
             </div>
           </IonItem>
-          <IonItem button={true} detail={false} routerLink='/member/inbox/456'>
+          <IonItem button={true} detail={false} routerLink='/admin/inbox/456'>
             <div className="unread-indicator-wrapper" slot="start"></div>
             <IonLabel>
               <strong>Ionitron</strong>
@@ -171,7 +171,7 @@ const AdminInbox: React.FC<RouteComponentProps> = ({match}) => {
               <IonIcon color="medium" icon={chevronForward}></IonIcon>
             </div>
           </IonItem>
-          <IonItem button={true} detail={false} routerLink='/member/inbox/456'>
+          <IonItem button={true} detail={false} routerLink='/admin/inbox/456'>
             <div className="unread-indicator-wrapper" slot="start"></div>
             <IonLabel>
               <strong>Ionitron</strong>
@@ -186,7 +186,7 @@ const AdminInbox: React.FC<RouteComponentProps> = ({match}) => {
               <IonIcon color="medium" icon={chevronForward}></IonIcon>
             </div>
           </IonItem>
-          <IonItem button={true} detail={false} routerLink='/member/inbox/456'>
+          <IonItem button={true} detail={false} routerLink='/admin/inbox/456'>
             <div className="unread-indicator-wrapper" slot="start"></div>
             <IonLabel>
               <strong>Ionitron</strong>
@@ -201,7 +201,7 @@ const AdminInbox: React.FC<RouteComponentProps> = ({match}) => {
               <IonIcon color="medium" icon={chevronForward}></IonIcon>
             </div>
           </IonItem>
-          <IonItem button={true} detail={false} routerLink='/member/inbox/456'>
+          <IonItem button={true} detail={false} routerLink='/admin/inbox/456'>
             <div className="unread-indicator-wrapper" slot="start"></div>
             <IonLabel>
               <strong>Ionitron</strong>
@@ -216,7 +216,7 @@ const AdminInbox: React.FC<RouteComponentProps> = ({match}) => {
               <IonIcon color="medium" icon={chevronForward}></IonIcon>
             </div>
           </IonItem>
-          <IonItem button={true} detail={false} routerLink='/member/inbox/456'>
+          <IonItem button={true} detail={false} routerLink='/admin/inbox/456'>
             <div className="unread-indicator-wrapper" slot="start"></div>
             <IonLabel>
               <strong>Ionitron</strong>
@@ -231,7 +231,7 @@ const AdminInbox: React.FC<RouteComponentProps> = ({match}) => {
               <IonIcon color="medium" icon={chevronForward}></IonIcon>
             </div>
           </IonItem>
-          <IonItem button={true} detail={false} routerLink='/member/inbox/456'>
+          <IonItem button={true} detail={false} routerLink='/admin/inbox/456'>
             <div className="unread-indicator-wrapper" slot="start"></div>
             <IonLabel>
               <strong>Ionitron</strong>
@@ -246,7 +246,7 @@ const AdminInbox: React.FC<RouteComponentProps> = ({match}) => {
               <IonIcon color="medium" icon={chevronForward}></IonIcon>
             </div>
           </IonItem>
-          <IonItem button={true} detail={false} routerLink='/member/inbox/456'>
+          <IonItem button={true} detail={false} routerLink='/admin/inbox/456'>
             <div className="unread-indicator-wrapper" slot="start"></div>
             <IonLabel>
               <strong>Ionitron</strong>
