@@ -1,66 +1,72 @@
-import { IonContent, IonPage, IonButton, IonText, IonCol, IonRow, IonGrid, IonImg, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle } from '@ionic/react';
-import { useHistory } from 'react-router-dom';
+import { IonContent, IonPage, IonRefresher, IonRefresherContent, IonList, IonItem, IonLabel, IonText, IonNote, IonIcon, IonRouterOutlet, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonAvatar, IonHeader, IonTitle, IonToolbar } from '@ionic/react';
+import { useState } from 'react';
+import { calendar, chevronForward, heart } from 'ionicons/icons';
+import { Route, RouteComponentProps } from 'react-router';
+import './donations.css';
 import SideMenuBtn from '../../../components/sideMenuBtn';
+import { donationsItemsData } from '@/data/donations_placeholder';
+import MemberDonationsSupportDetail from './detail';
 
-const MemberDonationsSupport: React.FC = () => {
-  const history = useHistory();
-
-  const handleNext = async () => {
-    // await storeData('firstAppVisit', 'false');
-    //history.replace('/signup');
+const MemberDonationsSupport: React.FC<RouteComponentProps> = ({ match }) => {
+ 
+  // Handle pull-to-refresh event
+  const handleRefresh = (event: CustomEvent) => {
+    setTimeout(() => {
+      event.detail.complete();
+    }, 2000);
   };
 
+  const donationsItems = donationsItemsData;
+
+  const renderDonationsSupportItem = (item: any) => (
+    <IonCard routerLink={`/member/donations-support/detail/${item.id}`} key={item.id} className='ion-margin-bottom'>
+    <IonCardHeader className="card-header">
+      <IonCardTitle>{item.title}</IonCardTitle>
+      <IonIcon icon={chevronForward} />
+    </IonCardHeader>
+    <IonCardContent>
+      <div className='card-text-icon'>
+        <IonText>
+          {item.reason}
+        </IonText>
+        <IonIcon style={{ fontSize: 60 }} icon={heart} />
+      </div>
+    </IonCardContent>
+  </IonCard>
+  );
+
   return (
-    <IonPage>
-      <IonContent className="ion-padding" fullscreen>
-        <IonGrid>
-          <IonRow>
-            <IonCol size="auto">
-              <IonText color="dark">
-                <h6 className="bold-text">Donations & Support</h6>
-              </IonText>
-            </IonCol>
+    <>
+      <IonRouterOutlet>
+        <Route path={`${match.url}/detail/:id`} component={MemberDonationsSupportDetail} exact/>
+      </IonRouterOutlet>
 
-            <IonCol size="12">
-              <IonCard>
-                <IonCardHeader>
-                  <IonCardTitle>Card Title</IonCardTitle>
-                  <IonCardSubtitle>Card Subtitle</IonCardSubtitle>
-                </IonCardHeader>
+      <IonPage>
+      <IonHeader>
+       <IonToolbar>
+            <IonTitle>Donations & Support</IonTitle>
+            <IonAvatar slot='end' className='ion-padding'>
+              <img src="https://randomuser.me/api/portraits/men/9.jpg" alt="me" />
+            </IonAvatar>
+          </IonToolbar>
+       </IonHeader>
 
-                <IonCardContent>Here's a small text description for the card content. Nothing more, nothing less.</IonCardContent>
-              </IonCard>
-            </IonCol>
+        <IonContent>
+          <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+            <IonRefresherContent />
+          </IonRefresher>
 
+          <div className='ion-padding'>
+            {donationsItems.map(renderDonationsSupportItem)}
+          </div>
 
-            <IonCol size="6">
-              <IonCard>
-                <IonCardHeader>
-                  <IonCardTitle>Card Title</IonCardTitle>
-                  <IonCardSubtitle>Card Subtitle</IonCardSubtitle>
-                </IonCardHeader>
+          {/* Spacer for bottom padding */}
+          <div style={{ marginBottom: 80 }}></div>
+        </IonContent>
 
-                <IonCardContent>Here's a small text description for the card content. Nothing more, nothing less.</IonCardContent>
-              </IonCard>
-            </IonCol>
-            <IonCol size="6">
-              <IonCard>
-                <IonCardHeader>
-                  <IonCardTitle>Card Title</IonCardTitle>
-                  <IonCardSubtitle>Card Subtitle</IonCardSubtitle>
-                </IonCardHeader>
-
-                <IonCardContent>Here's a small text description for the card content. Nothing more, nothing less.</IonCardContent>
-              </IonCard>
-            </IonCol>
-
-
-
-          </IonRow>
-        </IonGrid>
-      </IonContent>
-      <SideMenuBtn />
-    </IonPage>
+        <SideMenuBtn />
+      </IonPage>
+    </>
   );
 };
 

@@ -1,0 +1,17 @@
+.news-card {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  .news-card h2 {
+    font-size: 1.5rem;
+  }
+  
+  .news-card p {
+    font-size: 0.9rem;
+  }
+  
+  .ion-avatar {
+    margin-right: 10px;
+  }
+  

@@ -1,27 +1,27 @@
 export const groupsData = [
     {
-      long_name: "Innovative Tech Solutions",
-      short_name: "ITS",
-      location: "San Francisco, CA",
-      category: "Technology",
+      long_name: "Nigerian Political Science Association",
+      short_name: "NPSA",
+      location: "Ilorin, Kwara State Nigeria",
+      category: "Communication",
       status: "Active",
-      logo: "https://via.placeholder.com/150?text=ITS"
+      logo: "https://www.ipsa.org/sites/default/files/grprofile/NPSA%20LOGO.jpg"
     },
     {
-      long_name: "Creative Minds Collective",
-      short_name: "CMC",
-      location: "New York, NY",
-      category: "Art & Culture",
+      long_name: "NACCIMA BUSINESS WOMEN GROUP",
+      short_name: "NACCIMA",
+      location: " Ikeja-GRA, Lagos",
+      category: "Business",
       status: "Active",
-      logo: "https://via.placeholder.com/150?text=CMC"
+      logo: "https://nepc.gov.ng/business-support-organizations-directory-for-women-entrepreneurs/public/uploads/logo/naccima-business-women.png"
     },
     {
-      long_name: "Global Health Initiative",
-      short_name: "GHI",
-      location: "Geneva, Switzerland",
-      category: "Healthcare",
+      long_name: "Asaba Development Union",
+      short_name: "ADU Worlwide",
+      location: "Asaba, Nigeria",
+      category: "Town",
       status: "Active",
-      logo: "https://via.placeholder.com/150?text=GHI"
+      logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtoWAuP2GotaHam7SI-zKW2snNlNtfRP0hlg&s"
     },
     {
       long_name: "Sustainable Energy Network",
@@ -29,7 +29,7 @@ export const groupsData = [
       location: "Berlin, Germany",
       category: "Environmental",
       status: "Active",
-      logo: "https://via.placeholder.com/150?text=SEN"
+      logo: "https://sustainable-energy-week.ec.europa.eu/sites/default/files/styles/oe_theme_medium_no_crop/public/2023-12/SEYN_Logo_3_Black.png?itok=K8UZ1Er5"
     },
     {
       long_name: "Urban Development Agency",

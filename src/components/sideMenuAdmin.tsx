@@ -1,11 +1,28 @@
-import React from "react";
-import { IonContent, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonIcon, IonButton, IonNote, IonText } from "@ionic/react";
+import React, { useEffect, useState } from "react";
+import { IonContent, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonIcon, IonButton, IonNote, IonText, IonImg } from "@ionic/react";
 import { briefcase, calendar, calendarClear, heart, home, informationCircle, mail, newspaper, people, wallet, logOut, chevronForward } from "ionicons/icons";
 import { useHistory, useLocation } from "react-router-dom";
+import { getItem } from "@/utils/storage";
 
 const SideMenuAdmin: React.FC = () => {
     const history = useHistory();
     const location = useLocation();  // Get the current location
+    const [group, setGroup] = useState<any>(null);
+
+    useEffect(() => {
+        // Function to get selected group asynchronously
+        const fetchGroup = async () => {
+            try {
+                const selectedGroup = await getItem("selectedGroup"); // Await if getItem is async
+                setGroup(selectedGroup);
+            } catch (error) {
+                console.error("Error fetching group:", error);
+            }
+        };
+
+        fetchGroup();
+
+    }, [history]); // Added history to dependencies
 
     const handleLogout = () => {
         alert("hi");
@@ -32,12 +49,16 @@ const SideMenuAdmin: React.FC = () => {
         <IonMenu type="reveal" contentId="admin" menuId="main-menu">
             <IonContent>
                 {/* Big picture */}
-                <img
-                    src="https://png.pngtree.com/template/20191005/ourmid/pngtree-logo-people-group-team-image_314502.jpg"
+                <IonImg
+                    src={group ? group.logo : ""}
                     alt="Big Picture"
-                    style={{ width: '100%', height: 'auto', aspectRatio: '1/1' }}
+                    style={{
+                        padding:"5rem",
+                        width: '100%', // Or any fixed width you want, like '15rem'
+                        height: 'auto',
+                        objectFit: 'contain', // or 'cover' depending on your needs
+                    }}
                 />
-
                 <IonList>
                     <IonMenuToggle>
                         <IonButton
@@ -81,7 +102,7 @@ const SideMenuAdmin: React.FC = () => {
                         <IonButton
                             expand="full"
                             shape="round"
-                            color="secondary"
+                            color="tertiary"
                             routerLink="/main/choose"
                             style={{ margin: '16px' }}
                         >

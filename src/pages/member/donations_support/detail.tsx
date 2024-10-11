@@ -22,25 +22,22 @@ import {
 } from '@ionic/react';
 import { RouteComponentProps } from 'react-router-dom';
 import { chevronForward, ellipsisVertical, heart } from 'ionicons/icons';
-import { inboxItemsData } from '@/data/inbox_placeholder';
+import { donationsItemsData } from '@/data/donations_placeholder';
 
 // Adjust the type for a single donation item to reflect the actual data
-interface InboxItem {
-  id: number; // Change this from string to number to match your data,
-  name: string;
-  message: string;
-  note: string;
-  time: string;
-  unread: boolean,
+interface DonationItem {
+  id: number; // Change this from string to number to match your data
+  title: string;
+  reason: string;
 }
 
-interface MemberInboxDetailProps
+interface MemberDonationsSupportDetailProps
   extends RouteComponentProps<{
     id: string;
   }> { }
 
-const MemberInboxDetail: React.FC<MemberInboxDetailProps> = ({ match }) => {
-  const [item, setItem] = useState<InboxItem | null>(null);
+const MemberDonationsSupportDetail: React.FC<MemberDonationsSupportDetailProps> = ({ match }) => {
+  const [item, setItem] = useState<DonationItem | null>(null);
 
   const [showAlert, setShowAlert] = useState(false); // State to control the alert visibility
 
@@ -51,7 +48,7 @@ const MemberInboxDetail: React.FC<MemberInboxDetailProps> = ({ match }) => {
   useEffect(() => {
     // Convert match.params.id to a number, since donationsItemsData uses numeric ids
     const id = Number(match.params.id);
-    const foundItem = inboxItemsData.find((data) => data.id === id);
+    const foundItem = donationsItemsData.find((data) => data.id === id);
     setItem(foundItem || null);
   }, [match.params.id]);
 
@@ -62,12 +59,7 @@ const MemberInboxDetail: React.FC<MemberInboxDetailProps> = ({ match }) => {
           <IonButtons slot="start">
             <IonBackButton />
           </IonButtons>
-          {item ? (
-            <IonTitle>{item.name}</IonTitle>
-          ) : (
-            <IonTitle>Inbox</IonTitle>
-          )}
-
+          <IonTitle>Donation</IonTitle>
           <IonButtons slot="end">
             <IonButton id="click-trigger" >
               <IonIcon icon={ellipsisVertical} />
@@ -93,9 +85,13 @@ const MemberInboxDetail: React.FC<MemberInboxDetailProps> = ({ match }) => {
         {/* Only render the card if `item` is not null */}
         {item ? (
           <IonCard key={item.id} className="ion-margin-bottom">
+            <IonCardHeader className="card-header">
+              <IonCardTitle>{item.title}</IonCardTitle>
+              {/* <IonIcon icon={chevronForward} /> */}
+            </IonCardHeader>
             <IonCardContent>
               <div className="card-text-icon">
-                <IonText>{item.message}</IonText>
+                <IonText>{item.reason}</IonText>
                 <IonIcon style={{ fontSize: 60 }} icon={heart} />
               </div>
             </IonCardContent>
@@ -107,7 +103,7 @@ const MemberInboxDetail: React.FC<MemberInboxDetailProps> = ({ match }) => {
         <IonAlert
           isOpen={showAlert}
           onDidDismiss={() => { setShowAlert(false) }} // Hide alert when dismissed
-          message={'Delete this Inbox?'}
+          message={'Delete this Donation?'}
           buttons={['CANCEL', 'DELETE']} // Button to dismiss the alert
         />
       </IonContent>
@@ -115,4 +111,4 @@ const MemberInboxDetail: React.FC<MemberInboxDetailProps> = ({ match }) => {
   );
 };
 
-export default MemberInboxDetail;
+export default MemberDonationsSupportDetail;

@@ -1,8 +1,11 @@
-import { IonContent, IonPage, IonButton, IonText, IonCol, IonRow, IonGrid, IonImg, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle } from '@ionic/react';
-import { useHistory } from 'react-router-dom';
-import SideMenuBtn from '../../../components/sideMenuBtn';
+import { IonIcon, IonLabel, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs } from '@ionic/react';
+import { Redirect, Route, RouteComponentProps, useHistory } from 'react-router-dom';
+import { IonReactRouter } from '@ionic/react-router';
+import { book, call } from 'ionicons/icons';
+import MemberConstitution from './constitution';
+import MemberContactUs from './contact_us';
 
-const MemberAbout: React.FC = () => {
+const MemberAbout: React.FC<RouteComponentProps> = ({ match }) => {
   const history = useHistory();
 
   const handleNext = async () => {
@@ -11,56 +14,27 @@ const MemberAbout: React.FC = () => {
   };
 
   return (
-    <IonPage>
-      <IonContent className="ion-padding" fullscreen>
-        <IonGrid>
-          <IonRow>
-            <IonCol size="auto">
-              <IonText color="dark">
-                <h6 className="bold-text">About</h6>
-              </IonText>
-            </IonCol>
+    <IonReactRouter>
+      <IonTabs>
+        <IonRouterOutlet>
+        <Redirect exact path={`${match.url}`} to={`${match.url}/contact-us`} />
+          <Route path={`${match.url}/contact-us`} component={MemberContactUs} exact={true} />
+          <Route path={`${match.url}/constitution`} component={MemberConstitution} exact={true} />
+        </IonRouterOutlet>
 
-            <IonCol size="12">
-              <IonCard>
-                <IonCardHeader>
-                  <IonCardTitle>Card Title</IonCardTitle>
-                  <IonCardSubtitle>Card Subtitle</IonCardSubtitle>
-                </IonCardHeader>
+        <IonTabBar slot="bottom">
+          <IonTabButton tab="contact-us" href={`${match.url}/contact-us`}>
+            <IonIcon icon={call} />
+            <IonLabel>Contact Us</IonLabel>
+          </IonTabButton>
 
-                <IonCardContent>Here's a small text description for the card content. Nothing more, nothing less.</IonCardContent>
-              </IonCard>
-            </IonCol>
-
-
-            <IonCol size="6">
-              <IonCard>
-                <IonCardHeader>
-                  <IonCardTitle>Card Title</IonCardTitle>
-                  <IonCardSubtitle>Card Subtitle</IonCardSubtitle>
-                </IonCardHeader>
-
-                <IonCardContent>Here's a small text description for the card content. Nothing more, nothing less.</IonCardContent>
-              </IonCard>
-            </IonCol>
-            <IonCol size="6">
-              <IonCard>
-                <IonCardHeader>
-                  <IonCardTitle>Card Title</IonCardTitle>
-                  <IonCardSubtitle>Card Subtitle</IonCardSubtitle>
-                </IonCardHeader>
-
-                <IonCardContent>Here's a small text description for the card content. Nothing more, nothing less.</IonCardContent>
-              </IonCard>
-            </IonCol>
-
-
-
-          </IonRow>
-        </IonGrid>
-      </IonContent>
-      <SideMenuBtn />
-    </IonPage>
+          <IonTabButton tab="constitution" href={`${match.url}/constitution`} >
+            <IonIcon icon={book} />
+            <IonLabel>Constitution</IonLabel>
+          </IonTabButton>
+        </IonTabBar>
+      </IonTabs>
+    </IonReactRouter>
   );
 };
 

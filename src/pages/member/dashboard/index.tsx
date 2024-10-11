@@ -1,42 +1,74 @@
-import React, { useEffect } from 'react';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonCard, IonCardHeader, IonCardTitle, IonGrid, IonRow, IonCol, IonAvatar, IonFooter, IonItem, IonRefresher, IonRefresherContent, RefresherEventDetail, IonPage } from '@ionic/react';
-import './dashboard.css';
-import { useHistory } from 'react-router-dom';
-import SideMenuBtn from '../../../components/sideMenuBtn';
+import React, { useEffect, useState } from 'react';
+import {
+  IonContent,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonRefresher,
+  IonRefresherContent,
+  RefresherEventDetail,
+  IonPage,
+  IonImg,
+  IonIcon,
+  IonCardContent,
+  IonText,
+  useIonViewWillEnter,
+  IonAvatar,
+  IonHeader,
+  IonTitle,
+  IonToolbar,
+} from '@ionic/react';
+import { useHistory, useLocation } from 'react-router-dom';
 import { menuController } from '@ionic/core/components';
-import { useLocation } from 'react-router-dom';
-
+import SideMenuBtn from '../../../components/sideMenuBtn';
+import './dashboard.css';
+import { getItem } from '@/utils/storage';
+import { arrowForwardOutline, calendar, chevronForward } from 'ionicons/icons';
 
 const MemberDashboard: React.FC = () => {
   const location = useLocation();
   const history = useHistory();
+  const [group, setGroup] = useState<any>(null);
 
-  // Using URLSearchParams to extract the query parameter
+  // Extract the query parameter
   const searchParams = new URLSearchParams(location.search);
   const openMenu = searchParams.get('openMenu'); // Gets the 'openMenu' query parameter
 
-  // Once we get the openMenu parameter, remove it from the URL
-  if (openMenu) {
-    // Remove the 'openMenu' parameter from the URL
-    searchParams.delete('openMenu');
-    history.replace({
-      pathname: location.pathname,
-      search: searchParams.toString() // This will update the URL without 'openMenu'
-    });
-  }
-
   useEffect(() => {
+
+    // Function to get selected group asynchronously
+    const fetchGroup = async () => {
+      try {
+        const selectedGroup = await getItem("selectedGroup"); // Await if getItem is async
+        setGroup(selectedGroup);
+      } catch (error) {
+        console.error("Error fetching group:", error);
+      }
+    };
+
+    fetchGroup();
+
+  }, []);
+
+
+  useIonViewWillEnter(() => {
     if (openMenu) {
+      // Remove the 'openMenu' parameter from the URL only after component has mounted
+      searchParams.delete('openMenu');
+      history.replace({
+        pathname: location.pathname,
+        search: searchParams.toString(),
+      });
+
       openMenuManually();
     }
-  }, [openMenu]); // Added dependency array
+  });
+
 
   async function openMenuManually() {
-    /**
-     * Open the menu by menu-id
-     * We refer to the menu using an ID
-     * because multiple "start" menus exist.
-     */
     await menuController.open('main-menu');
   }
 
@@ -48,101 +80,113 @@ const MemberDashboard: React.FC = () => {
   }
 
   return (
-    <>
+    <IonPage className='dashboard'>
+      {/* Header */}
+      <IonHeader className='header'>
+        <IonToolbar class='toolbar'>
+          <IonAvatar slot='end' className='ion-padding'>
+            <img src="https://randomuser.me/api/portraits/men/9.jpg" alt="me" />
+          </IonAvatar>
+        </IonToolbar>
+      </IonHeader>
 
-      <IonPage>
-        {/* Header with User Image */}
-        {/* <IonHeader>
-          <IonToolbar>
-            <IonTitle>Dashboaord</IonTitle>
-            <IonAvatar slot="end" className="user-avatar">
-              <img src="https://via.placeholder.com/100" alt="User" />
-            </IonAvatar>
-          </IonToolbar>
-        </IonHeader> */}
+      <IonContent className="ion-padding">
+        <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+          <IonRefresherContent />
+        </IonRefresher>
 
-        {/* Content */}
-        <IonContent className="ion-padding">
-          <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
-            <IonRefresherContent></IonRefresherContent>
-          </IonRefresher>
-          {/* Full width card for attendance */}
-          <IonCard>
-            <IonCardHeader>
-              <IonCardTitle>Attendance</IonCardTitle>
-            </IonCardHeader>
-            <div className="card-content">
-              <h2>Total Attendance: 45</h2>
+        {/* photo */}
+        <IonRow style={{ marginTop: "20px" }} className="ion-justify-content-center ion-align-items-center">
+          <IonCol size="auto">
+            <div style={{ width: 150, height: 150 }} className="circle-image-container">
+              <IonImg
+                src="https://c8.alamy.com/comp/PG95YW/young-african-american-man-holding-canadian-passport-doing-ok-sign-with-fingers-excellent-symbol-PG95YW.jpg"  // Replace with your image URL
+                alt="Circular"
+                className="circle-image"
+              />
             </div>
-          </IonCard>
+          </IonCol>
+          <IonCol size="auto">
+            Emeka Obianom <br /><small>(Member)</small>
+          </IonCol>
+        </IonRow>
 
-          {/* Two side-by-side cards for debt and payment */}
-          <IonGrid className="ion-no-padding">
-            <IonRow>
-              <IonCol size="6">
-                <IonCard>
-                  <IonCardHeader>
-                    <IonCardTitle>Debt Owed</IonCardTitle>
-                  </IonCardHeader>
-                  <div className="card-content">
-                    <h2>$500</h2>
-                  </div>
-                </IonCard>
-              </IonCol>
 
-              <IonCol size="6">
-                <IonCard>
-                  <IonCardHeader>
-                    <IonCardTitle>Amount Paid This Year</IonCardTitle>
-                  </IonCardHeader>
-                  <div className="card-content">
-                    <h2>$300</h2>
-                  </div>
-                </IonCard>
-              </IonCol>
-            </IonRow>
-          </IonGrid>
-
-          {/* Full width card for News and Events */}
-          <IonCard>
-            <IonCardHeader>
-              <IonCardTitle>News & Upcoming Events</IonCardTitle>
-            </IonCardHeader>
-            <div className="card-content">
-              <h2>Club Meeting on Friday</h2>
-              <p>Stay tuned for more updates on upcoming events!</p>
+        {/* Full width card for attendance */}
+        <IonCard routerLink='/member/dashboard' >
+          <IonCardHeader className="card-header">
+            <IonCardTitle>Attendance</IonCardTitle>
+            <IonIcon icon={chevronForward} />
+          </IonCardHeader>
+          <IonCardContent>
+            <div className='card-text-icon'>
+              <IonText>
+                Share starts between Fit and your other apps,
+                like your calories, heart rate and body measurements
+              </IonText>
+              <IonIcon style={{ fontSize: 60 }} icon={calendar} />
             </div>
-          </IonCard>
-          <IonCard>
-            <IonCardHeader>
-              <IonCardTitle>News & Upcoming Events</IonCardTitle>
-            </IonCardHeader>
-            <div className="card-content">
-              <h2>Club Meeting on Friday</h2>
-              <p>Stay tuned for more updates on upcoming events!</p>
+          </IonCardContent>
+        </IonCard>
+
+        <IonCard>
+          <IonCardHeader className="card-header">
+            <IonCardTitle>Attendance</IonCardTitle>
+            <IonIcon icon={chevronForward} />
+          </IonCardHeader>
+          <IonCardContent>
+            <div className='card-text-icon'>
+              <IonText>
+                Share starts between Fit and your other apps,
+                like your calories, heart rate and body measurements
+              </IonText>
+              <IonIcon style={{ fontSize: 60 }} icon={calendar} />
             </div>
-          </IonCard>
-          <IonCard>
-            <IonCardHeader>
-              <IonCardTitle>News & Upcoming Events</IonCardTitle>
-            </IonCardHeader>
-            <div className="card-content">
-              <h2>Club Meeting on Friday</h2>
-              <p>Stay tuned for more updates on upcoming events!</p>
+          </IonCardContent>
+        </IonCard>
+
+        <IonRow class='ion-padding'>
+          <IonText>NEWS</IonText>
+        </IonRow>
+
+        <IonCard>
+          <IonCardHeader className="card-header">
+            <IonCardTitle>Attendance</IonCardTitle>
+            <IonIcon icon={chevronForward} />
+          </IonCardHeader>
+          <IonCardContent>
+            <div className='card-text-icon'>
+              <IonText>
+                Share starts between Fit and your other apps,
+                like your calories, heart rate and body measurements
+              </IonText>
+              <IonIcon style={{ fontSize: 60 }} icon={calendar} />
             </div>
-          </IonCard>
+          </IonCardContent>
+        </IonCard>
 
-          <div style={{ marginBottom: 80 }}></div>
+        <IonCard>
+          <IonCardHeader className="card-header">
+            <IonCardTitle>Attendance</IonCardTitle>
+            <IonIcon icon={chevronForward} />
+          </IonCardHeader>
+          <IonCardContent>
+            <div className='card-text-icon'>
+              <IonText>
+                Share starts between Fit and your other apps,
+                like your calories, heart rate and body measurements
+              </IonText>
+              <IonIcon style={{ fontSize: 60 }} icon={calendar} />
+            </div>
+          </IonCardContent>
+        </IonCard>
 
-        </IonContent>
+        <div style={{ marginBottom: 80 }}></div>
+      </IonContent>
 
-        <SideMenuBtn />
-      </IonPage>
-      {/* <BottomTabs/> */}
-    </>
+      <SideMenuBtn />
+    </IonPage>
   );
 };
 
 export default MemberDashboard;
-
-

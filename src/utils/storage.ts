@@ -1,8 +1,11 @@
-// src/utils/storage.ts
 import { Storage } from '@ionic/storage';
 
 let storage: Storage | null = null;
 
+/**
+ * Initializes the storage instance if it hasn't been initialized yet.
+ * @returns {Promise<Storage>} The storage instance.
+ */
 const initStorage = async () => {
   if (!storage) {
     storage = new Storage();
@@ -11,14 +14,36 @@ const initStorage = async () => {
   return storage;
 };
 
-// Set Item in Storage
+/**
+ * Sets an item in the storage.
+ * 
+ * @param {string} key - The key under which the value will be stored.
+ * @param {any} value - The value to store. Can be any data type.
+ * @returns {Promise<void>} A promise that resolves when the item has been set.
+ * 
+ * @example
+ * ```ts
+ * await setItem('username', 'JohnDoe');
+ * ```
+ */
 export const setItem = async (key: string, value: any) => {
   const storageInstance = await initStorage();
   await storageInstance.set(key, value);
   console.log(`Set ${key}: ${value}`);
 };
 
-// Get Item from Storage
+/**
+ * Retrieves an item from the storage.
+ * 
+ * @param {string} key - The key of the item to retrieve.
+ * @returns {Promise<any>} A promise that resolves with the retrieved value.
+ * 
+ * @example
+ * ```ts
+ * const username = await getItem('username');
+ * console.log(username);
+ * ```
+ */
 export const getItem = async (key: string) => {
   const storageInstance = await initStorage();
   const value = await storageInstance.get(key);
@@ -26,19 +51,39 @@ export const getItem = async (key: string) => {
   return value;
 };
 
-// Remove Item from Storage
+/**
+ * Removes an item from the storage.
+ * 
+ * @param {string} key - The key of the item to remove.
+ * @returns {Promise<void>} A promise that resolves when the item has been removed.
+ * 
+ * @example
+ * ```ts
+ * await removeItem('username');
+ * ```
+ */
 export const removeItem = async (key: string) => {
   const storageInstance = await initStorage();
   await storageInstance.remove(key);
   console.log(`Removed ${key}`);
 };
 
-// Clear all Storage
+/**
+ * Clears all items from the storage.
+ * 
+ * @returns {Promise<void>} A promise that resolves when all data has been cleared.
+ * 
+ * @example
+ * ```ts
+ * await clearStorage();
+ * ```
+ */
 export const clearStorage = async () => {
   const storageInstance = await initStorage();
   await storageInstance.clear();
   console.log('All data cleared');
 };
+
 
 
 

@@ -1,0 +1,35 @@
+.amount-to-pay-container {
+    background-color: #3b4a5a;
+    color: white;
+    padding: 16px;
+    border-radius: 12px;
+    text-align: center;
+  }
+  
+  .amount-to-pay-container h2 {
+    margin: 0;
+    font-size: 32px;
+  }
+  
+  .tabs-container {
+    margin-top: 16px;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .donation-card {
+    background-color: #00d3d3;
+    border-radius: 12px;
+    margin-top: 20px;
+  }
+  
+  .donation-card h1 {
+    font-size: 28px;
+  }
+  
+  .pledge-button {
+    font-size: 16px;
+    float: right;
+    margin-top: 10px;
+  }
+  

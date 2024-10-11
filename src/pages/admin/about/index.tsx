@@ -1,6 +1,8 @@
-import { IonContent, IonPage, IonButton, IonText, IonCol, IonRow, IonGrid, IonImg, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle } from '@ionic/react';
-import { useHistory } from 'react-router-dom';
+import { IonContent, IonPage, IonButton, IonText, IonCol, IonRow, IonGrid, IonImg, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonIcon, IonLabel, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs } from '@ionic/react';
+import { Redirect, Route, useHistory } from 'react-router-dom';
 import SideMenuBtn from '../../../components/sideMenuBtn';
+import { IonReactRouter } from '@ionic/react-router';
+import { playCircle, radio, library, search } from 'ionicons/icons';
 
 const AdminAbout: React.FC = () => {
   const history = useHistory();
@@ -11,56 +13,32 @@ const AdminAbout: React.FC = () => {
   };
 
   return (
-    <IonPage>
-      <IonContent className="ion-padding" fullscreen>
-        <IonGrid>
-          <IonRow>
-            <IonCol size="auto">
-              <IonText color="dark">
-                <h6 className="bold-text">About</h6>
-              </IonText>
-            </IonCol>
+    <IonReactRouter>
+      <IonTabs>
+        <IonRouterOutlet>
+          <Redirect exact path="/" to="/contact-us" />
+          {/*
+          Use the render method to reduce the number of renders your component will have due to a route change.
 
-            <IonCol size="12">
-              <IonCard>
-                <IonCardHeader>
-                  <IonCardTitle>Card Title</IonCardTitle>
-                  <IonCardSubtitle>Card Subtitle</IonCardSubtitle>
-                </IonCardHeader>
+          Use the component prop when your component depends on the RouterComponentProps passed in automatically.
+        */}
+          {/* <Route path="/contact-us" render={() => <HomePage />} exact={true} /> */}
+          {/* <Route path="/constitution" render={() => <RadioPage />} exact={true} /> */}
+        </IonRouterOutlet>
 
-                <IonCardContent>Here's a small text description for the card content. Nothing more, nothing less.</IonCardContent>
-              </IonCard>
-            </IonCol>
+        <IonTabBar slot="bottom">
+          <IonTabButton tab="home" href="/home">
+            <IonIcon icon={playCircle} />
+            <IonLabel>Listen now</IonLabel>
+          </IonTabButton>
 
-
-            <IonCol size="6">
-              <IonCard>
-                <IonCardHeader>
-                  <IonCardTitle>Card Title</IonCardTitle>
-                  <IonCardSubtitle>Card Subtitle</IonCardSubtitle>
-                </IonCardHeader>
-
-                <IonCardContent>Here's a small text description for the card content. Nothing more, nothing less.</IonCardContent>
-              </IonCard>
-            </IonCol>
-            <IonCol size="6">
-              <IonCard>
-                <IonCardHeader>
-                  <IonCardTitle>Card Title</IonCardTitle>
-                  <IonCardSubtitle>Card Subtitle</IonCardSubtitle>
-                </IonCardHeader>
-
-                <IonCardContent>Here's a small text description for the card content. Nothing more, nothing less.</IonCardContent>
-              </IonCard>
-            </IonCol>
-
-
-
-          </IonRow>
-        </IonGrid>
-      </IonContent>
-      <SideMenuBtn />
-    </IonPage>
+          <IonTabButton tab="radio" href="/radio">
+            <IonIcon icon={radio} />
+            <IonLabel>Radio</IonLabel>
+          </IonTabButton>
+        </IonTabBar>
+      </IonTabs>
+    </IonReactRouter>
   );
 };
 

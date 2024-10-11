@@ -1,0 +1,39 @@
+/* Executives.css */
+
+.executive-title {
+    text-align: center;
+    font-weight: bold;
+    font-size: 24px;
+    margin-top: 20px;
+  }
+  
+  .executive-subtitle {
+    text-align: center;
+    color: gray;
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+  
+  .executive-image {
+    width: 150px; /* Ensure the width and height are equal for a circular shape */
+    height: 150px;
+    border-radius: 50%; /* This makes the image circular */
+    object-fit: cover;
+    display: block; /* Make the image block-level so we can center it */
+    margin: 0 auto; /* Center the image horizontally */
+  }
+  
+  .executive-name {
+    font-weight: bold;
+    font-size: 20px;
+    text-align: center;
+    margin-top: 10px; /* Add some space between the image and name */
+  }
+  
+  .executive-role {
+    color: gray;
+    font-size: 16px;
+    text-align: center;
+    margin-bottom: 30px; /* Add space between the role and the next executive */
+  }
+  

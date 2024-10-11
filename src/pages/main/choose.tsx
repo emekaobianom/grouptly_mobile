@@ -14,7 +14,8 @@ import {
 import { useHistory } from 'react-router-dom';
 import { people } from 'ionicons/icons'; // Keep as fallback icon
 import { useState, useEffect } from 'react';
-import { groupsData } from '@/data/placeholder';
+import { getItem, setItem, removeItem } from '@/utils/storage';
+import { groupsData } from '@/data/group_placeholder';
 
 const Choose: React.FC = () => {
   const history = useHistory();
@@ -39,6 +40,11 @@ const Choose: React.FC = () => {
     setGroups(fetchedGroups);
   }, []); // The empty dependency array makes it run only once on component mount
 
+  const handleGroupClick = (group:any)=>{
+    setItem("selectedGroup",group);
+    history.push('/main/welcome')
+  }
+
   return (
     <IonPage>
       <IonContent className="ion-padding" fullscreen>
@@ -58,7 +64,7 @@ const Choose: React.FC = () => {
 
             <IonCol size="12">
               {groups.map((group, index) => (
-                <IonCard routerLink="/main/welcome" key={index}>
+                <IonCard onClick={()=>handleGroupClick(group)} style={{ cursor: 'pointer' }} key={index}>
                   <IonCardContent>
                     <IonGrid>
                       <IonRow>
@@ -66,7 +72,11 @@ const Choose: React.FC = () => {
                           {group.logo ? (
                             <IonImg
                               src={group.logo}
-                              style={{ width: '50px', height: '50px', borderRadius: '50%' }}
+                              style={{                                
+                                width: '50px', // Or any fixed width you want, like '15rem'
+                                height: 'auto',
+                                objectFit: 'contain', // or 'cover' depending on your needs
+                           borderRadius: '50%' }}
                             />
                           ) : (
                             <IonIcon

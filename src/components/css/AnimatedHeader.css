@@ -5,26 +5,19 @@
     height: 100%; /* Take full height of the header */
     box-shadow: none !important; /* Remove the shadow */
     border-bottom: 1px solid #ccc; /* Add a thin bottom border */
+ 
   }
 
-  /* Remove the shadow and add a bottom border */
-ion-header, ion-toolbar {
-    --ion-box-shadow: none; /* This removes the default shadow */
-    box-shadow: none !important; /* Ensures the shadow is removed */
-    border-bottom: 1px solid #ccc; /* Thin bottom border */
-  }
   
   /* Large header starts with 100px height */
   .large-header {
     height: 100px; /* Large height on page load */
     transition: height 0.3s ease-in-out;
-    border-bottom: none; /* No border on the large header */
   }
   
   .small-header {
     height: 56px; /* Standard height when scrolled */
     transition: height 0.3s ease-in-out;
-    border-bottom: none; /* No border on the large header */
   }
   
   /* Title styles */
@@ -40,48 +33,4 @@ ion-header, ion-toolbar {
     transition: font-size 0.3s ease-in-out, padding-bottom 0.3s ease-in-out;
   }
   
-  .content {
-    padding: 16px;
-  }
-
-
-  .unread-indicator {
-    background: var(--ion-color-primary);
-  
-    width: 10px;
-    height: 10px;
-  
-    border-radius: 100%;
-  
-    position: absolute;
-  
-    inset-inline-start: 12px;
-    top: 12px;
-  }
-  
-  .metadata-end-wrapper {
-    position: absolute;
-  
-    top: 10px;
-    inset-inline-end: 10px;
-  
-    font-size: 0.8rem;
-  
-    display: flex;
-    align-items: center;
-  }
-  
-  ion-label strong {
-    display: block;
-  
-    max-width: calc(100% - 60px);
-  
-    overflow: hidden;
-  
-    text-overflow: ellipsis;
-  }
-  
-  ion-label ion-note {
-    font-size: 0.9rem;
-  }
   
