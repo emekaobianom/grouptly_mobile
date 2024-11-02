@@ -1,3 +1,4 @@
+import { userAtom } from '@/store/store';
 import {
   IonContent,
   IonPage,
@@ -6,71 +7,47 @@ import {
   IonRow,
   IonGrid,
   IonImg,
+  IonButton,
+  IonAvatar,
 } from '@ionic/react';
+import { useAtom } from 'jotai';
+import { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { getItem } from '@/utils/storage';
 
 const Welcome: React.FC = () => {
+  const [user] = useAtom(userAtom); // Use destructuring to get the user atom
   const history = useHistory();
-  const [group, setGroup] = useState<any>(null);
 
+  // Check if user data is available; if not, redirect
   useEffect(() => {
-    const fetchGroup = async () => {
-      try {
-        const selectedGroup = await getItem("selectedGroup");
-        setGroup(selectedGroup);
-      } catch (error) {
-        console.error("Error fetching group:", error);
-      }
-    };
-
-    fetchGroup();
-    
-    const timer = setTimeout(() => {
-      // Pass the state object with openMenu set to true
-      history.push('/member/dashboard?openMenu=true');
-    }, 1000);
-
-    // Cleanup timer on unmount
-    return () => clearTimeout(timer);
-  }, [history]);
+    if (!user) {
+      history.push('/login'); // Redirect to login if no user
+    }
+  }, [user, history]);
 
   return (
     <IonPage>
       <IonContent className="ion-padding" fullscreen>
-        {/* Fixed Header */}
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            zIndex: 1000,
-            padding: '1rem',
-            background: 'transparent',
-          }}
-        >
-          <IonText color="dark">
-            <h6 className="bold-text">Grouptly™</h6>
-          </IonText>
-        </div>
-
-        {/* Main Content */}
-        <IonGrid style={{ height: '100%', paddingTop: '4rem' }}> {/* Added padding to avoid overlap */}
+        <IonGrid style={{ height: '100%', paddingTop: '4rem' }}> 
           <IonRow style={{ justifyContent: 'center', alignItems: 'center', height: '100%' }}>
             <IonCol size="12" style={{ textAlign: 'center' }}>
-              <IonImg
-                src={group?.logo || ""}
-                style={{
-                  margin: '0 auto',
-                  width: '15rem',
-                  height: 'auto',
-                  objectFit: 'contain',
-                }}
-                alt="Grouptly Icon"
-              />
-              <h2>Welcome to {group?.long_name || "your group"}</h2> {/* Display group name */}
+              <IonAvatar style={{ margin: '0 auto', width: '15rem', height: '15rem' }}>
+                <IonImg
+                  src={user?.image} // Optional chaining to handle undefined user
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    borderRadius: '50%',
+                  }}
+                  alt={user?.fullname} // Optional chaining for fullname
+                />
+              </IonAvatar>
+              <h4>Welcome to Grouptly™</h4>
+              <h2>{user?.fullname}</h2> {/* Display fullname with optional chaining */}
+              <IonButton size="large" color="tertiary" shape="round" fill="solid" onClick={() => history.push('/main/choose')}>
+                Enter
+              </IonButton>
             </IonCol>
           </IonRow>
         </IonGrid>

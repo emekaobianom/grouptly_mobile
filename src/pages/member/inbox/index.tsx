@@ -6,6 +6,7 @@ import MemberInboxDetail from './detail';
 import './inbox.css';
 import { inboxItemsData } from '@/data/inbox_placeholder';
 import SideMenuBtn from '../../../components/sideMenuBtn';
+import UserAvatar from '@/components/member/userAvatar';
 
 const MemberInbox: React.FC<RouteComponentProps> = ({ match }) => {
 
@@ -38,17 +39,15 @@ const MemberInbox: React.FC<RouteComponentProps> = ({ match }) => {
 
   return (
     <>
-      <IonRouterOutlet>
-        <Route path={`${match.url}/:id`} component={MemberInboxDetail} />
-      </IonRouterOutlet>
+      {/* <IonRouterOutlet>        
+      <Route path={`/member/inbox/:id`} component={MemberInboxDetail} />
+      </IonRouterOutlet> */}
 
       <IonPage>
        <IonHeader>
        <IonToolbar>
             <IonTitle>Inbox</IonTitle>
-            <IonAvatar slot='end' className='ion-padding'>
-              <img src="https://randomuser.me/api/portraits/men/9.jpg" alt="me" />
-            </IonAvatar>
+            <UserAvatar/>
           </IonToolbar>
        </IonHeader>
 

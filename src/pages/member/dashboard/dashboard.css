@@ -11,6 +11,13 @@
     box-shadow: none !important;
     border-bottom: none !important;
 }
+
+.info-card {
+  background: #f3f3f3; /* dark background for the card */
+  color: black;
+  margin: 15px;
+  border-radius: 10px;
+}
   
   .card-text-icon{
     display: flex;

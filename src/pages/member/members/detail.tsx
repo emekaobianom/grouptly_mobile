@@ -1,41 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import {
-  IonBackButton,
   IonButtons,
   IonHeader,
   IonContent,
   IonToolbar,
   IonTitle,
   IonPage,
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCardTitle,
-  IonIcon,
   IonText,
-  IonButton,
-  IonPopover,
-  IonItem,
-  IonList,
-  IonAlert,
-  IonLabel,
   IonAvatar,
   IonGrid,
   IonCol,
   IonRow,
+  IonBackButton,
+  IonButton,
+  IonImg,
 } from '@ionic/react';
 import { RouteComponentProps } from 'react-router-dom';
-import { chevronForward, ellipsisVertical, heart } from 'ionicons/icons';
-import { membersData } from '@/data/members_placeholder';
-import "./memberDetail.css"
-
-// Adjust the type for a single donation item to reflect the actual data
-interface MemberItem {
-  id: number; // Change this from string to number to match your data,
-  name: string;
-  image: string;
-  role:string;
-}
+import { membersData, MemberType } from '@/data/members_placeholder';
 
 interface MemberMembersDetailProps
   extends RouteComponentProps<{
@@ -43,63 +24,75 @@ interface MemberMembersDetailProps
   }> { }
 
 const MemberMembersDetail: React.FC<MemberMembersDetailProps> = ({ match }) => {
-  const [item, setItem] = useState<MemberItem | null>(null);
-
-  const [showAlert, setShowAlert] = useState(false); // State to control the alert visibility
-
-  const handleAlert = () => {
-    setShowAlert(true); // Show the alert when the button is clicked
-  };
+  const [item, setItem] = useState<MemberType | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Convert match.params.id to a number, since donationsItemsData uses numeric ids
-    const id = Number(match.params.id);
-    const foundItem = membersData.find((data) => data.id === id);
+    const foundItem = membersData.find((data) => data.id === match.params.id);
     setItem(foundItem || null);
+    setIsLoading(false);
+
+    return () => {
+      setItem(null);
+    };
   }, [match.params.id]);
+
+  const renderContent = () => {
+    if (isLoading) {
+      return <IonText>Loading...</IonText>;
+    }
+
+    if (!item) {
+      return <IonText>No item found</IonText>;
+    }
+
+    return (
+      <>
+        <IonGrid style={{ height: '100%', paddingTop: '4rem' }}>
+          <IonRow style={{ justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+            <IonCol size="12" style={{ textAlign: 'center' }}>
+              {/* Using IonAvatar to create a circular container for the image */}
+              <IonAvatar style={{ margin: '0 auto', width: '15rem', height: '15rem' }}>
+                <IonImg
+                  src={item.image}
+                  alt={item.name}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    borderRadius: '50%',
+                  }}
+                />
+              </IonAvatar>
+              <IonText className="member-detail-name">
+                <h3>{item.name}</h3>
+              </IonText>
+
+              <IonText className="member-detail-role">
+                <p>{item.role}</p>
+              </IonText>
+            </IonCol>
+
+          </IonRow>
+        </IonGrid>
+
+      </>
+    );
+  };
 
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonBackButton />
+            <IonBackButton defaultHref="/member/members" /> {/* Reuse the back button */}
           </IonButtons>
-          {item ? (
-            <IonTitle>{item.name}</IonTitle>
-          ) : (
-            <IonTitle>Member</IonTitle>
-          )}
-
+          <IonTitle>{item ? item.name : 'Member'}</IonTitle>
         </IonToolbar>
       </IonHeader>
 
       <IonContent class="ion-padding">
-        {/* Only render the card if `item` is not null */}
-        {item ? (
-          <IonGrid>
-            <IonRow>
-              <IonCol size="12" className="ion-text-center">
-                {/* Profile Image */}
-
-                <IonAvatar className="member-detail-image">
-                  <img src={item.image} alt="me" />
-                </IonAvatar>
-                {/* Executive Name */}
-                <IonText className="member-detail-name">
-                  <h3>{item.name}</h3>
-                </IonText>
-
-                {/* Executive Role */}
-                <IonText className="member-detail-role">
-            <p>{item.role}</p>
-          </IonText>
-              </IonCol>
-            </IonRow>
-          </IonGrid>
-        ) : (
-          <IonText>No item found</IonText>
-        )}
+        {renderContent()}
       </IonContent>
     </IonPage>
   );

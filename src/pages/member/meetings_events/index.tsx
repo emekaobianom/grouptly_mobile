@@ -1,109 +1,29 @@
+import React, { useState } from 'react';
+import { IonPage, IonHeader, IonContent, IonSearchbar, IonGrid, IonRow, IonCol, IonAvatar, IonCard, IonCardContent, IonItem, IonLabel, IonToolbar, IonSegment, IonSegmentButton, IonText, IonTitle, IonImg } from '@ionic/react';
+import './event.css';
+import { eventsData, EventType } from '@/data/events_placeholder';
+import { useHistory } from 'react-router';
+import SideMenuBtn from '@/components/sideMenuBtn';
+import UserAvatar from '@/components/member/userAvatar';
 
-import "./event.css";
-import React from 'react';
-import { IonPage, IonContent, IonGrid, IonRow, IonCol, IonAvatar, IonText, IonHeader, IonRefresher, IonRefresherContent, IonRouterOutlet, IonTitle, IonToolbar } from '@ionic/react';
-import SideMenuBtn from "@/components/sideMenuBtn";
-import { useHistory } from "react-router";
-
-interface DateType {
-  monthDay: string;
-  day: string;
-}
-
-interface EventType {
-  date: DateType;
-  title: string;
-  description: string;
-  category: string;
-  user: string;
-  userRole: string;
-  userImg: string;
-}
-
-interface EventCardProps {
-  event: EventType;
-}
-
-const EventCard: React.FC<EventCardProps> = ({ event }) => (
-  <div className="news-card">
-    <IonGrid>
-      <IonRow>
-        {/* Date Section */}
-        <IonCol size="2" className="ion-text-center">
-          <IonText color="medium">
-            <p>{event.date.monthDay}</p>
-            <h1>{event.date.day}</h1>
-          </IonText>
-        </IonCol>
-
-        {/* Event Details */}
-        <IonCol size="10">
-          <IonText color="primary">
-            <h6>{event.category.toUpperCase()}</h6>
-          </IonText>
-          <h2>{event.title}</h2>
-          <p>{event.description}</p>
-
-          {/* User Info */}
-          {/* <IonRow className="ion-align-items-center">
-            <IonAvatar>
-              <img src={event.userImg} alt={event.user} />
-            </IonAvatar>
-            <IonCol className="ion-padding">
-              <IonText>{event.user}</IonText>
-              <br/>
-              <small>{event.userRole}</small>
-            </IonCol>
-          </IonRow> */}
-        </IonCol>
-      </IonRow>
-    </IonGrid>
-  </div>
-);
-
+// Main Events Component
 const MemberMeetingsEvents: React.FC = () => {
-  const events: EventType[] = [
-    {
-      date: { monthDay: 'Jul-24', day: '01' },
-      title: '3rd Annual Meeting',
-      description: 'In this coming meeting we shall discuss the way forward on our new building and other pending issues of the previous meetings.',
-      category: 'Meeting',
-      user: 'Emeka Obianom Sunday',
-      userRole: 'PRO',
-      userImg: 'https://randomuser.me/api/portraits/men/12.jpg',
-    },
-    {
-      date: { monthDay: 'Aug-24', day: '12' },
-      title: 'Quarterly Financial Report',
-      description: 'We will be reviewing the quarterly financial report and addressing any discrepancies found.',
-      category: 'Finance',
-      user: 'Sophia Lee',
-      userRole: 'PRO',
-      userImg: 'https://randomuser.me/api/portraits/women/12.jpg',
-    },
-    
-    {
-      date: { monthDay: 'Mar-24', day: '12' },
-      title: 'Annually Financial Report',
-      description: 'We will be reviewing the quarterly financial report and addressing any discrepancies found.',
-      category: 'Finance',
-      user: 'Sophia Lee',
-      userRole: 'PRO',
-      userImg: 'https://randomuser.me/api/portraits/men/45.jpg',
-    },
-    
-    {
-      date: { monthDay: 'Oct-24', day: '12' },
-      title: '4th Financial Report',
-      description: 'We will be reviewing the quarterly financial report and addressing any discrepancies found.',
-      category: 'Finance',
-      user: 'Sophia Lee',
-      userRole: 'PRO',
-      userImg: 'https://randomuser.me/api/portraits/women/19.jpg',
-    },
-  ];
-  
+  const [segment, setSegment] = useState<'events' | 'meetings'>('meetings'); // State for segment
+  const [searchText, setSearchText] = useState(''); // State for search text
   const history = useHistory();
+
+  // Function to get records with roles other than 'event'
+  function getEventByCategory(events: EventType[], category: string) {
+    return events.filter((event) => event.category === category);
+  }
+
+  function getEventByNotCategory(events: EventType[], category: string) {
+    return events.filter((event) => event.category !== category);
+  }
+
+  const meetings = getEventByCategory(eventsData, "meeting");
+  const otherEventsNotMeeting = getEventByNotCategory(eventsData, "meeting");
+
   // Handle pull-to-refresh event
   const handleRefresh = (event: CustomEvent) => {
     setTimeout(() => {
@@ -111,30 +31,111 @@ const MemberMeetingsEvents: React.FC = () => {
     }, 2000);
   };
 
+  // Filter events based on search input
+  const filteredEvents = otherEventsNotMeeting.filter(event =>
+    event.title.toLowerCase().includes(searchText.toLowerCase())
+  );
+
+  // Event Section
+  const eventSection = () => (
+    <>
+      <IonSearchbar
+        value={searchText}
+        onIonInput={e => setSearchText(e.detail.value!)}
+        placeholder="Search by event"
+      />
+      <IonGrid>
+        {filteredEvents.map((event, index) => (
+          <IonRow key={index}>
+            {/* Date Section */}
+            <IonCol size="2" className="ion-text-center">
+              <IonText color="medium">
+                <p>{event.date.monthDay}</p>
+                <h1>{event.date.day}</h1>
+              </IonText>
+            </IonCol>
+
+            {/* Event Details */}
+            <IonCol size="10">
+              <IonItem
+                button
+                onClick={() => { history.push(`/member/meetings-events/detail/${event.id}`) }}
+              >
+                <IonLabel>
+                  <IonText color="primary">
+                    <h6>{event.category.toUpperCase()}</h6>
+                  </IonText>
+                  <h2>{event.title}</h2>
+                  <p>{event.description}</p>
+                </IonLabel>
+              </IonItem>
+            </IonCol>
+          </IonRow>
+        ))}
+      </IonGrid>
+    </>
+  );
+
+  // Meeting Section
+  const meetingSection = () => (
+    <IonGrid>
+      {meetings.map((event, index) => (
+        <IonRow key={index}>
+          {/* Date Section */}
+          <IonCol size="2" className="ion-text-center">
+            <IonText color="medium">
+              <p>{event.date.monthDay}</p>
+              <h1>{event.date.day}</h1>
+            </IonText>
+          </IonCol>
+
+          {/* Event Details */}
+          <IonCol size="10">
+            <IonItem
+              button
+              onClick={() => { history.push(`/member/meetings-events/detail/${event.id}`) }}
+            >
+              <IonLabel>
+                <IonText color="primary">
+                  <h6>{event.category.toUpperCase()}</h6>
+                </IonText>
+                <h2>{event.title}</h2>
+                <p>{event.description}</p>
+              </IonLabel>
+            </IonItem>
+          </IonCol>
+        </IonRow>
+      ))}
+    </IonGrid>
+  );
+
   return (
     <>
-
       <IonPage>
-       <IonHeader>
-       <IonToolbar>
-            <IonTitle>Meetings & Events</IonTitle>
-            <IonAvatar slot='end' className='ion-padding'>
-              <img src="https://randomuser.me/api/portraits/men/9.jpg" alt="me" />
-            </IonAvatar>
+        <IonHeader>
+          <IonToolbar>
+            <IonTitle>Events</IonTitle>
+            <UserAvatar/>
           </IonToolbar>
-       </IonHeader>
+          <IonToolbar>
+            <IonSegment value={segment} onIonChange={(e) => setSegment(e.detail.value as 'events' | 'meetings')}>
+              <IonSegmentButton value="meetings">
+                <IonLabel>Meetings</IonLabel>
+              </IonSegmentButton>
+              <IonSegmentButton value="events">
+                <IonLabel>Events</IonLabel>
+              </IonSegmentButton>
+            </IonSegment>
+          </IonToolbar>
+        </IonHeader>
 
         <IonContent>
-          <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
-            <IonRefresherContent />
-          </IonRefresher>
-        {/* <h1 className="ion-padding">Event</h1> */}
-        {events.map((event, index) => (
-          <EventCard key={index} event={event} />
-        ))}
-      </IonContent>
-      <SideMenuBtn />
-    </IonPage>
+          {/* Render based on the selected segment */}
+          {segment === 'events' ? eventSection() : meetingSection()}
+        </IonContent>
+
+        <SideMenuBtn />
+      </IonPage>
     </>
   );
 };

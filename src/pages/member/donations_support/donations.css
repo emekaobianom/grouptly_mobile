@@ -1,11 +1,4 @@
-/* .user-avatar {
-    margin-right: 15px;
-  }
-  
-  .card-content {
-    padding: 16px;
-  } */
-  
+
   .card-text-icon{
     display: flex;
     flex-direction: row;
@@ -13,31 +6,12 @@
     align-items: center;
   }
 
-
-  /* --- for circular photo */
-  .circle-image-container {
-    width: 150px;       /* Circular container size */
-    height: 150px;      /* Circular container size */
-    border-radius: 50%; /* Circular shape */
-    overflow: hidden;   /* Ensure the image stays within the container */
+  .card-icon-right{
     display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .circle-image {
-    width: 100%;
-    height: 100%;   /* Fill the container completely */
-    object-fit: cover; /* Ensure image covers the container without stretching */
-    object-position: top; /* Keep the top of the image in view (focus on forehead) */
-  }
-  
-
-  /* card arrow */
-  .card-header {
-    display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: space-between;
-    align-items: center;
-  }                                                                         
+    align-items: end;
+  }
+
+                                                                         
   

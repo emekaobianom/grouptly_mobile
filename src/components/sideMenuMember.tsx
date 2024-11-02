@@ -41,7 +41,7 @@ const SideMenuMember: React.FC = () => {
         { title: "News", icon: newspaper, path: "/member/news" },
         { title: "Calendar", icon: calendarClear, path: "/member/calendar" },
         { title: "Members", icon: people, path: "/member/members" },
-        { title: "Executives", icon: briefcase, path: "/member/executives" },
+        // { title: "Executives", icon: briefcase, path: "/member/executives" },
         { title: "About Us", icon: informationCircle, path: "/member/about-us" }
     ];
 
@@ -67,7 +67,8 @@ const SideMenuMember: React.FC = () => {
                             expand="full"
                             shape="round"
                             color="dark"
-                            routerLink="/admin/dashboard?openMenu=true"
+                            // routerLink="/admin/dashboard?openMenu=true"
+                            routerLink="/admin/dashboard"
                             style={{ margin: '16px' }}
                         >
                             <IonIcon icon={chevronForward} slot="start" />

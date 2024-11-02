@@ -8,7 +8,7 @@ const Signup: React.FC = () => {
 
   const handleNext = async () => {
     // await storeData('firstAppVisit', 'false');
-    history.replace('/main/signup');
+    // history.replace('/main/signup');
   };
 
   return (
@@ -39,18 +39,18 @@ const Signup: React.FC = () => {
             </IonCol>
 
             <IonCol size="12" style={{ textAlign: 'center' }}>
-              <IonButton style={{marginBottom:16}} expand="block" color="tertiary" shape='round' onClick={handleNext}>
+              <IonButton style={{marginBottom:16}} expand="block" color="dark" shape='round' onClick={handleNext}>
                 <IonIcon slot='start' icon={logoGoogle} />
                 Signup with Google
               </IonButton>
-              <IonButton style={{marginBottom:16}} expand="block" color="tertiary" shape='round' onClick={handleNext}>
+              <IonButton style={{marginBottom:16}} expand="block" color="dark" shape='round' onClick={handleNext}>
                 <IonIcon slot='start' icon={logoFacebook} />
                 Signup with Facebook
               </IonButton>
-              <hr />
+              {/* <hr />
               <IonButton expand="block" color="light" shape='round' onClick={handleNext}>
                 Signup with email
-              </IonButton>
+              </IonButton> */}
               <IonButton style={{marginTop:"2rem"}} color="light" shape='round'  onClick={()=>{history.push('/main/login')}}>
               I already have an account
               </IonButton>

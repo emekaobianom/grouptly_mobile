@@ -6,9 +6,10 @@ import './donations.css';
 import SideMenuBtn from '../../../components/sideMenuBtn';
 import { donationsItemsData } from '@/data/donations_placeholder';
 import MemberDonationsSupportDetail from './detail';
+import UserAvatar from '@/components/member/userAvatar';
 
 const MemberDonationsSupport: React.FC<RouteComponentProps> = ({ match }) => {
- 
+
   // Handle pull-to-refresh event
   const handleRefresh = (event: CustomEvent) => {
     setTimeout(() => {
@@ -20,36 +21,44 @@ const MemberDonationsSupport: React.FC<RouteComponentProps> = ({ match }) => {
 
   const renderDonationsSupportItem = (item: any) => (
     <IonCard routerLink={`/member/donations-support/detail/${item.id}`} key={item.id} className='ion-margin-bottom'>
-    <IonCardHeader className="card-header">
-      <IonCardTitle>{item.title}</IonCardTitle>
-      <IonIcon icon={chevronForward} />
-    </IonCardHeader>
-    <IonCardContent>
-      <div className='card-text-icon'>
-        <IonText>
-          {item.reason}
-        </IonText>
-        <IonIcon style={{ fontSize: 60 }} icon={heart} />
-      </div>
-    </IonCardContent>
-  </IonCard>
+      
+      <IonCardContent>
+        <div className='card-text-icon'>
+          <div>
+            <IonText style={{ fontSize: 16 }}>
+              {item.title}
+            </IonText>
+            <br />
+            <IonText style={{ fontSize: 30 }}>
+              N{item.amount}
+            </IonText>
+            <br />
+            <IonText>
+              {item.reason}
+            </IonText>
+          </div>
+          <div className='card-icon-right'>
+            <IonIcon className="ion-margin-bottom" icon={chevronForward} />
+            <IonIcon style={{ fontSize: 30 }} icon={heart} />
+          </div>
+        </div>
+      </IonCardContent>
+    </IonCard>
   );
 
   return (
     <>
       <IonRouterOutlet>
-        <Route path={`${match.url}/detail/:id`} component={MemberDonationsSupportDetail} exact/>
+        <Route path={`${match.url}/detail/:id`} component={MemberDonationsSupportDetail} exact />
       </IonRouterOutlet>
 
       <IonPage>
-      <IonHeader>
-       <IonToolbar>
+        <IonHeader>
+          <IonToolbar>
             <IonTitle>Donations & Support</IonTitle>
-            <IonAvatar slot='end' className='ion-padding'>
-              <img src="https://randomuser.me/api/portraits/men/9.jpg" alt="me" />
-            </IonAvatar>
+            <UserAvatar/>
           </IonToolbar>
-       </IonHeader>
+        </IonHeader>
 
         <IonContent>
           <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>

@@ -46,7 +46,7 @@ const SideMenuAdmin: React.FC = () => {
     ];
 
     return (
-        <IonMenu type="reveal" contentId="admin" menuId="main-menu">
+        <IonMenu style={{background:"yellow"}} type="reveal" contentId="admin" menuId="main-menu">
             <IonContent>
                 {/* Big picture */}
                 <IonImg

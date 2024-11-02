@@ -1,45 +1,47 @@
-import { IonContent, IonPage, IonButton, IonText, IonCol, IonRow, IonGrid, IonImg, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonIcon, IonLabel, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs } from '@ionic/react';
-import { Redirect, Route, useHistory } from 'react-router-dom';
-import SideMenuBtn from '../../../components/sideMenuBtn';
-import { IonReactRouter } from '@ionic/react-router';
-import { playCircle, radio, library, search } from 'ionicons/icons';
+import React, { useState, useEffect, useRef } from 'react';
+import { IonContent, IonPage } from '@ionic/react';
+import Quill from 'quill';
+import 'quill/dist/quill.snow.css'; // Quill editor's default styling
 
-const AdminAbout: React.FC = () => {
-  const history = useHistory();
+const QuillEditorPage = () => {
+  // Reference for the Quill editor element
+  const editorRef = useRef(null);
+  // State to hold the editor's output
+  const [editorContent, setEditorContent] = useState('');
 
-  const handleNext = async () => {
-    // await storeData('firstAppVisit', 'false');
-    //history.replace('/signup');
-  };
+  useEffect(() => {
+    // Initialize the Quill editor if editorRef exists
+    if (editorRef.current) {
+      const quill = new Quill(editorRef.current, {
+        theme: 'snow', // A nice default theme
+      });
+
+      // Set up a listener to track changes in editor and update state
+      quill.on('text-change', () => {
+        setEditorContent(quill.root.innerHTML); // Set editor's HTML content
+      });
+
+      
+    }
+  }, []);
 
   return (
-    <IonReactRouter>
-      <IonTabs>
-        <IonRouterOutlet>
-          <Redirect exact path="/" to="/contact-us" />
-          {/*
-          Use the render method to reduce the number of renders your component will have due to a route change.
-
-          Use the component prop when your component depends on the RouterComponentProps passed in automatically.
-        */}
-          {/* <Route path="/contact-us" render={() => <HomePage />} exact={true} /> */}
-          {/* <Route path="/constitution" render={() => <RadioPage />} exact={true} /> */}
-        </IonRouterOutlet>
-
-        <IonTabBar slot="bottom">
-          <IonTabButton tab="home" href="/home">
-            <IonIcon icon={playCircle} />
-            <IonLabel>Listen now</IonLabel>
-          </IonTabButton>
-
-          <IonTabButton tab="radio" href="/radio">
-            <IonIcon icon={radio} />
-            <IonLabel>Radio</IonLabel>
-          </IonTabButton>
-        </IonTabBar>
-      </IonTabs>
-    </IonReactRouter>
+    <IonPage>
+      <IonContent>
+        <div>
+          {/* Quill Editor */}
+          <div ref={editorRef} style={{ height: '200px', marginBottom: '20px' }} />
+          
+          {/* Displaying the output */}
+          <h2>Editor Output:</h2>
+          <div
+            dangerouslySetInnerHTML={{ __html: editorContent }}
+            style={{ border: '1px solid #ccc', padding: '10px', marginTop: '10px' }}
+          />
+        </div>
+      </IonContent>
+    </IonPage>
   );
 };
 
-export default AdminAbout;
+export default QuillEditorPage;

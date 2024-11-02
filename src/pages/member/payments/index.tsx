@@ -1,77 +1,93 @@
-import React from 'react';
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, IonGrid, IonRow, IonCol, IonText, IonButton } from '@ionic/react';
-import './payments.css'; // Assuming you want custom styles for this page
+import { IonAvatar, IonBackButton, IonButton, IonCard, IonCardContent, IonCol, IonContent, IonHeader, IonIcon, IonItem, IonLabel, IonPage, IonRouterOutlet, IonRow, IonTabBar, IonTabButton, IonTabs, IonText, IonTitle, IonToolbar } from '@ionic/react';
+import { Redirect, Route, RouteComponentProps } from 'react-router-dom';
+import MemberPaymentsHistory from './history';
+import './payments.css';
+import MemberPaymentsHistoryDetail from './history_detail';
 import SideMenuBtn from '@/components/sideMenuBtn';
+import { time, wallet } from 'ionicons/icons';
+import UserAvatar from '@/components/member/userAvatar';
 
-const MemberPayments: React.FC = () => {
+const MemberPayments: React.FC<RouteComponentProps> = ({ match }) => {
+
   return (
-    <IonPage>
-      <IonHeader>
-        <IonToolbar>
-          <IonTitle>Payments</IonTitle>
-        </IonToolbar>
-      </IonHeader>
+    <>     
 
-      <IonContent className="ion-padding">
-        {/* Amount to pay section */}
-        <IonGrid>
-          <IonRow>
-            <IonCol size="12">
-              <div className="amount-to-pay-container">
-                <p>Amount to pay</p>
-                <h2>₦25,600</h2>
-              </div>
-            </IonCol>
-          </IonRow>
-        </IonGrid>
+      <IonPage>
+        <IonHeader>
+          <IonToolbar>
+            <IonTitle>To Pay</IonTitle>
+            <UserAvatar/>
+          </IonToolbar>
+        </IonHeader>
 
-        {/* To Pay and History Tabs */}
-        <IonGrid className="tabs-container">
-          <IonRow>
-            <IonCol className="ion-text-center">
-              <IonText>To Pay</IonText>
-            </IonCol>
-            <IonCol className="ion-text-center">
-              <IonButton color="medium" size="small" fill="outline">History</IonButton>
-            </IonCol>
-          </IonRow>
-        </IonGrid>
+        <IonContent className="ion-padding">
 
-        {/* Donation Card */}
-        <IonCard className="donation-card">
-          <IonCardHeader>
-            <IonGrid>
+          <IonCard style={{ height: "200px" }}>
+            <IonCardContent>
               <IonRow>
-                <IonCol size="6">
-                  <IonCardSubtitle>
-                    <span role="img" aria-label="donation">❤️ Donation</span>
-                  </IonCardSubtitle>
+                <IonCol size='12' className='ion-align-items-end'>
+                  <IonLabel className="item-amount">Amount to Pay</IonLabel>
+                  <IonText color="medium">
+                    <p>Donation Pledge (you have paid ₦10,000)</p>
+                  </IonText>
+                  <IonLabel className="item-left-to-pay">₦15,000 Left to Pay</IonLabel>
                 </IonCol>
-                <IonCol size="6" className="ion-text-right">
-                  <IonText color="medium">Created 8 Nov/23</IonText>
+                <IonCol size='12' className='ion-align-items-end'>
+                  <IonButton shape="round" routerLink='/member/payments/history'>
+                    <IonIcon slot="start" icon={time} />
+                    History
+                  </IonButton>
                 </IonCol>
               </IonRow>
-            </IonGrid>
-          </IonCardHeader>
 
-          <IonGrid className="ion-padding-start ion-padding-end">
-            <IonRow>
-              <IonCol size="12">
-                <IonCardTitle>Purchase of Generator</IonCardTitle>
-                <IonText>
-                  <h1>₦2,500,000</h1>
-                </IonText>
-                <IonButton fill="clear" color="primary" className="pledge-button">
-                  Pledge →
-                </IonButton>
-              </IonCol>
-            </IonRow>
-          </IonGrid>
-        </IonCard>
-      </IonContent>
-      <SideMenuBtn />
-    </IonPage>
+            </IonCardContent>
+          </IonCard>
+
+
+          <IonCard className="pay-card">
+            <IonCardContent>
+              <IonLabel className="item-amount">₦25,000</IonLabel>
+              <IonText color="medium">
+                <p>Donation Pledge (you have paid ₦10,000)</p>
+              </IonText>
+              <IonLabel className="item-left-to-pay">₦15,000 Left to Pay</IonLabel>
+              <IonText color="secondary">
+                <p>PAY-ITEM-ID : MEET8823</p>
+              </IonText>
+            </IonCardContent>
+          </IonCard>
+
+          <IonCard className="pay-card">
+            <IonCardContent>
+              <IonLabel className="item-amount">₦25,000</IonLabel>
+              <IonText color="medium">
+                <p>Donation Pledge (you have paid ₦10,000)</p>
+              </IonText>
+              <IonLabel className="item-left-to-pay">₦15,000 Left to Pay</IonLabel>
+              <IonText color="secondary">
+                <p>PAY-ITEM-ID : MEET8823</p>
+              </IonText>
+            </IonCardContent>
+          </IonCard>
+
+          <IonCard className="pay-card">
+            <IonCardContent>
+              <IonText color="medium">
+                <p>Building Fund 2024</p>
+              </IonText>
+              <IonLabel className="item-left-to-pay">₦15,000</IonLabel>
+              <IonText color="secondary">
+                <p>PAY-ITEM-ID : MEET4523</p>
+              </IonText>
+            </IonCardContent>
+          </IonCard>
+        </IonContent>
+        <SideMenuBtn />
+      </IonPage>
+    </>
   );
 };
 
 export default MemberPayments;
+
+

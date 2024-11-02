@@ -10,46 +10,40 @@ import {
   IonCard,
   IonCardContent,
   IonImg,
+  IonAlert,
 } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
-import { people } from 'ionicons/icons'; // Keep as fallback icon
-import { useState, useEffect } from 'react';
-import { getItem, setItem, removeItem } from '@/utils/storage';
-import { groupsData } from '@/data/group_placeholder';
+import { checkmarkCircle, people } from 'ionicons/icons';
+import { useState, useEffect, useMemo } from 'react';
+import { setItem } from '@/utils/storage';
+import { userGroupsAtom, Group } from '@/store/store';
+import { useAtom } from 'jotai';
 
 const Choose: React.FC = () => {
   const history = useHistory();
+  const [alertIsOpen, setAlertIsOpen] = useState(false);
+  
+// Access user's groups from the atom
+  const [userGroups] = useAtom(userGroupsAtom); 
 
-  // Sample structure for groupsData:
-  // {
-  //   long_name: "Creative Minds Collective",
-  //   short_name: "CMC",
-  //   location: "New York, NY",
-  //   category: "Art & Culture",
-  //   status: "Active",
-  //   logo: "https://via.placeholder.com/150?text=CMC"
-  // }
-
-  const [groups, setGroups] = useState<any[]>([]);
-
-  useEffect(() => {
-    // Corrected logic to take only the first three groups
-    const fetchedGroups = groupsData.slice(0, 3).map(group => ({
-      ...group,
-    }));
-    setGroups(fetchedGroups);
-  }, []); // The empty dependency array makes it run only once on component mount
-
-  const handleGroupClick = (group:any)=>{
-    setItem("selectedGroup",group);
-    history.push('/main/welcome')
-  }
+  // Handle group selection
+  const handleGroupClick = (group: Group) => {
+    setItem('selectedGroup', group); // Save selected group in storage
+    if (group.status === 'Active') {
+      // Redirect if group is active
+      history.push('/member/dashboard?openMenu=true');
+    } else {
+      // Show alert if group is inactive
+      setAlertIsOpen(true);
+    }
+  };
 
   return (
     <IonPage>
       <IonContent className="ion-padding" fullscreen>
         <IonGrid style={{ height: '100%' }}>
           <IonRow style={{ justifyContent: 'space-between', height: '100%' }}>
+            {/* Header Section */}
             <IonCol size="auto">
               <IonText color="dark" className="ion-margin-bottom">
                 <h6 className="bold-text">Grouptly™</h6>
@@ -62,38 +56,52 @@ const Choose: React.FC = () => {
               </IonText>
             </IonCol>
 
+            {/* Display List of User's Groups */}
             <IonCol size="12">
-              {groups.map((group, index) => (
-                <IonCard onClick={()=>handleGroupClick(group)} style={{ cursor: 'pointer' }} key={index}>
+              {userGroups.map((group) => (
+                <IonCard
+                  onClick={() => handleGroupClick(group)}
+                  style={{ cursor: 'pointer' }}
+                  key={group.id}
+                >
                   <IonCardContent>
                     <IonGrid>
                       <IonRow>
+                        {/* Display Group Logo or Default Icon */}
                         <IonCol size="auto">
                           {group.logo ? (
                             <IonImg
                               src={group.logo}
-                              style={{                                
-                                width: '50px', // Or any fixed width you want, like '15rem'
+                              style={{
+                                width: '50px',
                                 height: 'auto',
-                                objectFit: 'contain', // or 'cover' depending on your needs
-                           borderRadius: '50%' }}
+                                objectFit: 'contain',
+                                borderRadius: '50%',
+                              }}
                             />
                           ) : (
                             <IonIcon
                               icon={people}
+                              className="status-icon"
                               style={{ color: 'black', fontSize: '24px' }}
                             />
                           )}
                         </IonCol>
+
+                        {/* Group Name and Location */}
                         <IonCol>
                           <p className="bold-text">{group.long_name}</p>
-                          
                           <IonText color="medium">
                             <small>{group.location}</small>
                           </IonText>
-                          <IonText color="success">
-                             <small>( {group.status} )</small>
-                          </IonText>
+                        </IonCol>
+
+                        {/* Status Indicator */}
+                        <IonCol size="auto">
+                          <IonIcon
+                            icon={checkmarkCircle}
+                            className={`status-icon ${group.status === 'Active' ? 'status-active' : 'status-inactive'}`}
+                          />
                         </IonCol>
                       </IonRow>
                     </IonGrid>
@@ -102,6 +110,7 @@ const Choose: React.FC = () => {
               ))}
             </IonCol>
 
+            {/* Action Buttons */}
             <IonCol size="12" style={{ textAlign: 'center' }}>
               <IonButton
                 expand="block"
@@ -115,16 +124,24 @@ const Choose: React.FC = () => {
                 style={{ marginTop: '2rem' }}
                 color="light"
                 shape="round"
-                onClick={() => {
-                  history.push('/main/login');
-                }}
+                routerLink="/main/login"
               >
-                LogOut
+                Log Out
               </IonButton>
             </IonCol>
           </IonRow>
         </IonGrid>
       </IonContent>
+
+      {/* Alert for Inactive Group Status */}
+      <IonAlert
+        isOpen={alertIsOpen}
+        header="Group Not Active"
+        subHeader="Your Request is still pending"
+        message="Once the group admin accepts you, you can enter this group."
+        buttons={['Okay']}
+        onDidDismiss={() => setAlertIsOpen(false)}
+      />
     </IonPage>
   );
 };

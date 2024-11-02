@@ -5,7 +5,6 @@ import { Route, RouteComponentProps, useHistory } from 'react-router';
 
 import './donations.css';
 import SideMenuBtn from '../../../components/sideMenuBtn';
-import AnimatedHeader from '@/components/AnimatedHeader';
 import { donationsItemsData } from '@/data/donations_placeholder';
 import AdminDonationsSupportDetail from './detail';
 import AdminDonationsSupportAdd from './add';
@@ -57,11 +56,6 @@ const AdminDonationsSupport: React.FC<RouteComponentProps> = ({ match }) => {
       </IonRouterOutlet>
 
       <IonPage>
-        <AnimatedHeader isScrolled={isScrolled} title="Donations & Support">
-        {/* Custom content for this page */}
-        <IonIcon onClick={() => history.push(`${match.url}/add`)} icon={addCircleOutline}  style={{ width: 30, height: 30 , marginRight:"1rem"}} />
-        {/* <IonIcon icon={pencil}  style={{ width: 30, height: 30, marginRight:"1rem" }} /> */}
-      </AnimatedHeader>
 
         <IonContent scrollEvents onIonScroll={handleScroll}>
           <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>

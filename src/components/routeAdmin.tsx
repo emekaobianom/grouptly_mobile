@@ -1,9 +1,7 @@
-import AdminAbout from "@/pages/admin/about";
 import AdminCalendar from "@/pages/admin/calendar";
 import AdminDashboard from "@/pages/admin/dashboard";
 import AdminDonationsSupport from "@/pages/admin/donations_support";
 import AdminExecutives from "@/pages/admin/executives";
-import AdminInbox from "@/pages/admin/inbox";
 import AdminInboxDetail from "@/pages/admin/inbox/detail";
 import AdminMeetingsEvents from "@/pages/admin/meetings_events";
 import AdminMembers from "@/pages/admin/members";
@@ -13,12 +11,14 @@ import { IonRouterOutlet } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import { Route, Redirect } from "react-router";
 import SideMenuAdmin from "./sideMenuAdmin";
+import AdminInbox from "@/pages/admin/inbox";
+import QuillEditorPage from "@/pages/admin/about";
 
 const RouteAdmin: React.FC = () => {
 
   return (
     <>
-      <SideMenuAdmin />
+      {/* <SideMenuAdmin /> */}
       <IonRouterOutlet id="admin">
 
         {/* admin */}
@@ -32,7 +32,7 @@ const RouteAdmin: React.FC = () => {
         <Route path="/admin/calendar" component={AdminCalendar} exact />
         <Route path="/admin/members" component={AdminMembers} exact />
         <Route path="/admin/executives" component={AdminExecutives} exact />
-        <Route path="/admin/about-us" component={AdminAbout} exact />
+        <Route path="/admin/about" component={QuillEditorPage} exact />
       </IonRouterOutlet>
     </>
   );

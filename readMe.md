@@ -71,3 +71,12 @@ const location = useLocation();
   useEffect(() => {
     console.log(`Route changed to: ${location.pathname}`);
   }, [location]);
+
+
+
+
+  # ================ adding rich text editor ================
+  Quill
+
+ npm install quill
+ npm install @types/quill --save-dev

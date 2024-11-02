@@ -1,35 +1,35 @@
-.amount-to-pay-container {
-    background-color: #3b4a5a;
-    color: white;
-    padding: 16px;
-    border-radius: 12px;
-    text-align: center;
-  }
-  
-  .amount-to-pay-container h2 {
-    margin: 0;
-    font-size: 32px;
-  }
-  
-  .tabs-container {
-    margin-top: 16px;
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  .donation-card {
-    background-color: #00d3d3;
-    border-radius: 12px;
-    margin-top: 20px;
-  }
-  
-  .donation-card h1 {
-    font-size: 28px;
-  }
-  
-  .pledge-button {
-    font-size: 16px;
-    float: right;
-    margin-top: 10px;
-  }
-  
+.history-title {
+  color: gray;
+}
+
+.total-to-pay {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.total-to-pay h2 {
+  font-size: 24px;
+}
+
+.total-to-pay p {
+  margin: 0;
+  color: lightgray;
+}
+
+.pay-card {
+  background: #f3f3f3; /* dark background for the card */
+  color: black;
+  margin: 15px;
+  border-radius: 10px;
+}
+
+.item-amount {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.item-left-to-pay {
+  font-size: 20px;
+  font-weight: bold;
+  color: #6f0bbc; /* yellow color for the amount */
+}

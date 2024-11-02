@@ -1,0 +1,36 @@
+/* General day card styling */
+.day-card {
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 16px;
+  color: white;
+  border: none;
+}
+
+/* Day and Date Headers */
+.day-header {
+  font-size: 1.5em;
+  font-weight: bold;
+  text-align: left;
+  color: #1e1e1e;
+}
+
+.date-col {
+  font-size: 2em;
+  text-align: left;
+}
+
+.date-text {
+  font-weight: bold;
+  color: #1e1e1e;
+}
+
+.month-text {
+  font-size: 1.5em;
+  color: #4e4e4e;
+}
+
+/* Time Slot styling */
+.body{
+  color:black
+}

@@ -27,8 +27,12 @@ import SideMenuBtn from '../../../components/sideMenuBtn';
 import './dashboard.css';
 import { getItem } from '@/utils/storage';
 import { arrowForwardOutline, calendar, chevronForward } from 'ionicons/icons';
+import UserAvatar from '@/components/member/userAvatar';
+import { userAtom } from '@/store/store';
+import { useAtom } from 'jotai';
 
 const MemberDashboard: React.FC = () => {
+  const [{ image , fullname, role}]:any = useAtom(userAtom);
   const location = useLocation();
   const history = useHistory();
   const [group, setGroup] = useState<any>(null);
@@ -84,9 +88,7 @@ const MemberDashboard: React.FC = () => {
       {/* Header */}
       <IonHeader className='header'>
         <IonToolbar class='toolbar'>
-          <IonAvatar slot='end' className='ion-padding'>
-            <img src="https://randomuser.me/api/portraits/men/9.jpg" alt="me" />
-          </IonAvatar>
+        <UserAvatar/>
         </IonToolbar>
       </IonHeader>
 
@@ -100,20 +102,20 @@ const MemberDashboard: React.FC = () => {
           <IonCol size="auto">
             <div style={{ width: 150, height: 150 }} className="circle-image-container">
               <IonImg
-                src="https://c8.alamy.com/comp/PG95YW/young-african-american-man-holding-canadian-passport-doing-ok-sign-with-fingers-excellent-symbol-PG95YW.jpg"  // Replace with your image URL
+                src={image}  // Replace with your image URL
                 alt="Circular"
                 className="circle-image"
               />
             </div>
           </IonCol>
           <IonCol size="auto">
-            Emeka Obianom <br /><small>(Member)</small>
+            {fullname} <br /><small>({role})</small>
           </IonCol>
         </IonRow>
 
 
         {/* Full width card for attendance */}
-        <IonCard routerLink='/member/dashboard' >
+        <IonCard className="info-card" routerLink='/member/dashboard' >
           <IonCardHeader className="card-header">
             <IonCardTitle>Attendance</IonCardTitle>
             <IonIcon icon={chevronForward} />
@@ -129,9 +131,9 @@ const MemberDashboard: React.FC = () => {
           </IonCardContent>
         </IonCard>
 
-        <IonCard>
+        <IonCard className="info-card">
           <IonCardHeader className="card-header">
-            <IonCardTitle>Attendance</IonCardTitle>
+            <IonCardTitle>Payments</IonCardTitle>
             <IonIcon icon={chevronForward} />
           </IonCardHeader>
           <IonCardContent>
@@ -149,9 +151,9 @@ const MemberDashboard: React.FC = () => {
           <IonText>NEWS</IonText>
         </IonRow>
 
-        <IonCard>
+        <IonCard className="info-card">
           <IonCardHeader className="card-header">
-            <IonCardTitle>Attendance</IonCardTitle>
+            <IonCardTitle>Next Meeting</IonCardTitle>
             <IonIcon icon={chevronForward} />
           </IonCardHeader>
           <IonCardContent>
@@ -165,7 +167,7 @@ const MemberDashboard: React.FC = () => {
           </IonCardContent>
         </IonCard>
 
-        <IonCard>
+        <IonCard className="info-card">
           <IonCardHeader className="card-header">
             <IonCardTitle>Attendance</IonCardTitle>
             <IonIcon icon={chevronForward} />
