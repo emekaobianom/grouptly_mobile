@@ -18,26 +18,24 @@ import {
     IonCol,
     IonGrid,
     IonRow,
+    IonTextarea,
+    IonText,
 } from '@ionic/react';
 import { RouteComponentProps } from 'react-router-dom';
 import { groupsData } from '@/data/group_placeholder';
 import { userAtom } from '@/store/store';
 import { useAtom } from 'jotai';
+import UserAvatar from '@/components/member/userAvatar';
 
 interface MainJoinRequestProps extends RouteComponentProps<{ id: string; }> { }
 
 const MainJoinRequest: React.FC<MainJoinRequestProps> = ({ match }) => {
     const [user]:any = useAtom(userAtom);
     const [form, setForm] = useState({
-        firstname: '',
-        middlename: '',
-        lastname: '',
-        phone: '',
-        image: '' // Keep this as a string for image URL
+        description: '',
     });
     const [group, setGroup] = useState<any>(null);
     const [termsAccepted, setTermsAccepted] = useState<boolean>(false); // State to track checkbox
-    const [selectedImage, setSelectedImage] = useState<string | null>(null); // Local state for displaying the image
 
     // useEffect to fetch the group based on ID and initialize the form
     useEffect(() => {
@@ -45,42 +43,16 @@ const MainJoinRequest: React.FC<MainJoinRequestProps> = ({ match }) => {
         setGroup(group);
 
         // Initialize form state with user data
-        setForm({
-            firstname: user.firstname,
-            middlename: user.middlename|| '' ,
-            lastname: user.lastname,
-            phone: user.phone|| '' ,
-            image: user.image || '' // Set the image URL if exists
-        });
+        // setForm({
+        //     description: user.firstname,
+        // });
     }, [match.params.id, user]);
-
-    // Image change handler
-    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.files && event.target.files[0]) {
-            const file = event.target.files[0];
-            const imageUrl = URL.createObjectURL(file);
-            setSelectedImage(imageUrl);
-            setForm(prevForm => ({ 
-                ...prevForm, 
-                image: imageUrl // Update form with the image URL for display
-            })); 
-        }
-    };
-
-    const handlePlaceholderClick = () => {
-        const fileInput = document.getElementById('fileInput') as HTMLInputElement;
-        fileInput?.click();
-    };
 
     // Validation logic
     const isFormValid = () => {
         // Check if any required fields are empty
         return (
-            form.firstname.trim() !== '' &&
-            form.middlename.trim() !== '' &&
-            form.lastname.trim() !== '' &&
-            form.phone.trim() !== '' &&
-            selectedImage !== null // Ensure an image is uploaded
+            form.description.trim() !== ''
         );
     };
 
@@ -90,10 +62,6 @@ const MainJoinRequest: React.FC<MainJoinRequestProps> = ({ match }) => {
             // If form is valid, navigate to the next page
             console.log('Form submitted successfully:', form);
             // Add navigation or API call logic here
-        } else {
-            // Handle the case where the form is invalid
-            alert('Please fill in all fields and upload a passport photo.');
-            return;
         }
 
         if (!termsAccepted) {
@@ -133,76 +101,25 @@ const MainJoinRequest: React.FC<MainJoinRequestProps> = ({ match }) => {
                             <h5>{group?.location || ""}</h5>
                         </IonCol>
                     </IonRow>
+
+                    <IonRow>
+                        <IonText>You will add</IonText>
+                        <UserAvatar/>
+                    </IonRow>
                 </IonGrid>
 
                 <IonItem lines="none">
-                    <IonInput
-                        label="First Name"
+                    <IonTextarea
+                        label="Any other Description ( optional )"
+                        rows={3}
                         labelPlacement="stacked"
-                        placeholder="..."
-                        value={form.firstname}
-                        onIonChange={(e) => setForm({ ...form, firstname: e.detail.value! })} // Update state on input change
+                        placeholder="is there any detailed info you need to tell the admin "
+                        value={form.description}
+                        onIonChange={(e) => setForm({ ...form, description: e.detail.value! })} // Update state on input change
                         counter={true}
-                        maxlength={30}
-                    ></IonInput>
+                        maxlength={200}
+                    ></IonTextarea>
                 </IonItem>
-
-                <IonItem lines="none">
-                    <IonInput
-                        label="Middle Name"
-                        labelPlacement="stacked"
-                        placeholder="..."
-                        value={form.middlename}
-                        onIonChange={(e) => setForm({ ...form, middlename: e.detail.value! })} // Update state on input change
-                        counter={true}
-                        maxlength={30}
-                    ></IonInput>
-                </IonItem>
-
-                <IonItem lines="none">
-                    <IonInput
-                        label="Last Name"
-                        labelPlacement="stacked"
-                        placeholder="..."
-                        value={form.lastname}
-                        onIonChange={(e) => setForm({ ...form, lastname: e.detail.value! })} // Update state on input change
-                        counter={true}
-                        maxlength={30}
-                    ></IonInput>
-                </IonItem>
-
-                <IonItem lines="none">
-                    <IonInput
-                        label="Phone"
-                        labelPlacement="stacked"
-                        placeholder="..."
-                        value={form.phone}
-                        onIonChange={(e) => setForm({ ...form, phone: e.detail.value! })} // Update state on input change
-                        counter={true}
-                        maxlength={15}
-                    ></IonInput>
-                </IonItem>
-
-                {/* Image Upload */}
-                <IonItem lines='none' onClick={handlePlaceholderClick} style={{ cursor: 'pointer' }}>
-                    <IonLabel position='stacked'>
-                        Add Passport Photo (white background)
-                    </IonLabel>
-                    <br />
-                    <IonImg
-                        src={selectedImage || logoPlaceholder}
-                        alt="Image Placeholder"
-                        style={{ width: '150px', height: '150px', objectFit: 'cover' }}
-                    />
-                </IonItem>
-
-                <input
-                    id="fileInput"
-                    type="file"
-                    accept="image/*"
-                    style={{ display: 'none' }}
-                    onChange={handleImageChange}
-                />
 
                 <IonItem lines="none">
                     <IonCheckbox 

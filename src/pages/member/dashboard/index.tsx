@@ -26,7 +26,7 @@ import { menuController } from '@ionic/core/components';
 import SideMenuBtn from '../../../components/sideMenuBtn';
 import './dashboard.css';
 import { getItem } from '@/utils/storage';
-import { arrowForwardOutline, calendar, chevronForward } from 'ionicons/icons';
+import { calendar, chevronForward } from 'ionicons/icons';
 import UserAvatar from '@/components/member/userAvatar';
 import { userAtom } from '@/store/store';
 import { useAtom } from 'jotai';

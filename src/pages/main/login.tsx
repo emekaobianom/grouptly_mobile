@@ -13,7 +13,7 @@ import { useHistory } from 'react-router-dom';
 import icon from '@/assets/images/icon.png';
 import { logoGoogle, logoFacebook } from 'ionicons/icons';
 import { useSetAtom } from 'jotai';
-import { setUserAtom } from '@/store/store'; // Import the setUser atom
+import { setUserAtom, UserStatus } from '@/store/store'; // Import the setUser atom
 
 const Login: React.FC = () => {
   const setUser = useSetAtom(setUserAtom); // Correctly use useSetAtom for a writable atom
@@ -28,7 +28,9 @@ const Login: React.FC = () => {
       role: 'Chairman',
       phone: '09098943967',
       image: 'https://randomuser.me/api/portraits/men/1.jpg',
-      groups: [{ id: 'g3', active: 'true' },{ id: 'g2', active: 'true' }]
+      groups: [{ id: 'g3', user_status: UserStatus.Active }
+        , { id: 'g4', user_status: UserStatus.Active }
+        , { id: 'g2', user_status: UserStatus.Pending }]
     });
     history.push('/main/welcome');
   };

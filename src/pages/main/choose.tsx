@@ -11,25 +11,28 @@ import {
   IonCardContent,
   IonImg,
   IonAlert,
+  IonHeader,
+  IonToolbar,
 } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
-import { checkmarkCircle, people } from 'ionicons/icons';
+import { checkmarkCircle, closeCircle, handLeft, people, timer } from 'ionicons/icons';
 import { useState, useEffect, useMemo } from 'react';
 import { setItem } from '@/utils/storage';
-import { userGroupsAtom, Group } from '@/store/store';
+import { userGroupsAtom, Group, UserStatus } from '@/store/store';
 import { useAtom } from 'jotai';
+import UserAvatar from '@/components/member/userAvatar';
 
 const Choose: React.FC = () => {
   const history = useHistory();
   const [alertIsOpen, setAlertIsOpen] = useState(false);
-  
-// Access user's groups from the atom
-  const [userGroups] = useAtom(userGroupsAtom); 
+
+  // Access user's groups from the atom
+  const [userGroups] = useAtom(userGroupsAtom);
 
   // Handle group selection
   const handleGroupClick = (group: Group) => {
     setItem('selectedGroup', group); // Save selected group in storage
-    if (group.status === 'Active') {
+    if (group.user_status === UserStatus.Active) {
       // Redirect if group is active
       history.push('/member/dashboard?openMenu=true');
     } else {
@@ -40,14 +43,17 @@ const Choose: React.FC = () => {
 
   return (
     <IonPage>
+      {/* Header */}
+      <IonHeader className='header'>
+        <IonToolbar class='toolbar'>
+          <UserAvatar />
+        </IonToolbar>
+      </IonHeader>
       <IonContent className="ion-padding" fullscreen>
         <IonGrid style={{ height: '100%' }}>
           <IonRow style={{ justifyContent: 'space-between', height: '100%' }}>
             {/* Header Section */}
             <IonCol size="auto">
-              <IonText color="dark" className="ion-margin-bottom">
-                <h6 className="bold-text">Grouptly™</h6>
-              </IonText>
               <IonText color="dark">
                 <h3 className="bold-text">Choose</h3>
                 <p className="bold-text ion-no-margin">
@@ -98,10 +104,30 @@ const Choose: React.FC = () => {
 
                         {/* Status Indicator */}
                         <IonCol size="auto">
-                          <IonIcon
-                            icon={checkmarkCircle}
-                            className={`status-icon ${group.status === 'Active' ? 'status-active' : 'status-inactive'}`}
-                          />
+                          {(group.user_status === UserStatus.Active) && (
+                            <IonIcon
+                              icon={checkmarkCircle}
+                              style={{ color: 'slate', fontSize: '24px' }}
+                            />
+                          )}
+                          {(group.user_status === UserStatus.Pending) && (
+                            <IonIcon
+                              icon={timer}
+                              style={{ color: 'slate', fontSize: '24px' }}
+                            />
+                          )}
+                          {(group.user_status === UserStatus.Suspended) && (
+                            <IonIcon
+                              icon={handLeft}
+                              style={{ color: 'slate', fontSize: '24px' }}
+                            />
+                          )}
+                          {(group.user_status === UserStatus.Rejected) && (
+                            <IonIcon
+                              icon={closeCircle}
+                              style={{ color: 'darkred', fontSize: '24px' }}
+                            />
+                          )}
                         </IonCol>
                       </IonRow>
                     </IonGrid>

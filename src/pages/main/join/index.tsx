@@ -22,18 +22,21 @@ import {
   IonAlert,
 } from '@ionic/react';
 import { useState } from 'react';
-import { add, checkmarkCircle, chevronForward, people } from 'ionicons/icons';
+import { add, checkmarkCircle, closeCircle, handLeft, people, timer } from 'ionicons/icons';
 import { RouteComponentProps, useHistory } from 'react-router';
-import { groupsData } from '@/data/group_placeholder';
+import { Group, GroupsWithUserGroupsAtom, userAtom, UserStatus } from '@/store/store';
+import { useAtom } from 'jotai';
 
 const MainJoin: React.FC<RouteComponentProps> = ({ match }) => {
+  const [user] = useAtom(userAtom);
   const history = useHistory();
   const [isScrolled, setIsScrolled] = useState(false);
-  const [alertOrangeIsOpen,setAlertOrangeIsOpen] = useState(false);
-  const [alertGreenIsOpen,setAlertGreenIsOpen] = useState(false);
+  const [alertOrangeIsOpen, setAlertOrangeIsOpen] = useState(false);
+  const [alertGreenIsOpen, setAlertGreenIsOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(''); // State for the search query
 
   // Sample group data
-  const groups = groupsData;
+  const [groups] = useAtom(GroupsWithUserGroupsAtom);
 
   const handleScroll = (event: any) => {
     const scrollTop = event.detail.scrollTop;
@@ -46,26 +49,28 @@ const MainJoin: React.FC<RouteComponentProps> = ({ match }) => {
     }, 2000);
   };
 
-  const handleGroupClick = (group: any) => {
-    // Navigate to group details or perform other actions
+  const handleGroupClick = (group: Group) => {
     console.log('Group clicked:', group);
-    if (group.status == "Active") {
+    if (group.user_status === (UserStatus.Active || UserStatus.Rejected || UserStatus.Suspended)) {
       setAlertGreenIsOpen(true);
-    } else if(group.status == "Not-Active") {
+    } else if (group.user_status === UserStatus.Pending) {
       setAlertOrangeIsOpen(true);
-    }
-    else{
+    } else {
       history.push(`/main/join/request/${group.id}`);
     }
-    
   };
+
+  // Filter groups based on the search query
+  const filteredGroups = groups.filter(group =>
+    group.long_name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <IonPage>
-      <IonHeader>
+      <IonHeader className='header'>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonBackButton defaultHref='/main/choose' />
+            <IonBackButton defaultHref="/main/choose" />
           </IonButtons>
           <IonTitle>Join Group</IonTitle>
           <IonButtons slot="end">
@@ -76,7 +81,11 @@ const MainJoin: React.FC<RouteComponentProps> = ({ match }) => {
           </IonButtons>
         </IonToolbar>
         <IonToolbar>
-          <IonSearchbar />
+          <IonSearchbar
+            value={searchQuery}
+            onIonInput={e => setSearchQuery((e.target as EventTarget & { value: string }).value)}
+            placeholder="Search groups"
+          />
         </IonToolbar>
       </IonHeader>
 
@@ -85,8 +94,8 @@ const MainJoin: React.FC<RouteComponentProps> = ({ match }) => {
           <IonRefresherContent />
         </IonRefresher>
 
-        {/* Map through groups to display a list of cards */}
-        {groups.map((group, index) => (
+        {/* Map through filtered groups to display a list of cards */}
+        {filteredGroups.map((group, index) => (
           <IonCard
             onClick={() => handleGroupClick(group)}
             style={{ cursor: 'pointer' }}
@@ -117,21 +126,30 @@ const MainJoin: React.FC<RouteComponentProps> = ({ match }) => {
                     </IonText>
                   </IonCol>
                   <IonCol size="auto">
-                    {(group.status === 'Active') && (
-                      <IonIcon
-                        icon={checkmarkCircle}
-                        style={{ color: 'green', fontSize: '24px' }}
-                      />
-                    )}
-                    {(group.status === 'Not-Active') && (
-                      <IonIcon
-                        icon={checkmarkCircle}
-                        style={{ color: 'orange', fontSize: '24px' }}
-                      />
-                    )}
-                    {(group.status === '') && (
-                      <></>
-                    )}
+                  {(group.user_status === UserStatus.Active) && (
+                            <IonIcon
+                              icon={checkmarkCircle}
+                              style={{ color: 'slate', fontSize: '24px' }}
+                            />
+                          )}
+                          {(group.user_status === UserStatus.Pending) && (
+                            <IonIcon
+                              icon={timer}
+                              style={{ color: 'slate', fontSize: '24px' }}
+                            />
+                          )}
+                          {(group.user_status === UserStatus.Suspended) && (
+                            <IonIcon
+                              icon={handLeft}
+                              style={{ color: 'slate', fontSize: '24px' }}
+                            />
+                          )}
+                          {(group.user_status === UserStatus.Rejected) && (
+                            <IonIcon
+                              icon={closeCircle}
+                              style={{ color: 'darkred', fontSize: '24px' }}
+                            />
+                          )}
                   </IonCol>
                 </IonRow>
               </IonGrid>
@@ -144,7 +162,7 @@ const MainJoin: React.FC<RouteComponentProps> = ({ match }) => {
       <IonAlert
         isOpen={alertGreenIsOpen}
         header="Group Green"
-        subHeader="Your are already a member"
+        subHeader="You are already a member"
         message="You can't request to join again."
         buttons={['Okay']}
         onDidDismiss={() => setAlertGreenIsOpen(false)}
