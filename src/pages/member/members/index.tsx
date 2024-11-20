@@ -1,20 +1,25 @@
 import React, { useState } from 'react';
 import { IonPage, IonHeader, IonContent, IonSearchbar, IonGrid, IonRow, IonCol, IonAvatar, IonCard, IonCardContent, IonItem, IonLabel, IonToolbar, IonSegment, IonSegmentButton, IonText, IonTitle, IonImg } from '@ionic/react';
 import './Members.css';
-import { membersData, MemberType } from '@/data/members_placeholder';
+import { membersData } from '@/data/members_placeholder';
 import { useHistory } from 'react-router';
 import MemberMembersDetail from './detail';
 import SideMenuBtn from '@/components/sideMenuBtn';
 import UserAvatar from '@/components/member/userAvatar';
+import { User } from '@/store/store';
 
 // Main Members Component
 const MemberMembers: React.FC = () => {
   const [segment, setSegment] = useState<'members' | 'executives'>('members'); // State for segment
   const [searchText, setSearchText] = useState(''); // State for search text
   const history = useHistory();
+  
+  const memberFullname = (user: User) => {
+    return user.firstname + " " + user.lastname
+  }
 
   // Function to get records with roles other than 'member'
-  function getNonMemberRecords(members: MemberType[]) {
+  function getNonMemberRecords(members: User[]) {
     return members.filter((member) => member.role !== 'member');
   }
   const executives = getNonMemberRecords(membersData);
@@ -28,13 +33,14 @@ const MemberMembers: React.FC = () => {
 
   // Filter members based on search input
   const filteredMembers = membersData.filter(member =>
-    member.name.toLowerCase().includes(searchText.toLowerCase())
+    member.lastname.toLowerCase().includes(searchText.toLowerCase())
   );
 
   // Member Section
   const memberSection = () => (
     <>
       <IonSearchbar
+      className='ion-padding'
         value={searchText}
         onIonInput={e => setSearchText(e.detail.value!)}
         placeholder="Search by name"
@@ -46,9 +52,9 @@ const MemberMembers: React.FC = () => {
               <IonCard className="member-card" routerLink={`/member/members/${member.id}`}>
                 <IonCardContent>
                   <IonAvatar className="member-avatar">
-                    <img src={member.image} alt={member.name} />
+                    <img src={member.image} alt={memberFullname(member)} />
                   </IonAvatar>
-                  <IonLabel className="member-name">{member.name}</IonLabel>
+                  <IonLabel className="member-name">{memberFullname(member)}</IonLabel>
                 </IonCardContent>
               </IonCard>
             </IonCol>
@@ -68,7 +74,7 @@ const MemberMembers: React.FC = () => {
             <IonAvatar style={{ margin: '0 auto', width: '10rem', height: '10rem' }}>
                 <IonImg
                   src={executive.image} 
-                  alt={executive.name} 
+                  alt={memberFullname(executive)} 
                   style={{
                     width: '100%',
                     height: '100%',
@@ -79,7 +85,7 @@ const MemberMembers: React.FC = () => {
               </IonAvatar>
             {/* Executive Name */}
             <IonText className="executive-name">
-              <h3>{executive.name}</h3>
+              <h3>{memberFullname(executive)} </h3>
             </IonText>
             {/* Executive Role */}
             <IonText className="executive-role">
@@ -109,7 +115,7 @@ const MemberMembers: React.FC = () => {
           </IonSegment>
         </IonHeader>
 
-        <IonContent>
+        <IonContent className='ion-padding-vertical'>
           {/* Render based on the selected segment */}
           {segment === 'members' ? memberSection() : executiveSection()}
         </IonContent>

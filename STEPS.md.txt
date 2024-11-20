@@ -1,0 +1,62 @@
+//------- create the website ---------------
+
+# from the official site
+# https://ionicframework.com/
+# install ionic cli globally
+
+npm i -g @ionic/cli
+
+
+# create the project
+ionic start myApp blank --type react
+
+Go to your new project: cd .\myApp
+- Run ionic serve within the app directory to see your app in the browser
+- Run ionic capacitor add to add a native iOS or Android project using Capacitor
+- Generate your app icon and splash screens using cordova-res --skip-config --copy
+- Explore the Ionic docs for components, tutorials, and more: https://ion.link/docs
+
+# run the website (with hotreload on save)
+ionic serve
+
+
+//---- wrap the website with capacitor (convert to app android or ios)----
+# 1. build (converts it to js with html entry) the website first (it adds it to /dist)
+ionic build
+
+# 2. add android native project to our project ( cap means capacitor)
+ionic cap add android
+
+# 3. open android studio with the android native project
+ionic cap open android
+
+# 4. copy build in /dist into the native project
+ionic cap sync
+
+//--------------- easier way to do all the above at once ----------------
+// build before you do this)
+# serve, sync
+# - it will ask you which device (connect phone with cable before you run)
+# capacitor will deploy a livereload version of the app on your device
+# you can now unplug the phone wire and the livereload will still work so far the computer 
+# and phone are on thesame wifi or on your phone hostspot
+ionic cap run android --livereload --external
+
+
+
+// ------------ how a url move through the project -----
+[index.html] 
+-> [src/main.tsx] 
+-> [src/App.tsx]
+-> [src/pages/Home.tsx]
+
+
+//------------ change the dark mode to white mode ------------
+
+# go to the file [/src/App.tsx], change this line
+
+import '@ionic/react/css/palettes/dark.system.css';
+
+# to
+
+import '@ionic/react/css/palettes/high-contrast.always.css';

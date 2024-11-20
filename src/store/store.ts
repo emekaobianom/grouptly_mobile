@@ -1,7 +1,20 @@
 import { atom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
 import { produce } from 'immer';
-import { groupsData } from '@/data/group_placeholder';
+// import { groupsData } from '@/data/group_placeholder';
+
+//---amplify setup
+import { Amplify } from 'aws-amplify';
+import outputs from '../../amplify_outputs.json';
+Amplify.configure(outputs);
+
+// --- Amplify ---
+import { generateClient } from "aws-amplify/data";
+import type { Schema } from "@/data-schema";
+
+const client = generateClient<Schema>(); // Initialize the Amplify client with your schema
+// --- End Amplify ---
+
 
 // Utility function for creating persistent Jotai atoms that sync with local storage
 const createPersistentAtom = <T>(key: string, initialValue: T) => {
@@ -82,7 +95,7 @@ export const userAtom = createPersistentAtom<User>('user', {
 });
 
 // Persistent atom for group data, initialized with placeholder data
-export const groupsAtom = createPersistentAtom<Group[]>('groups', groupsData);
+export const groupsAtom = createPersistentAtom<Group[]>('groups', []);
 
 // Persistent atoms for managing other data structures
 export const messagesAtom = createPersistentAtom<Record<string, Message[]>>('messages', {});
@@ -154,6 +167,23 @@ export const userGroupsAtom = atom<Group[]>((get) => {
         }));
     return userGroups;
 });
+
+// Initialization Atom
+export const initializeGroupsAtom = atom(
+    null,
+    async (get, set) => {
+        try {
+            const { data: groups }:any = await client.models.Group.list(); // Fetch groups
+            if (groups) {
+                set(groupsAtom, groups);
+                // Perform any additional first-load logic here
+                console.log("Groups initialized:", groups);
+            }
+        } catch (error) {
+            console.error("Failed to initialize groups:", error);
+        } 
+    }
+);
 
 export const GroupsWithUserGroupsAtom = atom<Group[]>((get) => {
     const user = get(userAtom); // Get the current user state

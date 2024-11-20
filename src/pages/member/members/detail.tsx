@@ -16,7 +16,8 @@ import {
   IonImg,
 } from '@ionic/react';
 import { RouteComponentProps } from 'react-router-dom';
-import { membersData, MemberType } from '@/data/members_placeholder';
+import { membersData } from '@/data/members_placeholder';
+import { User } from '@/store/store';
 
 interface MemberMembersDetailProps
   extends RouteComponentProps<{
@@ -24,8 +25,12 @@ interface MemberMembersDetailProps
   }> { }
 
 const MemberMembersDetail: React.FC<MemberMembersDetailProps> = ({ match }) => {
-  const [item, setItem] = useState<MemberType | null>(null);
+  const [member, setItem] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const memberFullname = (user: User) => {
+    return user.firstname + " " + user.lastname
+  }
 
   useEffect(() => {
     const foundItem = membersData.find((data) => data.id === match.params.id);
@@ -42,8 +47,8 @@ const MemberMembersDetail: React.FC<MemberMembersDetailProps> = ({ match }) => {
       return <IonText>Loading...</IonText>;
     }
 
-    if (!item) {
-      return <IonText>No item found</IonText>;
+    if (!member) {
+      return <IonText>No member found</IonText>;
     }
 
     return (
@@ -54,8 +59,8 @@ const MemberMembersDetail: React.FC<MemberMembersDetailProps> = ({ match }) => {
               {/* Using IonAvatar to create a circular container for the image */}
               <IonAvatar style={{ margin: '0 auto', width: '15rem', height: '15rem' }}>
                 <IonImg
-                  src={item.image}
-                  alt={item.name}
+                  src={member.image}
+                  alt={memberFullname(member)}
                   style={{
                     width: '100%',
                     height: '100%',
@@ -65,11 +70,11 @@ const MemberMembersDetail: React.FC<MemberMembersDetailProps> = ({ match }) => {
                 />
               </IonAvatar>
               <IonText className="member-detail-name">
-                <h3>{item.name}</h3>
+                <h3>{memberFullname(member)}</h3>
               </IonText>
 
               <IonText className="member-detail-role">
-                <p>{item.role}</p>
+                <p>{member.role}</p>
               </IonText>
             </IonCol>
 
@@ -87,7 +92,7 @@ const MemberMembersDetail: React.FC<MemberMembersDetailProps> = ({ match }) => {
           <IonButtons slot="start">
             <IonBackButton defaultHref="/member/members" /> {/* Reuse the back button */}
           </IonButtons>
-          <IonTitle>{item ? item.name : 'Member'}</IonTitle>
+          <IonTitle>{member ? memberFullname(member) : 'Member'}</IonTitle>
         </IonToolbar>
       </IonHeader>
 

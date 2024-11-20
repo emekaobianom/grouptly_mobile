@@ -21,10 +21,10 @@ import {
   IonText,
   IonAlert,
 } from '@ionic/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { add, checkmarkCircle, closeCircle, handLeft, people, timer } from 'ionicons/icons';
 import { RouteComponentProps, useHistory } from 'react-router';
-import { Group, GroupsWithUserGroupsAtom, userAtom, UserStatus } from '@/store/store';
+import { Group, GroupsWithUserGroupsAtom, initializeGroupsAtom, userAtom, UserStatus } from '@/store/store';
 import { useAtom } from 'jotai';
 
 const MainJoin: React.FC<RouteComponentProps> = ({ match }) => {
@@ -34,6 +34,12 @@ const MainJoin: React.FC<RouteComponentProps> = ({ match }) => {
   const [alertOrangeIsOpen, setAlertOrangeIsOpen] = useState(false);
   const [alertGreenIsOpen, setAlertGreenIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState(''); // State for the search query
+
+  const [, initializeGroups] = useAtom(initializeGroupsAtom);
+
+    useEffect(() => {
+            initializeGroups(); // Trigger initialization only once
+    }, [initializeGroups]);
 
   // Sample group data
   const [groups] = useAtom(GroupsWithUserGroupsAtom);

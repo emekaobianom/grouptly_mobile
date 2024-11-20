@@ -3,7 +3,7 @@
     "target": "ESNext",
     "useDefineForClassFields": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "allowJs": false,
+    "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
@@ -17,9 +17,10 @@
     "jsx": "react-jsx",
     "baseUrl": "src", // Set the base URL to your src folder
     "paths": {
-      "@/*": ["*"] // Create an alias for all files in src
+      "@/*": ["*"], // Create an alias for all files in src,
+      "@/data-schema": ["../amplifyBackend/data/resource"]
     }
   },
-  "include": ["src"],
+  "include": ["src", "**/*.ts", "**/*.tsx"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

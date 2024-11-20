@@ -1,25 +1,10 @@
 // Define the Member interface
-export interface MemberType {
-  id: string | null;
-  firstname: string;
-  middlename?: string;
-  lastname: string;
-  fullname?: string; 
-  phone?: string;
-  role: string;
-  image: string;
-  groups: UserGroup[];
-}
 
-interface UserGroup {
-  id: string;
-  active: string;
-}
-
+import { User } from "@/store/store";
 
 // Updated membersData with 'id' as string
-export const membersData: MemberType[] = [
-  { id: '1', firstname: 'Emeka', lastname: 'Obianom', middlename: 'Sunday', phone:"08033806763", role: 'Chairman', image: 'https://randomuser.me/api/portraits/men/1.jpg', groups: [{id:"g2",active:"false"}] },
+export const membersData: User[] = [
+  { id: '1', firstname: 'Emeka', lastname: 'Obianom', middlename: 'Sunday', phone:"08033806763", role: 'Chairman', image: 'https://randomuser.me/api/portraits/men/1.jpg', groups: [] },
   { id: '2', firstname: 'John', lastname: 'Doe', phone:"08033806763", role: 'Secretary', image: 'https://randomuser.me/api/portraits/men/2.jpg', groups: [] },
   { id: '3', firstname: 'Jane', lastname: 'Smith', phone:"08033806763", role: 'Treasurer', image: 'https://randomuser.me/api/portraits/women/1.jpg', groups: [] },
   { id: '4', firstname: 'Alice', lastname: 'Johnson', phone:"08033806763", role: 'Vice Chairman', image: 'https://randomuser.me/api/portraits/women/2.jpg', groups: [] },
