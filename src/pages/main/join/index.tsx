@@ -37,9 +37,9 @@ const MainJoin: React.FC<RouteComponentProps> = ({ match }) => {
 
   const [, initializeGroups] = useAtom(initializeGroupsAtom);
 
-    useEffect(() => {
-            initializeGroups(); // Trigger initialization only once
-    }, [initializeGroups]);
+  useEffect(() => {
+    initializeGroups(); // Trigger initialization only once
+  }, [initializeGroups]);
 
   // Sample group data
   const [groups] = useAtom(GroupsWithUserGroupsAtom);
@@ -132,30 +132,30 @@ const MainJoin: React.FC<RouteComponentProps> = ({ match }) => {
                     </IonText>
                   </IonCol>
                   <IonCol size="auto">
-                  {(group.user_status === UserStatus.Active) && (
-                            <IonIcon
-                              icon={checkmarkCircle}
-                              style={{ color: 'slate', fontSize: '24px' }}
-                            />
-                          )}
-                          {(group.user_status === UserStatus.Pending) && (
-                            <IonIcon
-                              icon={timer}
-                              style={{ color: 'slate', fontSize: '24px' }}
-                            />
-                          )}
-                          {(group.user_status === UserStatus.Suspended) && (
-                            <IonIcon
-                              icon={handLeft}
-                              style={{ color: 'slate', fontSize: '24px' }}
-                            />
-                          )}
-                          {(group.user_status === UserStatus.Rejected) && (
-                            <IonIcon
-                              icon={closeCircle}
-                              style={{ color: 'darkred', fontSize: '24px' }}
-                            />
-                          )}
+                    {(group.user_status === UserStatus.Active) && (
+                      <IonIcon
+                        icon={checkmarkCircle}
+                        style={{ color: 'slate', fontSize: '24px' }}
+                      />
+                    )}
+                    {(group.user_status === UserStatus.Pending) && (
+                      <IonIcon
+                        icon={timer}
+                        style={{ color: 'slate', fontSize: '24px' }}
+                      />
+                    )}
+                    {(group.user_status === UserStatus.Suspended) && (
+                      <IonIcon
+                        icon={handLeft}
+                        style={{ color: 'slate', fontSize: '24px' }}
+                      />
+                    )}
+                    {(group.user_status === UserStatus.Rejected) && (
+                      <IonIcon
+                        icon={closeCircle}
+                        style={{ color: 'darkred', fontSize: '24px' }}
+                      />
+                    )}
                   </IonCol>
                 </IonRow>
               </IonGrid>

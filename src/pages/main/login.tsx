@@ -7,32 +7,42 @@ import {
   IonRow,
   IonGrid,
   IonImg,
-  IonIcon
+  IonIcon,
+  IonSpinner
 } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
 import icon from '@/assets/images/icon.png';
 import { logoGoogle, logoFacebook } from 'ionicons/icons';
-import { useSetAtom } from 'jotai';
-import { setUserAtom, UserStatus } from '@/store/store'; // Import the setUser atom
+import { useAtom, useSetAtom } from 'jotai';
+import { initializeUserAtom, loadingAtom, logoutUserAtom, setUserAtom, userAtom, UserStatus } from '@/store/store'; // Import the setUser atom
+import { useEffect } from 'react';
+import React from 'react';
 
 const Login: React.FC = () => {
-  const setUser = useSetAtom(setUserAtom); // Correctly use useSetAtom for a writable atom
   const history = useHistory();
 
+  // Access Jotai atoms    
+  const [, logoutUser] = useAtom(logoutUserAtom);// Atom to initialize user data
+  const [, initializeUser] = useAtom(initializeUserAtom);// Atom to initialize user data
+  const [user] = useAtom(userAtom); // Atom containing user data
+  const [loading, setLoading] = useAtom(loadingAtom); // Atom to manage loading state
+
+  // Monitor the user state
+  useEffect(() => { //run once on startup
+    logoutUser()
+    setLoading(false);
+  }, []);
+
+  // Handle the login button click
   const handleLogin = async () => {
-    setUser({
-      id: '1',
-      firstname: 'Emeka',
-      lastname: 'Obianom',
-      middlename: 'Sunday',
-      role: 'Chairman',
-      phone: '09098943967',
-      image: 'https://randomuser.me/api/portraits/men/1.jpg',
-      groups: [{ id: 'g3', user_status: UserStatus.Active }
-        , { id: 'g4', user_status: UserStatus.Active }
-        , { id: 'g2', user_status: UserStatus.Pending }]
-    });
-    history.push('/main/welcome');
+    setLoading(true); // Set the loading state to true
+    try {
+      await initializeUser(); // Call initialize user atom
+      history.replace('/main/welcome');
+    } catch (error) {
+      console.error("Failed to initialize user:", error);
+      setLoading(false); // Reset loading state in case of an error
+    }
   };
 
   const handleNext = () => {
@@ -65,34 +75,39 @@ const Login: React.FC = () => {
             </IonCol>
 
             <IonCol size="12" style={{ textAlign: 'center' }}>
-              <IonButton
-                style={{ marginBottom: 16 }}
-                expand="block"
-                color="tertiary"
-                shape="round"
-                onClick={handleLogin}
-              >
-                <IonIcon slot="start" icon={logoGoogle} />
-                Login with Google
-              </IonButton>
-              <IonButton
-                style={{ marginBottom: 16 }}
-                expand="block"
-                color="tertiary"
-                shape="round"
-                onClick={handleLogin}
-              >
-                <IonIcon slot="start" icon={logoFacebook} />
-                Login with Facebook
-              </IonButton>
-              <IonButton
-                style={{ marginTop: '2rem' }}
-                color="light"
-                shape="round"
-                onClick={handleNext}
-              >
-                I don't have an account
-              </IonButton>
+
+              {loading ? <IonSpinner name="dots"></IonSpinner> :
+                <>
+                  <IonButton
+                    style={{ marginBottom: 16 }}
+                    expand="block"
+                    color="tertiary"
+                    shape="round"
+                    onClick={handleLogin}
+                  >
+                    <IonIcon slot="start" icon={logoGoogle} />
+                    Login with Google
+                  </IonButton>
+                  <IonButton
+                    style={{ marginBottom: 16 }}
+                    expand="block"
+                    color="tertiary"
+                    shape="round"
+                    onClick={handleLogin}
+                  >
+                    <IonIcon slot="start" icon={logoFacebook} />
+                    Login with Facebook
+                  </IonButton>
+                  <IonButton
+                    style={{ marginTop: '2rem' }}
+                    color="light"
+                    shape="round"
+                    onClick={handleNext}
+                  >
+                    I don't have an account
+                  </IonButton>
+                </>
+              }
             </IonCol>
           </IonRow>
         </IonGrid>

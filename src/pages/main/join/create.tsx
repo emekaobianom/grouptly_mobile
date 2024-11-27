@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import logoPlaceholder from '@/assets/images/logo_placeholder.png';
 import {
   IonBackButton,
@@ -6,7 +6,6 @@ import {
   IonButton,
   IonHeader,
   IonContent,
-  IonNavLink,
   IonToolbar,
   IonTitle,
   IonPage,
@@ -19,17 +18,42 @@ import {
   IonLabel,
   IonImg,
 } from '@ionic/react';
-import { RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, useHistory } from 'react-router-dom';
+import { addGroupAtom, Group } from '@/store/store';
+import { useAtom, useSetAtom } from 'jotai/react';
 
 interface MainJoinCreateProps
   extends RouteComponentProps<{
     id: string;
-  }> { }
-const MainJoinCreate: React.FC<MainJoinCreateProps> = ({ match }) => {
+  }> {}
 
-  //image start
+const MainJoinCreate: React.FC<MainJoinCreateProps> = ({ match }) => {
+  const history = useHistory();
+  const addGroup = useSetAtom(addGroupAtom);
+
+  // State for form fields
+  const [groupName, setGroupName] = useState('');
+  const [groupAbbreviation, setGroupAbbreviation] = useState('');
+  const [groupDescription, setGroupDescription] = useState('');
+  const [groupCategory, setGroupCategory] = useState('');
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(false);
+
+  // State for image
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
+  // Handle form validation
+  useEffect(() => {
+    const isValid =
+      groupName.trim() !== '' &&
+      groupAbbreviation.trim() !== '' &&
+      groupDescription.trim() !== '' &&
+      groupCategory.trim() !== '' &&
+      termsAccepted;
+    setIsFormValid(isValid);
+  }, [groupName, groupAbbreviation, groupDescription, groupCategory, termsAccepted]);
+
+  // Handle image upload
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
@@ -42,35 +66,78 @@ const MainJoinCreate: React.FC<MainJoinCreateProps> = ({ match }) => {
     const fileInput = document.getElementById('fileInput');
     fileInput?.click();
   };
-  //image end
 
+  // Handle form submission
+  const handleSubmit = () => {
+    if (isFormValid) {
+      const formData :Group = {
+        long_name: groupName,
+        short_name: groupAbbreviation,
+        location: "Lagos",
+        category: groupCategory,
+        logo: "selectedImage"
+
+      };
+      addGroup(formData);
+      console.log('Form submitted:', formData);
+      history.replace("/main/choose");
+    }
+  };
 
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonBackButton></IonBackButton>
+            <IonBackButton defaultHref="/main/join" />
           </IonButtons>
           <IonTitle>Create Group</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent class="ion-padding">
-
         <IonItem lines="none">
-          <IonInput label="Group Name (full)" labelPlacement="stacked" placeholder="Enter text" counter={true} maxlength={100}></IonInput>
+          <IonInput
+            label="Group Name (full)"
+            labelPlacement="stacked"
+            placeholder="e.g Women And Men's Association Kenya Branch"
+            value={groupName}
+            onIonChange={(e) => setGroupName(e.detail.value!)}
+            counter={true}
+            maxlength={100}
+          ></IonInput>
         </IonItem>
 
         <IonItem lines="none">
-          <IonInput label="Group Name (abbreviation)" labelPlacement="stacked" placeholder="Enter text" counter={true} maxlength={20}></IonInput>
+          <IonInput
+            label="Group Name (abbreviation)"
+            labelPlacement="stacked"
+            placeholder="e.g WAMA Kenya"
+            value={groupAbbreviation}
+            onIonChange={(e) => setGroupAbbreviation(e.detail.value!)}
+            counter={true}
+            maxlength={20}
+          ></IonInput>
         </IonItem>
 
         <IonItem lines="none">
-          <IonTextarea label="Description of group" labelPlacement="stacked" placeholder="Enter text" counter={true} maxlength={200}></IonTextarea>
+          <IonTextarea
+            label="Description of group"
+            labelPlacement="stacked"
+            placeholder="e.g We always gather to share tips on family growth."
+            value={groupDescription}
+            onIonChange={(e) => setGroupDescription(e.detail.value!)}
+            counter={true}
+            maxlength={200}
+          ></IonTextarea>
         </IonItem>
 
         <IonItem lines="none">
-          <IonSelect label="Which Category" labelPlacement="stacked">
+          <IonSelect
+            label="Which Category is your Group"
+            labelPlacement="stacked"
+            value={groupCategory}
+            onIonChange={(e) => setGroupCategory(e.detail.value!)}
+          >
             <IonSelectOption value="Professional Networking">Professional Networking</IonSelectOption>
             <IonSelectOption value="Hobby & Interests">Hobby & Interests</IonSelectOption>
             <IonSelectOption value="Education & Learning">Education & Learning</IonSelectOption>
@@ -96,42 +163,48 @@ const MainJoinCreate: React.FC<MainJoinCreateProps> = ({ match }) => {
           </IonSelect>
         </IonItem>
 
-        {/* logo start */}
-        <>
-          <IonItem lines='none' onClick={handlePlaceholderClick} style={{ cursor: 'pointer' }}>
-          <IonLabel position='stacked'>
-            Add Logo (white background)
-                      </IonLabel>
-                      <br />
-            <IonImg
-              src={selectedImage || logoPlaceholder}
-              alt="Image Placeholder"
-              style={{ width: '150px', height: '150px', objectFit: 'cover' }}
-            />
-          </IonItem>
-
-          <input
-            id="fileInput"
-            type="file"
-            accept="image/*"
-            style={{ display: 'none' }}
-            onChange={handleImageChange}
+        <IonItem lines="none" onClick={handlePlaceholderClick} style={{ cursor: 'pointer' }}>
+          <IonLabel position="stacked">Tap to add Logo (white background)</IonLabel>
+          <IonImg
+            src={selectedImage || logoPlaceholder}
+            alt="Image Placeholder"
+            style={{ width: '150px', height: '150px', objectFit: 'cover' }}
           />
-        </>
-        {/* logo end */}
-        <br />
+        </IonItem>
+        <input
+          id="fileInput"
+          type="file"
+          accept="image/*"
+          style={{ display: 'none' }}
+          onChange={handleImageChange}
+        />
+
         <IonItem lines="none">
-          <IonCheckbox slot="start" id="terms" />
+          <IonCheckbox
+            slot="start"
+            checked={termsAccepted}
+            onIonChange={(e) => setTermsAccepted(e.detail.checked)}
+          />
           <IonLabel>
-            <small> I agree with the <a href="#" className="text-blue-600 hover:underline">terms and conditions</a></small>
-           
+            <small>
+              I agree with the{' '}
+              <a href="#" className="text-blue-600 hover:underline">
+                terms and conditions
+              </a>
+            </small>
           </IonLabel>
         </IonItem>
-        <IonButton routerLink='/main/choose' expand='full' >Create Group</IonButton>
 
+        <IonButton
+          expand="full"
+          onClick={handleSubmit}
+          disabled={!isFormValid}
+        >
+          Create Group
+        </IonButton>
       </IonContent>
     </IonPage>
   );
-}
+};
 
 export default MainJoinCreate;

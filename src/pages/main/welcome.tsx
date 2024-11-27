@@ -21,9 +21,9 @@ const Welcome: React.FC = () => {
   // Check if user data is available; if not, redirect
   useEffect(() => {
     if (!user) {
-      history.push('/login'); // Redirect to login if no user
+      history.replace('/main/login'); // Redirect to login if no user
     }
-  }, [user, history]);
+  }, [user]);
 
   return (
     <IonPage>

@@ -18,7 +18,7 @@ import { useHistory } from 'react-router-dom';
 import { checkmarkCircle, closeCircle, handLeft, people, timer } from 'ionicons/icons';
 import { useState, useEffect, useMemo } from 'react';
 import { setItem } from '@/utils/storage';
-import { userGroupsAtom, Group, UserStatus } from '@/store/store';
+import { userGroupsAtom, Group, UserStatus, logoutUserAtom, userAtom, loadingAtom } from '@/store/store';
 import { useAtom } from 'jotai';
 import UserAvatar from '@/components/member/userAvatar';
 
@@ -26,8 +26,33 @@ const Choose: React.FC = () => {
   const history = useHistory();
   const [alertIsOpen, setAlertIsOpen] = useState(false);
 
-  // Access user's groups from the atom
+
+  // Access Jotai atoms    
+  const [user] = useAtom(userAtom); // Atom containing user data
+  const [loading, setLoading] = useAtom(loadingAtom); // Atom to manage loading state
   const [userGroups] = useAtom(userGroupsAtom);
+
+  console.log(userGroups);
+
+  // Monitor the user state
+  useEffect(() => {
+    if (!user) {
+      history.replace('/main/login');
+    }
+  }, [user, setLoading]);
+
+  // Handle the login button click
+  const handleLogOut = async () => {
+    setLoading(true); // Set the loading state to true
+    try {
+      history.replace('/main/login');
+      //await logoutUser(); // Call initialize user atom
+    } catch (error) {
+      console.error("Failed to initialize user:", error);
+      setLoading(false); // Reset loading state in case of an error
+    }
+  };
+
 
   // Handle group selection
   const handleGroupClick = (group: Group) => {
@@ -151,6 +176,7 @@ const Choose: React.FC = () => {
                 color="light"
                 shape="round"
                 routerLink="/main/login"
+                onClick={handleLogOut}
               >
                 Log Out
               </IonButton>
