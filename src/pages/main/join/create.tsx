@@ -17,27 +17,31 @@ import {
   IonCheckbox,
   IonLabel,
   IonImg,
+  IonSpinner,
 } from '@ionic/react';
 import { RouteComponentProps, useHistory } from 'react-router-dom';
-import { addGroupAtom, Group } from '@/store/store';
+import { addGroupAtom, initializeUserAtom } from '@/store/store';
 import { useAtom, useSetAtom } from 'jotai/react';
+import { Group } from '@/store/interface';
 
 interface MainJoinCreateProps
   extends RouteComponentProps<{
     id: string;
-  }> {}
+  }> { }
 
 const MainJoinCreate: React.FC<MainJoinCreateProps> = ({ match }) => {
   const history = useHistory();
   const addGroup = useSetAtom(addGroupAtom);
 
   // State for form fields
+  const [, initializeUser] = useAtom(initializeUserAtom);// Atom to initialize user data
   const [groupName, setGroupName] = useState('');
   const [groupAbbreviation, setGroupAbbreviation] = useState('');
   const [groupDescription, setGroupDescription] = useState('');
   const [groupCategory, setGroupCategory] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
+  const [submitting, setSubmitting] = useState(false); // Atom to manage submitting state
 
   // State for image
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -68,9 +72,9 @@ const MainJoinCreate: React.FC<MainJoinCreateProps> = ({ match }) => {
   };
 
   // Handle form submission
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (isFormValid) {
-      const formData :Group = {
+      const formData: Group = {
         long_name: groupName,
         short_name: groupAbbreviation,
         location: "Lagos",
@@ -78,9 +82,20 @@ const MainJoinCreate: React.FC<MainJoinCreateProps> = ({ match }) => {
         logo: "selectedImage"
 
       };
-      addGroup(formData);
-      console.log('Form submitted:', formData);
-      history.replace("/main/choose");
+
+      setSubmitting(true); // Set the submitting state to true
+      try {
+        await addGroup(formData);
+        await initializeUser(); // Call initialize user atom
+        setSubmitting(false);
+        history.replace("/main/choose");
+      } catch (error) {
+        console.error("Failed to initialize create:", error);
+        setSubmitting(false); // Reset submitting state in case of an error
+      }
+
+
+
     }
   };
 
@@ -194,14 +209,15 @@ const MainJoinCreate: React.FC<MainJoinCreateProps> = ({ match }) => {
             </small>
           </IonLabel>
         </IonItem>
-
-        <IonButton
-          expand="full"
-          onClick={handleSubmit}
-          disabled={!isFormValid}
-        >
-          Create Group
-        </IonButton>
+        
+            <IonButton
+              expand="full"
+              onClick={handleSubmit}
+              disabled={!isFormValid || submitting}
+            >
+              {submitting ? <IonSpinner name="dots"></IonSpinner> : "Create Group"}
+            </IonButton>
+         
       </IonContent>
     </IonPage>
   );

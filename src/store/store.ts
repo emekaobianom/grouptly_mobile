@@ -11,6 +11,7 @@ Amplify.configure(outputs);
 // --- Amplify ---
 import { generateClient } from "aws-amplify/data";
 import type { Schema } from "@/data-schema";
+import { User, Group, Message } from "./interface";
 
 const client = generateClient<Schema>(); // Initialize the Amplify client with your schema
 // --- End Amplify ---
@@ -21,72 +22,9 @@ const createPersistentAtom = <T>(key: string, initialValue: T) => {
     return atomWithStorage<T>(key, initialValue);
 };
 
-// Define types for User data structure
-export interface User {
-    id: string | null;
-    firstname: string;
-    middlename?: string;
-    lastname: string;
-    role: string;
-    image: string;
-    phone?: string;
-    groups: UserGroupStatus[]; // List of groups the user is part of with statuses
-    fullname?: string; // Computed full name of the user
-}
-
-// Enum representing possible statuses a user can have in a group
-export enum UserStatus {
-    Active = "active",
-    Pending = "pending",
-    Suspended = "suspended",
-    Rejected = "rejected"
-}
-
-// Interface representing a user"s status in a specific group
-export interface UserGroupStatus {
-    id: string; // ID of the group
-    user_status: UserStatus; // Status of the user within that group
-}
-
-// Interface representing basic group information
-export interface Group {
-    id?: string;
-    long_name: string;
-    short_name: string;
-    location: string;
-    category: string;
-    logo: string;
-    //for inidividual user
-    user_status?: UserStatus; // Status of the user within that group
-}
-
-// Interface representing a message in a group
-export interface Message {
-    text: string;
-    timestamp: number; // UNIX timestamp or ISO string for when the message was sent
-    sender: string; // Identifier for who sent the message
-}
-
-// Interface representing an event
-export interface Event {
-    id: string;
-    name: string;
-    groupId: string; // The group associated with the event
-    date: string; // Date of the event (ISO string)
-}
-
-// Interface representing a notification
-export interface Notification {
-    id: string;
-    message: string; // Content of the notification
-    type: "info" | "warning" | "error"; // Type of notification for categorization
-}
-
-//loading indicator
-export const loadingAtom = atom(false);
 
 // Persistent atom for user data, synced with local storage
-export const userAtom = createPersistentAtom<User | null>("user", null);
+export const userAtom = createPersistentAtom<User| null>("user", null);
 
 // Persistent atom for group data, initialized with placeholder data
 export const groupsAtom = createPersistentAtom<Group[]>("groups", []);
@@ -119,7 +57,7 @@ export const addGroupAtom = atom(
         const user = get(userAtom);
 
         if (!user || !user.id) {
-            console.error("User must be logged in to add a group.");            
+            console.error("User must be logged in to add a group.");
             return;
         }
 
@@ -138,7 +76,7 @@ export const addGroupAtom = atom(
             const { errors: userGroupErrors } = await client.models.UserGroup.create({
                 userId: user.id,
                 groupId: newGroup.id,
-                user_status: "pending"
+                user_status: "active"
             });
 
             if (userGroupErrors) {
@@ -170,6 +108,29 @@ export const removeGroupAtom = atom(
     }
 );
 
+// Atom to remove a group by its ID using Immer
+export const removeUserGroupAtom = atom(
+    null,
+    async (get, set, usergroupId: string) => {
+
+        try {
+            // Associate the user with the group
+            const { errors: userGroupErrors } = await client.models.UserGroup.delete({
+                id: usergroupId,
+            });
+
+            if (userGroupErrors) {
+                console.error("Failed to associate user with group:", userGroupErrors);
+                return;
+            }
+        } catch (error) {
+            console.error("Error adding usergroup:", error);
+        }
+
+        //refresh user
+    }
+);
+
 // Derived atom to get user-specific groups with status included
 export const userGroupsAtom = atom<Group[]>((get) => {
     const user = get(userAtom); // Get the current user state
@@ -189,17 +150,53 @@ export const userGroupsAtom = atom<Group[]>((get) => {
     return filteredUserGroups;
 });
 
+
+
+// Atom to add a new group to the list of groups using Immer
+export const addUserGroupAtom = atom(
+    null,
+    async (get, set, thisgroup: Group,this_user_status:string) => {
+        const user = get(userAtom);
+
+        if (!user || !user.id) {
+            console.error("User must be logged in to add a group.");
+            return;
+        }
+
+        try {
+            // Associate the user with the group
+            const { errors: userGroupErrors } = await client.models.UserGroup.create({
+                userId: user.id,
+                groupId: thisgroup.id,
+                user_status: this_user_status
+            });
+
+            if (userGroupErrors) {
+                console.error("Failed to associate user with group:", userGroupErrors);
+                return;
+            }
+        } catch (error) {
+            console.error("Error adding usergroup:", error);
+        }
+    }
+);
+
 // Initialization Atom
 export const initializeUserAtom = atom(
     null,
     async (get, set) => {
         try {
-            const { data: user }:any = await client.models.User.get({
+            const { data: user }: any = await client.models.User.get({
                 id: "sampleidemeka1",
-              },
-              {
-                selectionSet: ["id", "firstname","middlename","lastname","image","role",],
-              }
+            },
+                {
+                    selectionSet: [
+                        "id", "firstname", "middlename", "lastname", "image", "role",
+                        "groups.id",
+                        "groups.group.id","groups.group.short_name","groups.group.long_name",
+                        "groups.group.location","groups.user_status","groups.group.logo"
+                    ]
+                }
             ); // Fetch user (sample id)
             if (user) {
                 set(userAtom, {
@@ -210,14 +207,14 @@ export const initializeUserAtom = atom(
             }
         } catch (error) {
             console.error("Failed to initialize user:", error);
-        } 
+        }
     }
 );
 export const initializeGroupsAtom = atom(
     null,
     async (get, set) => {
         try {
-            const { data: groups }:any = await client.models.Group.list(); // Fetch groups
+            const { data: groups }: any = await client.models.Group.list(); // Fetch groups
             if (groups) {
                 set(groupsAtom, groups);
                 // Perform any additional first-load logic here
@@ -225,7 +222,7 @@ export const initializeGroupsAtom = atom(
             }
         } catch (error) {
             console.error("Failed to initialize groups:", error);
-        } 
+        }
     }
 );
 

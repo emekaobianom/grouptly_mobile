@@ -24,8 +24,10 @@ import {
 import { useEffect, useState } from 'react';
 import { add, checkmarkCircle, closeCircle, handLeft, people, timer } from 'ionicons/icons';
 import { RouteComponentProps, useHistory } from 'react-router';
-import { Group, GroupsWithUserGroupsAtom, initializeGroupsAtom, userAtom, UserStatus } from '@/store/store';
+import { GroupsWithUserGroupsAtom, initializeGroupsAtom, userAtom } from '@/store/store';
 import { useAtom } from 'jotai';
+import { Group, UserStatus } from '@/store/interface';
+import logoPlaceholder from '@/assets/images/logo_placeholder.png';
 
 const MainJoin: React.FC<RouteComponentProps> = ({ match }) => {
   const [user] = useAtom(userAtom);
@@ -55,11 +57,11 @@ const MainJoin: React.FC<RouteComponentProps> = ({ match }) => {
     }, 2000);
   };
 
-  const handleGroupClick = (group: Group) => {
+  const handleGroupClick = (group: Group, user_status: string) => {
     console.log('Group clicked:', group);
-    if (group.user_status === (UserStatus.Active || UserStatus.Rejected || UserStatus.Suspended)) {
+    if (user_status === (UserStatus.Active || UserStatus.Rejected || UserStatus.Suspended)) {
       setAlertGreenIsOpen(true);
-    } else if (group.user_status === UserStatus.Pending) {
+    } else if (user_status === UserStatus.Pending) {
       setAlertOrangeIsOpen(true);
     } else {
       history.push(`/main/join/request/${group.id}`);
@@ -101,67 +103,86 @@ const MainJoin: React.FC<RouteComponentProps> = ({ match }) => {
         </IonRefresher>
 
         {/* Map through filtered groups to display a list of cards */}
-        {filteredGroups.map((group, index) => (
-          <IonCard
-            onClick={() => handleGroupClick(group)}
-            style={{ cursor: 'pointer' }}
-            key={index}
-          >
-            <IonCardContent>
-              <IonGrid>
-                <IonRow>
-                  <IonCol size="auto">
-                    {group.logo ? (
-                      <IonImg
-                        src={group.logo}
-                        style={{
-                          width: '50px',
-                          height: 'auto',
-                          objectFit: 'contain',
-                          borderRadius: '50%',
-                        }}
-                      />
-                    ) : (
-                      <IonIcon icon={people} style={{ color: 'black', fontSize: '24px' }} />
-                    )}
-                  </IonCol>
-                  <IonCol>
-                    <p className="bold-text">{group.long_name}</p>
-                    <IonText color="medium">
-                      <small>{group.location}</small>
-                    </IonText>
-                  </IonCol>
-                  <IonCol size="auto">
-                    {(group.user_status === UserStatus.Active) && (
-                      <IonIcon
-                        icon={checkmarkCircle}
-                        style={{ color: 'slate', fontSize: '24px' }}
-                      />
-                    )}
-                    {(group.user_status === UserStatus.Pending) && (
-                      <IonIcon
-                        icon={timer}
-                        style={{ color: 'slate', fontSize: '24px' }}
-                      />
-                    )}
-                    {(group.user_status === UserStatus.Suspended) && (
-                      <IonIcon
-                        icon={handLeft}
-                        style={{ color: 'slate', fontSize: '24px' }}
-                      />
-                    )}
-                    {(group.user_status === UserStatus.Rejected) && (
-                      <IonIcon
-                        icon={closeCircle}
-                        style={{ color: 'darkred', fontSize: '24px' }}
-                      />
-                    )}
-                  </IonCol>
-                </IonRow>
-              </IonGrid>
-            </IonCardContent>
-          </IonCard>
-        ))}
+        {filteredGroups.map((group, index) => {
+
+          let user_status: string = "";
+          user?.groups.map(ug => {
+            if (ug.group.id == group.id) {
+              user_status = ug.user_status;
+            }
+          }
+          );
+
+          return (
+            <IonCard
+              onClick={() => handleGroupClick(group, user_status)}
+              style={{ cursor: 'pointer' }}
+              key={index}
+            >
+              <IonCardContent>
+                <IonGrid>
+                  <IonRow>
+                    <IonCol size="auto">
+                      {group.logo ? (
+                        <IonImg
+                                  src={group.logo}
+                                  style={{
+                                    width: '50px',
+                                    height: 'auto',
+                                    objectFit: 'contain',
+                                    borderRadius: '50%',
+                                  }}
+                                  onIonImgDidLoad={() => {
+                                    console.log('Image loaded successfully');
+                                  }}
+                                  onIonError={(e:any) => {
+                                    console.log('Failed to load image, setting fallback');
+                                    e.currentTarget.src = logoPlaceholder; // Replace with fallback
+                                  }}
+                                />
+                      ) : (
+                        <IonIcon icon={people} style={{ color: 'black', fontSize: '24px' }} />
+                      )}
+                    </IonCol>
+                    <IonCol>
+                      <p className="bold-text">{group.long_name}</p>
+                      <IonText color="medium">
+                        <small>{group.location}</small>
+                      </IonText>
+                    </IonCol>
+                    <IonCol size="auto">
+                      {(user_status === UserStatus.Active) && (
+                        <IonIcon
+                          icon={checkmarkCircle}
+                          style={{ color: 'slate', fontSize: '24px' }}
+                        />
+                      )}
+                      {(user_status === UserStatus.Pending) && (
+                        <IonIcon
+                          icon={timer}
+                          style={{ color: 'slate', fontSize: '24px' }}
+                        />
+                      )}
+                      {(user_status === UserStatus.Suspended) && (
+                        <IonIcon
+                          icon={handLeft}
+                          style={{ color: 'slate', fontSize: '24px' }}
+                        />
+                      )}
+                      {(user_status === UserStatus.Rejected) && (
+                        <IonIcon
+                          icon={closeCircle}
+                          style={{ color: 'darkred', fontSize: '24px' }}
+                        />
+                      )}
+                    </IonCol>
+                  </IonRow>
+                </IonGrid>
+              </IonCardContent>
+            </IonCard>
+          )
+        }
+        )}
 
         <div style={{ marginBottom: 80 }}></div>
       </IonContent>

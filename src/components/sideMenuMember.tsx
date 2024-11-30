@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { IonContent, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonIcon, IonButton, IonNote, IonText } from "@ionic/react";
+import { IonContent, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonIcon, IonButton, IonNote, IonText, IonImg } from "@ionic/react";
 import { briefcase, calendar, calendarClear, heart, home, informationCircle, mail, newspaper, people, wallet, logOut, chevronForward } from "ionicons/icons";
 import { useHistory, useLocation } from "react-router-dom";
 import { getItem } from "@/utils/storage";
+import logoPlaceholder from '@/assets/images/logo_placeholder.png';
 
 const SideMenuMember: React.FC = () => {
     const history = useHistory();
@@ -49,14 +50,20 @@ const SideMenuMember: React.FC = () => {
         <IonMenu type="reveal" contentId="member" menuId="main-menu">
             <IonContent>
                 {/* Big picture */}
-                <img
+                <IonImg
                     src={group ? group.logo : ""}
-                    alt="Big Picture"
                     style={{
-                        padding:"5rem",
+                        padding: "5rem",
                         width: '100%', // Or any fixed width you want, like '15rem'
                         height: 'auto',
                         objectFit: 'contain', // or 'cover' depending on your needs
+                    }}
+                    onIonImgDidLoad={() => {
+                        console.log('Image loaded successfully');
+                    }}
+                    onIonError={(e: any) => {
+                        console.log('Failed to load image, setting fallback');
+                        e.currentTarget.src = logoPlaceholder; // Replace with fallback
                     }}
                 />
 

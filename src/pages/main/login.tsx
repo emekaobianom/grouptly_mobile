@@ -14,8 +14,8 @@ import { useHistory } from 'react-router-dom';
 import icon from '@/assets/images/icon.png';
 import { logoGoogle, logoFacebook } from 'ionicons/icons';
 import { useAtom, useSetAtom } from 'jotai';
-import { initializeUserAtom, loadingAtom, logoutUserAtom, setUserAtom, userAtom, UserStatus } from '@/store/store'; // Import the setUser atom
-import { useEffect } from 'react';
+import { initializeUserAtom, logoutUserAtom, setUserAtom, userAtom } from '@/store/store'; // Import the setUser atom
+import { useEffect, useState } from 'react';
 import React from 'react';
 
 const Login: React.FC = () => {
@@ -25,12 +25,11 @@ const Login: React.FC = () => {
   const [, logoutUser] = useAtom(logoutUserAtom);// Atom to initialize user data
   const [, initializeUser] = useAtom(initializeUserAtom);// Atom to initialize user data
   const [user] = useAtom(userAtom); // Atom containing user data
-  const [loading, setLoading] = useAtom(loadingAtom); // Atom to manage loading state
+  const [loading, setLoading] = useState(false); // Atom to manage loading state
 
   // Monitor the user state
   useEffect(() => { //run once on startup
     logoutUser()
-    setLoading(false);
   }, []);
 
   // Handle the login button click

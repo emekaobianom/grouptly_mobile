@@ -13,162 +13,154 @@ import {
   IonAlert,
   IonHeader,
   IonToolbar,
+  IonActionSheet,
+  IonSpinner,
 } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
-import { checkmarkCircle, closeCircle, handLeft, people, timer } from 'ionicons/icons';
-import { useState, useEffect, useMemo } from 'react';
+import { checkmarkCircle, closeCircle, ellipsisVertical, handLeft, people, timer } from 'ionicons/icons';
+import { useState, useEffect } from 'react';
 import { setItem } from '@/utils/storage';
-import { userGroupsAtom, Group, UserStatus, logoutUserAtom, userAtom, loadingAtom } from '@/store/store';
-import { useAtom } from 'jotai';
+import { initializeUserAtom, removeUserGroupAtom, userAtom } from '@/store/store';
+import { useAtom, useSetAtom } from 'jotai';
 import UserAvatar from '@/components/member/userAvatar';
+import { UserGroup, UserStatus } from '@/store/interface';
+import logoPlaceholder from '@/assets/images/logo_placeholder.png';
 
 const Choose: React.FC = () => {
+
   const history = useHistory();
   const [alertIsOpen, setAlertIsOpen] = useState(false);
+  const [actionSheetIsOpen, setActionSheetIsOpen] = useState(false);
+  const [selectedUserGroup, setSelectedUserGroup] = useState<UserGroup | null>(null); // Track selected group for ActionSheet
 
+  const [user] = useAtom(userAtom);
+  const [, initializeUser] = useAtom(initializeUserAtom);// Atom to initialize user data
+  const removeUserGroup = useSetAtom(removeUserGroupAtom);
+  const [loading, setLoading] = useState(false);
+  const [deleting, setDeleting] = useState(false); // Atom to manage submitting state
 
-  // Access Jotai atoms    
-  const [user] = useAtom(userAtom); // Atom containing user data
-  const [loading, setLoading] = useAtom(loadingAtom); // Atom to manage loading state
-  const [userGroups] = useAtom(userGroupsAtom);
-
-  console.log(userGroups);
-
-  // Monitor the user state
   useEffect(() => {
     if (!user) {
+      setLoading(false);
       history.replace('/main/login');
     }
-  }, [user, setLoading]);
+  }, [user, history, setLoading]);
 
-  // Handle the login button click
   const handleLogOut = async () => {
-    setLoading(true); // Set the loading state to true
+    setLoading(true);
     try {
       history.replace('/main/login');
-      //await logoutUser(); // Call initialize user atom
     } catch (error) {
-      console.error("Failed to initialize user:", error);
-      setLoading(false); // Reset loading state in case of an error
-    }
-  };
-
-
-  // Handle group selection
-  const handleGroupClick = (group: Group) => {
-    setItem('selectedGroup', group); // Save selected group in storage
-    if (group.user_status === UserStatus.Active) {
-      // Redirect if group is active
-      history.push('/member/dashboard?openMenu=true');
-    } else {
-      // Show alert if group is inactive
+      console.error('Failed to log out:', error);
+      setLoading(false);
       setAlertIsOpen(true);
     }
   };
 
+  const handleGroupClick = (usergroup: UserGroup) => {
+    setItem('selectedGroup', usergroup.group);
+    if (usergroup.user_status === UserStatus.Active) {
+      history.push('/member/dashboard?openMenu=true');
+    } else {
+      setAlertIsOpen(true);
+    }
+  };
+
+  const openActionSheet = (usergroup: UserGroup) => {
+    setSelectedUserGroup(usergroup); // Set the selected group
+    setActionSheetIsOpen(true); // Open the ActionSheet
+  };
+
   return (
     <IonPage>
-      {/* Header */}
-      <IonHeader className='header'>
-        <IonToolbar class='toolbar'>
+      <IonHeader>
+        <IonToolbar>
           <UserAvatar />
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding" fullscreen>
         <IonGrid style={{ height: '100%' }}>
           <IonRow style={{ justifyContent: 'space-between', height: '100%' }}>
-            {/* Header Section */}
             <IonCol size="auto">
               <IonText color="dark">
                 <h3 className="bold-text">Choose</h3>
-                <p className="bold-text ion-no-margin">
-                  Tap to enter your group
-                </p>
+                <p className="bold-text ion-no-margin">Tap to enter your group</p>
               </IonText>
             </IonCol>
 
-            {/* Display List of User's Groups */}
             <IonCol size="12">
-              {userGroups.map((group) => (
-                <IonCard
-                  onClick={() => handleGroupClick(group)}
-                  style={{ cursor: 'pointer' }}
-                  key={group.id}
-                >
-                  <IonCardContent>
-                    <IonGrid>
-                      <IonRow>
-                        {/* Display Group Logo or Default Icon */}
-                        <IonCol size="auto">
-                          {group.logo ? (
-                            <IonImg
-                              src={group.logo}
-                              style={{
-                                width: '50px',
-                                height: 'auto',
-                                objectFit: 'contain',
-                                borderRadius: '50%',
-                              }}
-                            />
-                          ) : (
-                            <IonIcon
-                              icon={people}
-                              className="status-icon"
-                              style={{ color: 'black', fontSize: '24px' }}
-                            />
-                          )}
-                        </IonCol>
-
-                        {/* Group Name and Location */}
-                        <IonCol>
-                          <p className="bold-text">{group.long_name}</p>
-                          <IonText color="medium">
-                            <small>{group.location}</small>
-                          </IonText>
-                        </IonCol>
-
-                        {/* Status Indicator */}
-                        <IonCol size="auto">
-                          {(group.user_status === UserStatus.Active) && (
-                            <IonIcon
-                              icon={checkmarkCircle}
-                              style={{ color: 'slate', fontSize: '24px' }}
-                            />
-                          )}
-                          {(group.user_status === UserStatus.Pending) && (
-                            <IonIcon
-                              icon={timer}
-                              style={{ color: 'slate', fontSize: '24px' }}
-                            />
-                          )}
-                          {(group.user_status === UserStatus.Suspended) && (
-                            <IonIcon
-                              icon={handLeft}
-                              style={{ color: 'slate', fontSize: '24px' }}
-                            />
-                          )}
-                          {(group.user_status === UserStatus.Rejected) && (
-                            <IonIcon
-                              icon={closeCircle}
-                              style={{ color: 'darkred', fontSize: '24px' }}
-                            />
-                          )}
-                        </IonCol>
-                      </IonRow>
-                    </IonGrid>
-                  </IonCardContent>
-                </IonCard>
-              ))}
+              {user?.groups && user.groups.length > 0 ? (
+                user.groups.map((usergroup) => (
+                  <IonCard key={usergroup.id} style={{ cursor: 'pointer' }}>
+                    <IonCardContent className="ion-no-padding">
+                      <IonGrid>
+                        <IonRow>
+                          <IonCol>
+                            <IonRow onClick={() => handleGroupClick(usergroup)}>
+                              <IonCol size="auto">
+                                {usergroup.group.logo ? (
+                                  <IonImg
+                                    src={usergroup.group.logo}
+                                    style={{
+                                      width: '50px',
+                                      height: 'auto',
+                                      objectFit: 'contain',
+                                      borderRadius: '50%',
+                                    }}
+                                    onIonImgDidLoad={() => {
+                                      console.log('Image loaded successfully');
+                                    }}
+                                    onIonError={(e: any) => {
+                                      console.log('Failed to load image, setting fallback');
+                                      e.currentTarget.src = logoPlaceholder; // Replace with fallback
+                                    }}
+                                  />
+                                ) : (
+                                  <IonIcon
+                                    icon={logoPlaceholder}
+                                    className="status-icon"
+                                    style={{ color: 'black', fontSize: '18px' }}
+                                  />
+                                )}
+                              </IonCol>
+                              <IonCol>
+                                <p className="bold-text">{usergroup.group.long_name}</p>
+                                <IonText color="medium">
+                                  <small>{usergroup.group.location}</small>
+                                </IonText>
+                                <br />
+                                {usergroup.user_status === UserStatus.Active && (
+                                  <IonIcon icon={checkmarkCircle} style={{ color: 'green', fontSize: '18px' }} />
+                                )}
+                                {usergroup.user_status === UserStatus.Pending && (
+                                  <IonIcon icon={timer} style={{ color: 'orange', fontSize: '18px' }} />
+                                )}
+                                {usergroup.user_status === UserStatus.Suspended && (
+                                  <IonIcon icon={handLeft} style={{ color: 'blue', fontSize: '18px' }} />
+                                )}
+                                {usergroup.user_status === UserStatus.Rejected && (
+                                  <IonIcon icon={closeCircle} style={{ color: 'darkred', fontSize: '18px' }} />
+                                )}
+                              </IonCol>
+                            </IonRow>
+                          </IonCol>
+                          <IonCol size="auto">
+                            <IonButton fill="clear" onClick={() => openActionSheet(usergroup)}>
+                              <IonIcon icon={ellipsisVertical} />
+                            </IonButton>
+                          </IonCol>
+                        </IonRow>
+                      </IonGrid>
+                    </IonCardContent>
+                  </IonCard>
+                ))
+              ) : (
+                <IonText>No groups available</IonText>
+              )}
             </IonCol>
 
-            {/* Action Buttons */}
             <IonCol size="12" style={{ textAlign: 'center' }}>
-              <IonButton
-                expand="block"
-                color="light"
-                shape="round"
-                routerLink="/main/join"
-              >
+              <IonButton expand="block" color="light" shape="round" routerLink="/main/join">
                 Join or Create Group
               </IonButton>
               <IonButton
@@ -185,7 +177,6 @@ const Choose: React.FC = () => {
         </IonGrid>
       </IonContent>
 
-      {/* Alert for Inactive Group Status */}
       <IonAlert
         isOpen={alertIsOpen}
         header="Group Not Active"
@@ -193,6 +184,39 @@ const Choose: React.FC = () => {
         message="Once the group admin accepts you, you can enter this group."
         buttons={['Okay']}
         onDidDismiss={() => setAlertIsOpen(false)}
+      />
+
+      <IonActionSheet
+        isOpen={actionSheetIsOpen}
+        onDidDismiss={() => setActionSheetIsOpen(false)
+
+        }header={deleting ? "Deleting..." : selectedUserGroup?.group.long_name} 
+        buttons={[
+          {
+            text: 'Delete',
+            role: 'destructive',
+            data: { action: 'delete' },
+            handler: async() => {
+              if(selectedUserGroup==null)return;
+              setDeleting(true); // Set the submitting state to true              
+              try { console.log("id ",selectedUserGroup)
+                await removeUserGroup(selectedUserGroup.id);
+                await initializeUser(); // Call initialize user atom
+                setDeleting(false);
+                history.replace("/main/choose");
+              } catch (error) {
+                console.error("Failed to initialize create:", error);
+                setDeleting(false); // Reset submitting state in case of an error
+              }
+            },
+          },
+
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            data: { action: 'cancel' },
+          },
+        ]}
       />
     </IonPage>
   );
