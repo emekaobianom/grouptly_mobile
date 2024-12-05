@@ -20,16 +20,15 @@ import {
   IonCardContent,
   IonLabel,
 } from '@ionic/react';
-import { useHistory, useLocation } from 'react-router-dom';
-import { menuController } from '@ionic/core/components';
-import SideMenuBtn from '../../../components/sideMenuBtn';
 import './dashboard.css';
-import { calendarOutline, cardOutline, chevronForward, heartOutline, informationCircleOutline, mailOutline, newspaperOutline } from 'ionicons/icons';
+import { calendarOutline, cardOutline, chevronForward, heartOutline, informationCircleOutline, mailOutline, newspaperOutline, people } from 'ionicons/icons';
+import UserAdminAvatar from '@/components/admin/userAvatar';
 
 const AdminDashboard: React.FC = () => {
   const buttons = [
     { name: 'Inbox', path: '/admin/inbox', icon: mailOutline },
     { name: 'Events', path: '/admin/events', icon: calendarOutline },
+    { name: "Members", path: "/admin/members", icon: people },
     { name: 'Donations', path: '/admin/donations', icon: heartOutline },
     { name: 'Payments', path: '/admin/payments', icon: cardOutline },
     { name: 'About', path: '/admin/about', icon: informationCircleOutline },
@@ -50,10 +49,7 @@ const AdminDashboard: React.FC = () => {
       {/* Header */}
       <IonHeader className='header'>
         <IonToolbar class='toolbar'>
-          <p  slot='end'>Admin</p>
-          <IonAvatar slot='end' className='ion-padding'>
-            <img src="https://randomuser.me/api/portraits/men/9.jpg" alt="me" />
-          </IonAvatar>
+          <UserAdminAvatar/>
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">

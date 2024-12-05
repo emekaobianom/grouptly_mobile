@@ -17,25 +17,27 @@ import {
   IonSpinner,
 } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
-import { checkmarkCircle, closeCircle, ellipsisVertical, handLeft, people, timer } from 'ionicons/icons';
+import { checkmarkCircle, closeCircle, ellipsisVertical, handLeft, timer } from 'ionicons/icons';
 import { useState, useEffect } from 'react';
-import { setItem } from '@/utils/storage';
-import { initializeUserAtom, removeUserGroupAtom, userAtom } from '@/store/store';
+import { initializeSelectedGroupAtom, initializeUserAtom, removeMemberAtom, userAtom } from '@/store/store';
 import { useAtom, useSetAtom } from 'jotai';
 import UserAvatar from '@/components/member/userAvatar';
-import { UserGroup, UserStatus } from '@/store/interface';
+import { Member, UserStatus , User} from '@/store/interface';
 import logoPlaceholder from '@/assets/images/logo_placeholder.png';
+import icon from '@/assets/images/icon.png';
 
 const Choose: React.FC = () => {
 
   const history = useHistory();
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [actionSheetIsOpen, setActionSheetIsOpen] = useState(false);
-  const [selectedUserGroup, setSelectedUserGroup] = useState<UserGroup | null>(null); // Track selected group for ActionSheet
+  const [selectedMembership, setSelectedMember] = useState<Member | null>(null); // Track selected group for ActionSheet
 
   const [user] = useAtom(userAtom);
   const [, initializeUser] = useAtom(initializeUserAtom);// Atom to initialize user data
-  const removeUserGroup = useSetAtom(removeUserGroupAtom);
+  const [, initializeSelectedGroup] = useAtom(initializeSelectedGroupAtom);// Atom to initialize user data
+  
+  const removeMember = useSetAtom(removeMemberAtom);
   const [loading, setLoading] = useState(false);
   const [deleting, setDeleting] = useState(false); // Atom to manage submitting state
 
@@ -57,17 +59,17 @@ const Choose: React.FC = () => {
     }
   };
 
-  const handleGroupClick = (usergroup: UserGroup) => {
-    setItem('selectedGroup', usergroup.group);
-    if (usergroup.user_status === UserStatus.Active) {
+  const handleGroupClick = (membership: Member) => {
+    initializeSelectedGroup(String(membership.groupId))
+    if (membership.status === UserStatus.Active) {
       history.push('/member/dashboard?openMenu=true');
     } else {
       setAlertIsOpen(true);
     }
   };
 
-  const openActionSheet = (usergroup: UserGroup) => {
-    setSelectedUserGroup(usergroup); // Set the selected group
+  const openActionSheet = (member: Member) => {
+    setSelectedMember(member); // Set the selected group
     setActionSheetIsOpen(true); // Open the ActionSheet
   };
 
@@ -89,30 +91,24 @@ const Choose: React.FC = () => {
             </IonCol>
 
             <IonCol size="12">
-              {user?.groups && user.groups.length > 0 ? (
-                user.groups.map((usergroup) => (
-                  <IonCard key={usergroup.id} style={{ cursor: 'pointer' }}>
+              {user?.memberships && user.memberships.length > 0 ? (
+                user.memberships.map((membership:Member) => (
+                  <IonCard key={membership.id} style={{ cursor: 'pointer' }}>
                     <IonCardContent className="ion-no-padding">
                       <IonGrid>
                         <IonRow>
                           <IonCol>
-                            <IonRow onClick={() => handleGroupClick(usergroup)}>
+                            <IonRow onClick={() => handleGroupClick(membership)}>
                               <IonCol size="auto">
-                                {usergroup.group.logo ? (
+                                {membership.group.logo ? (
                                   <IonImg
-                                    src={usergroup.group.logo}
+                                    src={(() =>((membership.group.logo=="default_logo")?icon:membership.group.logo))()}
+                                   
                                     style={{
                                       width: '50px',
                                       height: 'auto',
                                       objectFit: 'contain',
                                       borderRadius: '50%',
-                                    }}
-                                    onIonImgDidLoad={() => {
-                                      console.log('Image loaded successfully');
-                                    }}
-                                    onIonError={(e: any) => {
-                                      console.log('Failed to load image, setting fallback');
-                                      e.currentTarget.src = logoPlaceholder; // Replace with fallback
                                     }}
                                   />
                                 ) : (
@@ -124,28 +120,28 @@ const Choose: React.FC = () => {
                                 )}
                               </IonCol>
                               <IonCol>
-                                <p className="bold-text">{usergroup.group.long_name}</p>
+                                <p className="bold-text">{membership.group.long_name}</p>
                                 <IonText color="medium">
-                                  <small>{usergroup.group.location}</small>
+                                  <small>{membership.group.location}</small>
                                 </IonText>
                                 <br />
-                                {usergroup.user_status === UserStatus.Active && (
+                                {membership.status === UserStatus.Active && (
                                   <IonIcon icon={checkmarkCircle} style={{ color: 'green', fontSize: '18px' }} />
                                 )}
-                                {usergroup.user_status === UserStatus.Pending && (
+                                {membership.status === UserStatus.Pending && (
                                   <IonIcon icon={timer} style={{ color: 'orange', fontSize: '18px' }} />
                                 )}
-                                {usergroup.user_status === UserStatus.Suspended && (
+                                {membership.status === UserStatus.Suspended && (
                                   <IonIcon icon={handLeft} style={{ color: 'blue', fontSize: '18px' }} />
                                 )}
-                                {usergroup.user_status === UserStatus.Rejected && (
+                                {membership.status === UserStatus.Rejected && (
                                   <IonIcon icon={closeCircle} style={{ color: 'darkred', fontSize: '18px' }} />
                                 )}
                               </IonCol>
                             </IonRow>
                           </IonCol>
                           <IonCol size="auto">
-                            <IonButton fill="clear" onClick={() => openActionSheet(usergroup)}>
+                            <IonButton fill="clear" onClick={() => openActionSheet(membership)}>
                               <IonIcon icon={ellipsisVertical} />
                             </IonButton>
                           </IonCol>
@@ -190,18 +186,18 @@ const Choose: React.FC = () => {
         isOpen={actionSheetIsOpen}
         onDidDismiss={() => setActionSheetIsOpen(false)
 
-        }header={deleting ? "Deleting..." : selectedUserGroup?.group.long_name} 
+        }header={deleting ? "Leaving group..." : selectedMembership?.group.long_name} 
         buttons={[
           {
-            text: 'Delete',
+            text: 'Leave this Group',
             role: 'destructive',
             data: { action: 'delete' },
             handler: async() => {
-              if(selectedUserGroup==null)return;
+              if (selectedMembership == null || user == null) return; // Ensure both user and selectedMembership are non-null
               setDeleting(true); // Set the submitting state to true              
-              try { console.log("id ",selectedUserGroup)
-                await removeUserGroup(selectedUserGroup.id);
-                await initializeUser(); // Call initialize user atom
+              try { console.log("id ",selectedMembership)
+                await removeMember(selectedMembership.id);
+                await initializeUser(user.id); // Call initialize user atom
                 setDeleting(false);
                 history.replace("/main/choose");
               } catch (error) {

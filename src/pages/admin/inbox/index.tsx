@@ -5,6 +5,7 @@ import { Route, RouteComponentProps } from 'react-router';
 import AdminInboxDetail from './detail';
 import './inbox.css';
 import { inboxItemsData } from '@/data/inbox_placeholder';
+import UserAdminAvatar from '@/components/admin/userAvatar';
 
 const AdminInbox: React.FC<RouteComponentProps> = ({ match }) => {
 
@@ -47,10 +48,8 @@ const AdminInbox: React.FC<RouteComponentProps> = ({ match }) => {
             <IonButtons slot="start">
               <IonBackButton defaultHref='/admin/dashboard' />
             </IonButtons>
-            <IonTitle>Inbox</IonTitle>
-            <IonAvatar slot='end' className='ion-padding'>
-              <img src="https://randomuser.me/api/portraits/men/9.jpg" alt="me" />
-            </IonAvatar>
+            <IonTitle>Inbox</IonTitle> 
+            <UserAdminAvatar/>
           </IonToolbar>
         </IonHeader>
 

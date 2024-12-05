@@ -1,170 +1,299 @@
 import React, { useState, useEffect } from 'react';
 import logoPlaceholder from '@/assets/images/logo_placeholder.png';
+import icon from '@/assets/images/icon.png';
 import {
-    IonBackButton,
-    IonButtons,
-    IonButton,
-    IonHeader,
-    IonContent,
-    IonToolbar,
-    IonTitle,
-    IonPage,
-    IonInput,
-    IonItem,
-    IonCheckbox,
-    IonLabel,
-    IonImg,
-    IonAvatar,
-    IonCol,
-    IonGrid,
-    IonRow,
-    IonTextarea,
-    IonText,
-    IonCard,
-    IonCardContent,
-    IonSpinner,
+  IonBackButton,
+  IonButtons,
+  IonButton,
+  IonHeader,
+  IonContent,
+  IonToolbar,
+  IonTitle,
+  IonPage,
+  IonInput,
+  IonItem,
+  IonTextarea,
+  IonSelect,
+  IonSelectOption,
+  IonCheckbox,
+  IonLabel,
+  IonImg,
+  IonSpinner,
+  IonAvatar,
+  IonCard,
+  IonCardContent,
+  IonCol,
+  IonGrid,
+  IonRow,
 } from '@ionic/react';
 import { RouteComponentProps, useHistory } from 'react-router-dom';
-import { groupsData } from '@/data/group_placeholder';
-import { addGroupAtom, addUserGroupAtom, initializeUserAtom, userAtom } from '@/store/store';
-import { useAtom, useSetAtom } from 'jotai';
-import { User } from '@/store/interface';
+import { addGroupAtom, addMemberAtom, getGroupAtom, initializeUserAtom, memberFullname, userAtom } from '@/store/store';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai/react';
+import { Group, MemberForm } from '@/store/interface';
 
 interface MainJoinRequestProps extends RouteComponentProps<{ id: string }> { }
 
 const MainJoinRequest: React.FC<MainJoinRequestProps> = ({ match }) => {
+  const history = useHistory();
+  const addMember = useSetAtom(addMemberAtom);
 
-    const history = useHistory();
-    const addUserGroup = useSetAtom(addUserGroupAtom);
+  // State management for user and group data
+  const [, initializeUser] = useAtom(initializeUserAtom);
+  const [user] = useAtom(userAtom);
+  const getGroup = useAtomValue(getGroupAtom);
+  const [group, setGroup] = useState<Group | null>(null);
 
-    // State for form fields
-    const [, initializeUser] = useAtom(initializeUserAtom);// Atom to initialize user data
-    const [user]: any = useAtom(userAtom);
-    const [form, setForm] = useState({ description: '' });
-    const [group, setGroup] = useState<any>(null);
-    const [termsAccepted, setTermsAccepted] = useState<boolean>(false); // State to track checkbox
-    const [isFormValid, setIsFormValid] = useState(false); // Tracks form validity
-    const [isSubmitting, setIsSubmitting] = useState(false); // Tracks submission state
+  // State for form fields
+  const [userFirstname, setUserFirstname] = useState('');
+  const [userMiddlename, setUserMiddlename] = useState('');
+  const [userLastname, setUserLastname] = useState('');
+  const [userGender, setUserGender] = useState('');
+  const [userPhone, setUserPhone] = useState('');
+  const [userImageUrl, setUserImageUrl] = useState('');
+  const [description, setDescription] = useState('');
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-    const memberFullname = (user: User) => user.firstname + ' ' + user.lastname;
+  // State for image upload
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-    // Fetch group data on component mount
-    useEffect(() => {
-        const group = groupsData.find((group) => group.id === match.params.id);
-        setGroup(group);
-    }, [match.params.id]);
+  useEffect(() => {
+    if (user) {
+      setUserFirstname(user.firstname);
+      setUserMiddlename(user.middlename ?? "");
+      setUserLastname(user.lastname);
+      // setUserGender(user.);
+      setUserPhone(user.phone ?? "");
+      setUserImageUrl(user.image ?? "");
+    }
+  }, []);
 
-    // Validate form whenever termsAccepted changes
-    useEffect(() => {
-        setIsFormValid(termsAccepted);
-    }, [termsAccepted]);
+  // Fetch group on mount
+  useEffect(() => {
+    const fetchedGroup: any = getGroup(match.params.id);
+    setGroup(fetchedGroup);
+  }, [match.params.id, getGroup]);
 
-    const handleSubmit = async () => {
-        if (!isFormValid) return;
+  // Form validation logic
+  useEffect(() => {
+    const isValid =
+      userFirstname.trim() !== '' &&
+      userMiddlename.trim() !== '' &&
+      userLastname.trim() !== '' &&
+      userGender.trim() !== '' &&
+      userPhone.trim() !== '' &&
+      termsAccepted;
 
-        setIsSubmitting(true); // Show loading spinner
-        try {
-            await addUserGroup(group, "pending");
-            await initializeUser(); // Call initialize user atom
-            setIsSubmitting(false);
-            history.replace("/main/choose");
-        } catch (error) {
-            console.error('Error submitting form:', error);
-        } finally {
-            setIsSubmitting(false); // Hide loading spinner
-        }
-    };
+    setIsFormValid(isValid);
+  }, [userFirstname, userMiddlename, userLastname, userGender, userPhone, termsAccepted]);
 
-    return (
-        <IonPage>
-            <IonHeader>
-                <IonToolbar>
-                    <IonButtons slot="start">
-                        <IonBackButton defaultHref="/main/join"></IonBackButton>
-                    </IonButtons>
-                    <IonTitle>Request to Join</IonTitle>
-                </IonToolbar>
-            </IonHeader>
-            <IonContent className="ion-padding">
-                <IonGrid>
-                    <IonRow style={{ justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                        <IonCol size="12" style={{ textAlign: 'center' }}>
-                            <IonAvatar style={{ margin: '0 auto', width: '15rem', height: '15rem' }}>
-                                <IonImg
-                                    src={group?.logo || logoPlaceholder}
-                                    style={{
-                                        width: '100%',
-                                        height: '100%',
-                                        objectFit: 'cover',
-                                        borderRadius: '50%',
-                                    }}
-                                    alt="Group logo"
-                                />
-                            </IonAvatar>
-                        </IonCol>
-                    </IonRow>
+  // Handle image selection
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      const imageUrl = URL.createObjectURL(file);
+      setSelectedImage(imageUrl);
+    }
+  };
 
-                    <IonRow>
-                        <IonCol size="6">
-                            <IonCard className="member-card">
-                                <IonCardContent>
-                                    <IonAvatar className="member-avatar">
-                                        <img src={user.image} alt={memberFullname(user)} />
-                                    </IonAvatar>
-                                    <IonLabel className="member-name">{memberFullname(user)}</IonLabel>
-                                </IonCardContent>
-                            </IonCard>
-                        </IonCol>
-                        <IonCol size="6">
-                            <h5 style={{ color: 'slate' }}>Request to Join</h5>
-                            <h4>{group?.long_name || 'your group'}</h4>
-                            <small>{group?.location || ''}</small>
-                        </IonCol>
-                    </IonRow>
-                </IonGrid>
+  const handlePlaceholderClick = () => {
+    const fileInput = document.getElementById('fileInput');
+    fileInput?.click();
+  };
 
-                <IonItem lines="none">
-                    <IonTextarea
-                        label="Any other Description (optional)"
-                        rows={2}
-                        labelPlacement="stacked"
-                        placeholder=""
-                        value={form.description}
-                        onIonChange={(e) =>
-                            setForm({ ...form, description: e.detail.value! })
-                        }
-                        counter={true}
-                        maxlength={200}
-                    ></IonTextarea>
-                </IonItem>
+  // Handle form submission
+  const handleSubmit = async () => {
+    if (isFormValid && group) {
+      const formData: MemberForm = {
+        userId: user?.id ?? "",
+        groupId: group?.id ?? "",
+        firstname: userFirstname,
+        middlename: userMiddlename,
+        lastname: userLastname,
+        gender: userGender,
+        phone: userPhone,
+        image_url: userImageUrl,
+        status: group.super_admin_user_id === user?.id ? 'active' : 'pending',
+      };
 
-                <IonItem lines="none">
-                    <IonCheckbox
-                        slot="start"
-                        id="terms"
-                        checked={termsAccepted}
-                        onIonChange={(e) => setTermsAccepted(e.detail.checked)}
-                    />
-                    <IonLabel>
-                        <small>
-                            I agree with the{' '}
-                            <a href="#" className="text-blue-600 hover:underline">
-                                terms and conditions
-                            </a>
-                        </small>
-                    </IonLabel>
-                </IonItem>
+      setSubmitting(true);
+      try {
+        await addMember(formData);
+        await initializeUser(user ? user.id : "");
+        setSubmitting(false);
+        history.replace("/main/choose");
+      } catch (error) {
+        console.error("Failed to submit:", error);
+        setSubmitting(false);
+      }
+    }
+  };
 
-                <IonButton
-                    expand="full"
-                    onClick={handleSubmit}
-                    disabled={!isFormValid || isSubmitting}
-                >
-                    {isSubmitting ? <IonSpinner name="dots" /> : 'Submit'}
-                </IonButton>
-            </IonContent>
-        </IonPage>
-    );
+  return (
+    <IonPage>
+      <IonHeader>
+        <IonToolbar>
+          <IonButtons slot="start">
+            <IonBackButton defaultHref="/main/join" />
+          </IonButtons>
+          <IonTitle>Request to Join</IonTitle>
+        </IonToolbar>
+      </IonHeader>
+      <IonContent className="ion-padding">
+        <IonGrid>
+          <IonRow className="ion-justify-content-center ion-align-items-center">
+            <IonCol size="12" className="ion-text-center">
+              <IonAvatar style={{ margin: '0 auto', width: '15rem', height: '15rem' }}>
+                <IonImg
+                  src={group?.logo === 'default_logo' ? icon : group?.logo || logoPlaceholder}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    borderRadius: '50%',
+                  }}
+                  alt="Group logo"
+                />
+              </IonAvatar>
+            </IonCol>
+          </IonRow>
+
+          <IonRow>
+            {/* <IonCol size="6">
+              <IonCard className="member-card">
+                <IonCardContent>
+                  <IonAvatar className="member-avatar">
+                    <img src={user?.image || logoPlaceholder} alt={user ? memberFullname(user) : ''} />
+                  </IonAvatar>
+                  <IonLabel className="member-name">{user ? memberFullname(user) : 'Guest'}</IonLabel>
+                </IonCardContent>
+              </IonCard>
+            </IonCol> */}
+            <IonCol size="12" class='ion-text-center'>
+              <h4>{group?.long_name || 'Your Group'}</h4>
+              <small>{group?.location || 'Unknown Location'}</small>
+            </IonCol>
+          </IonRow>
+        </IonGrid>
+
+        {/* Form fields */}
+        <IonItem lines="none">
+          <IonInput
+            label="First Name"
+            labelPlacement="stacked"
+            value={userFirstname}
+            onIonChange={(e) => setUserFirstname(e.detail.value!)}
+            counter={true}
+            maxlength={50}
+          />
+        </IonItem>
+
+        <IonItem lines="none">
+          <IonInput
+            label="Middle Name"
+            labelPlacement="stacked"
+            value={userMiddlename}
+            onIonChange={(e) => setUserMiddlename(e.detail.value!)}
+            counter={true}
+            maxlength={50}
+          />
+        </IonItem>
+
+        <IonItem lines="none">
+          <IonInput
+            label="Last Name"
+            labelPlacement="stacked"
+            value={userLastname}
+            onIonChange={(e) => setUserLastname(e.detail.value!)}
+            counter={true}
+            maxlength={50}
+          />
+        </IonItem>
+
+
+        <IonItem lines="none">
+  <IonLabel position="stacked">Gender</IonLabel>
+  <IonSelect
+    value={userGender}
+    onIonChange={(e) => setUserGender(e.detail.value)}
+    placeholder="Select your gender"
+    interface="popover" // This makes the modal a popover
+  >
+    <IonSelectOption value="male">Male</IonSelectOption>
+    <IonSelectOption value="female">Female</IonSelectOption>
+    <IonSelectOption value="other">Other</IonSelectOption>
+  </IonSelect>
+</IonItem>
+
+
+        <IonItem lines="none">
+          <IonInput
+            label="Phone"
+            labelPlacement="stacked"
+            value={userPhone}
+            onIonChange={(e) => setUserPhone(e.detail.value!)}
+            counter={true}
+            maxlength={15}
+          />
+        </IonItem>
+
+        {/* Image Upload */}
+        <IonItem lines="none" onClick={handlePlaceholderClick} style={{ cursor: 'pointer' }}>
+          <IonLabel position="stacked">Tap to add Logo (white background)</IonLabel>
+          <IonImg
+            src={selectedImage || logoPlaceholder}
+            alt="Image Placeholder"
+            style={{ width: '150px', height: '150px', objectFit: 'cover' }}
+          />
+        </IonItem>
+        <input
+          id="fileInput"
+          type="file"
+          accept="image/*"
+          style={{ display: 'none' }}
+          onChange={handleImageChange}
+        />
+
+        {/* Terms Acceptance */}
+        <IonItem lines="none">
+          <IonCheckbox
+            slot="start"
+            checked={termsAccepted}
+            onIonChange={(e) => setTermsAccepted(e.detail.checked)}
+          />
+          <IonLabel>
+            <small>
+              I agree with the{' '}
+              <a href="#" className="text-blue-600 hover:underline">
+                terms and conditions
+              </a>
+            </small>
+          </IonLabel>
+        </IonItem>
+
+        {/* Description */}
+        <IonItem lines="none">
+          <IonTextarea
+            label="Description"
+            labelPlacement="stacked"
+            value={description}
+            onIonChange={(e) => setDescription(e.detail.value!)}
+          />
+        </IonItem>
+
+        {/* Submit Button */}
+        <IonButton
+          expand="full"
+          disabled={!isFormValid}
+          onClick={handleSubmit}
+          className={submitting ? 'disabled-button' : ''}
+        >
+          {submitting ? <IonSpinner name="lines" /> : 'Submit Request'}
+        </IonButton>
+      </IonContent>
+    </IonPage>
+  );
 };
 
 export default MainJoinRequest;

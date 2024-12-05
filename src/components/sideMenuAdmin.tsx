@@ -1,37 +1,61 @@
 import React, { useEffect, useState } from "react";
-import { IonContent, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonIcon, IonButton, IonNote, IonText, IonImg } from "@ionic/react";
-import { briefcase, calendar, calendarClear, heart, home, informationCircle, mail, newspaper, people, wallet, logOut, chevronForward } from "ionicons/icons";
+import {
+    IonContent,
+    IonItem,
+    IonLabel,
+    IonList,
+    IonMenu,
+    IonMenuToggle,
+    IonIcon,
+    IonButton,
+    IonNote,
+    IonText,
+    IonImg,
+} from "@ionic/react";
+import {
+    briefcase,
+    calendar,
+    calendarClear,
+    heart,
+    home,
+    informationCircle,
+    mail,
+    newspaper,
+    people,
+    wallet,
+    logOut,
+    chevronForward,
+} from "ionicons/icons";
 import { useHistory, useLocation } from "react-router-dom";
 import { getItem } from "@/utils/storage";
+import icon from "@/assets/images/icon.png";
 
 const SideMenuAdmin: React.FC = () => {
     const history = useHistory();
-    const location = useLocation();  // Get the current location
+    const location = useLocation(); // Get the current location
     const [group, setGroup] = useState<any>(null);
 
     useEffect(() => {
-        // Function to get selected group asynchronously
         const fetchGroup = async () => {
             try {
-                const selectedGroup = await getItem("selectedGroup"); // Await if getItem is async
+                const selectedGroup = await getItem("selectedGroup"); // Fetch the selected group from storage
                 setGroup(selectedGroup);
+                console.log("selectedGroup ",selectedGroup);
             } catch (error) {
                 console.error("Error fetching group:", error);
             }
         };
 
         fetchGroup();
-
-    }, [history]); // Added history to dependencies
+    }, []); // No dependencies needed since the fetch logic doesn't depend on external changes
 
     const handleLogout = () => {
-        alert("hi");
+        alert("Logging out...");
         history.replace("/login");
     };
 
     const isActive = (path: string) => location.pathname === path;
 
-    // Menu items definition
     const menuItems = [
         { title: "Dashboard", icon: home, path: "/admin/dashboard" },
         { title: "Inbox", icon: mail, path: "/admin/inbox", note: "15" },
@@ -42,23 +66,25 @@ const SideMenuAdmin: React.FC = () => {
         { title: "Calendar", icon: calendarClear, path: "/admin/calendar" },
         { title: "Members", icon: people, path: "/admin/members" },
         { title: "Executives", icon: briefcase, path: "/admin/executives" },
-        { title: "About Us", icon: informationCircle, path: "/admin/about-us" }
+        { title: "About Us", icon: informationCircle, path: "/admin/about-us" },
     ];
 
     return (
-        <IonMenu style={{background:"yellow"}} type="reveal" contentId="admin" menuId="main-menu">
+        <IonMenu style={{ background: "yellow" }} type="reveal" contentId="admin" menuId="main-menu">
             <IonContent>
-                {/* Big picture */}
+                {/* Group Logo */}
                 <IonImg
-                    src={group ? group.logo : ""}
-                    alt="Big Picture"
+                    src={group?.logo === "default_logo" || !group?.logo ? icon : group.logo}
+                    alt="Group Logo"
                     style={{
-                        padding:"5rem",
-                        width: '100%', // Or any fixed width you want, like '15rem'
-                        height: 'auto',
-                        objectFit: 'contain', // or 'cover' depending on your needs
+                        padding: "5rem",
+                        width: "100%",
+                        height: "auto",
+                        objectFit: "contain",
                     }}
                 />
+
+                {/* My Account Button */}
                 <IonList>
                     <IonMenuToggle>
                         <IonButton
@@ -67,7 +93,7 @@ const SideMenuAdmin: React.FC = () => {
                             shape="round"
                             color="dark"
                             routerLink="/member/dashboard?openMenu=true"
-                            style={{ margin: '16px' }}
+                            style={{ margin: "16px" }}
                         >
                             <IonIcon icon={chevronForward} slot="start" />
                             My Account
@@ -75,8 +101,11 @@ const SideMenuAdmin: React.FC = () => {
                     </IonMenuToggle>
                 </IonList>
 
-                <IonItem> <IonText color={"tertiary"}>Admin Office</IonText> </IonItem>
+                <IonItem>
+                    <IonText color="tertiary">Admin Office</IonText>
+                </IonItem>
 
+                {/* Menu Items */}
                 <IonList>
                     {menuItems.map((item, index) => (
                         <IonMenuToggle key={index}>
@@ -86,7 +115,7 @@ const SideMenuAdmin: React.FC = () => {
                                 routerDirection="forward"
                                 color={isActive(item.path) ? "tertiary" : ""}
                                 style={{
-                                    "--background": isActive(item.path) ? "var(--ion-color-tertiary)" : "lightgray"
+                                    "--background": isActive(item.path) ? "var(--ion-color-tertiary)" : "lightgray",
                                 }}
                             >
                                 <IonIcon icon={item.icon} slot="start" />
@@ -97,6 +126,7 @@ const SideMenuAdmin: React.FC = () => {
                     ))}
                 </IonList>
 
+                {/* Change Group and Logout Buttons */}
                 <IonList>
                     <IonMenuToggle>
                         <IonButton
@@ -104,7 +134,7 @@ const SideMenuAdmin: React.FC = () => {
                             shape="round"
                             color="tertiary"
                             routerLink="/main/choose"
-                            style={{ margin: '16px' }}
+                            style={{ margin: "16px" }}
                         >
                             <IonIcon icon={people} slot="start" />
                             Change Group
@@ -114,8 +144,8 @@ const SideMenuAdmin: React.FC = () => {
                             fill="clear"
                             shape="round"
                             color="dark"
-                            routerLink="/main/login"
-                            style={{ margin: '16px' }}
+                            onClick={handleLogout}
+                            style={{ margin: "16px" }}
                         >
                             <IonIcon icon={logOut} slot="start" />
                             Log Out

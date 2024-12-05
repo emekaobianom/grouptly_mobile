@@ -20,14 +20,16 @@ import {
   IonCol,
   IonText,
   IonAlert,
+  IonChip,
 } from '@ionic/react';
 import { useEffect, useState } from 'react';
 import { add, checkmarkCircle, closeCircle, handLeft, people, timer } from 'ionicons/icons';
 import { RouteComponentProps, useHistory } from 'react-router';
-import { GroupsWithUserGroupsAtom, initializeGroupsAtom, userAtom } from '@/store/store';
+import { GroupsWithMembersAtom, initializeGroupsAtom, userAtom } from '@/store/store';
 import { useAtom } from 'jotai';
-import { Group, UserStatus } from '@/store/interface';
-import logoPlaceholder from '@/assets/images/logo_placeholder.png';
+import { Group, Member, UserStatus } from '@/store/interface';
+import icon from '@/assets/images/icon.png';
+import { forEach } from 'cypress/types/lodash';
 
 const MainJoin: React.FC<RouteComponentProps> = ({ match }) => {
   const [user] = useAtom(userAtom);
@@ -44,7 +46,7 @@ const MainJoin: React.FC<RouteComponentProps> = ({ match }) => {
   }, [initializeGroups]);
 
   // Sample group data
-  const [groups] = useAtom(GroupsWithUserGroupsAtom);
+  const [groups] = useAtom(GroupsWithMembersAtom);
 
   const handleScroll = (event: any) => {
     const scrollTop = event.detail.scrollTop;
@@ -58,7 +60,6 @@ const MainJoin: React.FC<RouteComponentProps> = ({ match }) => {
   };
 
   const handleGroupClick = (group: Group, user_status: string) => {
-    console.log('Group clicked:', group);
     if (user_status === (UserStatus.Active || UserStatus.Rejected || UserStatus.Suspended)) {
       setAlertGreenIsOpen(true);
     } else if (user_status === UserStatus.Pending) {
@@ -69,7 +70,7 @@ const MainJoin: React.FC<RouteComponentProps> = ({ match }) => {
   };
 
   // Filter groups based on the search query
-  const filteredGroups = groups.filter(group =>
+  const filteredGroups = groups.filter((group: Group) =>
     group.long_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -106,9 +107,9 @@ const MainJoin: React.FC<RouteComponentProps> = ({ match }) => {
         {filteredGroups.map((group, index) => {
 
           let user_status: string = "";
-          user?.groups.map(ug => {
-            if (ug.group.id == group.id) {
-              user_status = ug.user_status;
+          user?.memberships.map((m: Member) => {
+            if (m.group.id == group.id) {
+              user_status = m.status;
             }
           }
           );
@@ -125,21 +126,14 @@ const MainJoin: React.FC<RouteComponentProps> = ({ match }) => {
                     <IonCol size="auto">
                       {group.logo ? (
                         <IonImg
-                                  src={group.logo}
-                                  style={{
-                                    width: '50px',
-                                    height: 'auto',
-                                    objectFit: 'contain',
-                                    borderRadius: '50%',
-                                  }}
-                                  onIonImgDidLoad={() => {
-                                    console.log('Image loaded successfully');
-                                  }}
-                                  onIonError={(e:any) => {
-                                    console.log('Failed to load image, setting fallback');
-                                    e.currentTarget.src = logoPlaceholder; // Replace with fallback
-                                  }}
-                                />
+                          src={(() => ((group.logo == "default_logo") ? icon : group.logo))()}
+                          style={{
+                            width: '50px',
+                            height: 'auto',
+                            objectFit: 'contain',
+                            borderRadius: '50%',
+                          }}
+                        />
                       ) : (
                         <IonIcon icon={people} style={{ color: 'black', fontSize: '24px' }} />
                       )}
@@ -147,8 +141,10 @@ const MainJoin: React.FC<RouteComponentProps> = ({ match }) => {
                     <IonCol>
                       <p className="bold-text">{group.long_name}</p>
                       <IonText color="medium">
-                        <small>{group.location}</small>
+                        <small>{group.location}</small><br />
                       </IonText>
+                      {(group.super_admin_user_id == user?.id) ? <IonChip color="secondary">You are super Admin</IonChip> : ""}
+
                     </IonCol>
                     <IonCol size="auto">
                       {(user_status === UserStatus.Active) && (

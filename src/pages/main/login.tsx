@@ -33,11 +33,11 @@ const Login: React.FC = () => {
   }, []);
 
   // Handle the login button click
-  const handleLogin = async () => {
+  const handleLogin = async (userId:string) => {
     setLoading(true); // Set the loading state to true
     try {
-      await initializeUser(); // Call initialize user atom
-      history.replace('/main/welcome');
+      await initializeUser(userId); // Call initialize user atom
+      history.replace('/main/choose');
     } catch (error) {
       console.error("Failed to initialize user:", error);
       setLoading(false); // Reset loading state in case of an error
@@ -77,12 +77,43 @@ const Login: React.FC = () => {
 
               {loading ? <IonSpinner name="dots"></IonSpinner> :
                 <>
+                <IonButton
+                    style={{ marginBottom: 16 }}
+                    expand="block"
+                    color="secondary"
+                    shape="round"
+                    onClick={()=>handleLogin("1")}
+                  >
+                    <IonIcon slot="start" icon={logoGoogle} />
+                    Login with Test User 1
+                  </IonButton>
+                  <IonButton
+                    style={{ marginBottom: 16 }}
+                    expand="block"
+                    color="secondary"
+                    shape="round"
+                    onClick={()=>handleLogin("2")}
+                  >
+                    <IonIcon slot="start" icon={logoGoogle} />
+                    Login with Test User 2
+                  </IonButton>
+                  <IonButton
+                    style={{ marginBottom: 16 }}
+                    expand="block"
+                    color="secondary"
+                    shape="round"
+                    onClick={()=>handleLogin("3")}
+                  >
+                    <IonIcon slot="start" icon={logoGoogle} />
+                    Login with Test User 3
+                  </IonButton>
+                {/* <hr />
                   <IonButton
                     style={{ marginBottom: 16 }}
                     expand="block"
                     color="tertiary"
                     shape="round"
-                    onClick={handleLogin}
+                    onClick={()=>handleLogin("googletestid")}
                   >
                     <IonIcon slot="start" icon={logoGoogle} />
                     Login with Google
@@ -92,11 +123,11 @@ const Login: React.FC = () => {
                     expand="block"
                     color="tertiary"
                     shape="round"
-                    onClick={handleLogin}
+                    onClick={()=>handleLogin("facebooktestid")}
                   >
                     <IonIcon slot="start" icon={logoFacebook} />
                     Login with Facebook
-                  </IonButton>
+                  </IonButton> */}
                   <IonButton
                     style={{ marginTop: '2rem' }}
                     color="light"

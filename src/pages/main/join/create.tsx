@@ -20,9 +20,9 @@ import {
   IonSpinner,
 } from '@ionic/react';
 import { RouteComponentProps, useHistory } from 'react-router-dom';
-import { addGroupAtom, initializeUserAtom } from '@/store/store';
+import { addGroupAtom, initializeUserAtom, userAtom } from '@/store/store';
 import { useAtom, useSetAtom } from 'jotai/react';
-import { Group } from '@/store/interface';
+import { Group, GroupForm } from '@/store/interface';
 
 interface MainJoinCreateProps
   extends RouteComponentProps<{
@@ -32,6 +32,7 @@ interface MainJoinCreateProps
 const MainJoinCreate: React.FC<MainJoinCreateProps> = ({ match }) => {
   const history = useHistory();
   const addGroup = useSetAtom(addGroupAtom);
+  const [user] = useAtom(userAtom);
 
   // State for form fields
   const [, initializeUser] = useAtom(initializeUserAtom);// Atom to initialize user data
@@ -74,19 +75,19 @@ const MainJoinCreate: React.FC<MainJoinCreateProps> = ({ match }) => {
   // Handle form submission
   const handleSubmit = async () => {
     if (isFormValid) {
-      const formData: Group = {
+      const formData: GroupForm = {
         long_name: groupName,
         short_name: groupAbbreviation,
         location: "Lagos",
         category: groupCategory,
-        logo: "selectedImage"
-
+        logo: "default_logo",
+        super_admin_user_id: ""
       };
 
       setSubmitting(true); // Set the submitting state to true
       try {
         await addGroup(formData);
-        await initializeUser(); // Call initialize user atom
+        await initializeUser(user?user.id:""); // Call initialize user atom
         setSubmitting(false);
         history.replace("/main/choose");
       } catch (error) {
@@ -152,6 +153,7 @@ const MainJoinCreate: React.FC<MainJoinCreateProps> = ({ match }) => {
             labelPlacement="stacked"
             value={groupCategory}
             onIonChange={(e) => setGroupCategory(e.detail.value!)}
+            interface="popover" // This makes the modal a popover
           >
             <IonSelectOption value="Professional Networking">Professional Networking</IonSelectOption>
             <IonSelectOption value="Hobby & Interests">Hobby & Interests</IonSelectOption>
@@ -179,7 +181,7 @@ const MainJoinCreate: React.FC<MainJoinCreateProps> = ({ match }) => {
         </IonItem>
 
         <IonItem lines="none" onClick={handlePlaceholderClick} style={{ cursor: 'pointer' }}>
-          <IonLabel position="stacked">Tap to add Logo (white background)</IonLabel>
+          <IonLabel position="stacked">Tap to add Picture (white background)</IonLabel>
           <IonImg
             src={selectedImage || logoPlaceholder}
             alt="Image Placeholder"
@@ -209,15 +211,15 @@ const MainJoinCreate: React.FC<MainJoinCreateProps> = ({ match }) => {
             </small>
           </IonLabel>
         </IonItem>
-        
-            <IonButton
-              expand="full"
-              onClick={handleSubmit}
-              disabled={!isFormValid || submitting}
-            >
-              {submitting ? <IonSpinner name="dots"></IonSpinner> : "Create Group"}
-            </IonButton>
-         
+
+        <IonButton
+          expand="full"
+          onClick={handleSubmit}
+          disabled={!isFormValid || submitting}
+        >
+          {submitting ? <IonSpinner name="dots"></IonSpinner> : "Create Group"}
+        </IonButton>
+
       </IonContent>
     </IonPage>
   );

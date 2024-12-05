@@ -12,7 +12,7 @@ const schema = a.schema({
       image: a.string(),
       phone: a.string(),
       fullname: a.string(),
-      groups: a.hasMany('UserGroup', 'userId'), // Link to UserGroup join table
+      memberships: a.hasMany('Member', 'userId'), // Link to Member join table
     })
     .authorization((allow) => [allow.guest()]),
 
@@ -24,30 +24,50 @@ const schema = a.schema({
       short_name: a.string(),
       location: a.string(),
       category: a.string(),
-      logo: a.string(),
-      users: a.hasMany('UserGroup', 'groupId'), // Link to UserGroup join table
+      logo: a.string().default('default_logo').required(),
+      super_admin_user_id: a.string(), //super_admin that can delete this group
+      members: a.hasMany('Member', 'groupId'), // Link to Member join table
     })
     .authorization((allow) => [allow.guest()]),
 
   // ==== USER with GROUP FEATURES ONLY =======
   //this model is used for all features uniting the user with the group like - inbox, payments
-  UserGroup: a
+  // Member Model
+  Member: a
     .model({
-      userId: a.id(),
-      groupId: a.id(),
-      user_status: a.string().default('pending').required(),//"active", "pending", "suspended","rejected"
-      status_reason: a.string(),//reason for the status [e.g when a user requests to join a group, the status will be pending]]
-      user: a.belongsTo('User', 'userId'), // Reference to the User model
-      group: a.belongsTo('Group', "groupId"), // Reference to the Group model
-      inbox: a.hasMany('Inbox', 'userGroupId'), // Link to UserGroup join table
+      userId: a.id().required(),
+      groupId: a.id().required(),
+      firstname: a.string(),
+      middlename: a.string(),
+      lastname: a.string(),
+      gender: a.string(),
+      phone: a.string(),
+      image_url: a.string(),
+      regno: a.string(),
+      role: a.string(),
+      address: a.string(),
+      status: a
+        .string()
+        .default("pending")
+        .required(), // Possible values: "active", "pending", "suspended", "rejected"
+      status_reason: a.string(), // Reason for the status
+      //-----------------------------
+      user: a.belongsTo("User", "userId"), // Relationship to User model
+      group: a.belongsTo("Group", "groupId"), // Relationship to Group model
+      inbox: a.hasMany("Inbox", "memberId"), // Relationship to Inbox
     })
+    // .identifier(["userId", "groupId"]) // Composite key for userId and groupId
+    // .secondaryIndexes((index) => [
+    //   index("userId"), // Secondary index for querying by userId
+    //   index("groupId"), // Secondary index for querying by groupId
+    // ])
     .authorization((allow) => [allow.guest()]),
   //--------------------------------------------------------------------------
 
   Inbox: a
     .model({
-      userGroupId: a.id(),
-      userGroup: a.belongsTo('UserGroup', 'userGroupId'),
+      memberId: a.id(),
+      member: a.belongsTo('Member', 'memberId'),
       from: a.string(),
       message: a.string(),
       status: a.string()
@@ -123,7 +143,7 @@ const schema = a.schema({
       location: a.string(),
       category: a.string(),
       logo: a.string(),
-      users: a.hasMany('UserGroup', 'group') // Link to UserGroup join table
+      users: a.hasMany('Member', 'group') // Link to Member join table
     })
     .authorization((allow) => [allow.guest()]),
 
@@ -132,12 +152,12 @@ const schema = a.schema({
     .model({
       name: a.string(),
       email: a.string(),
-      groups: a.hasMany('UserGroup', 'user') // Link to UserGroup join table
+      groups: a.hasMany('Member', 'user') // Link to Member join table
     })
     .authorization((allow) => [allow.owner()]),
 
-  // Define the UserGroup join model
-  UserGroup: a
+  // Define the Member join model
+  Member: a
     .model({
       userId: a.id(),
       user: a.belongsTo('User', 'userId'), // Reference to the User model

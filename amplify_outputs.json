@@ -94,11 +94,11 @@
               "isRequired": false,
               "attributes": []
             },
-            "groups": {
-              "name": "groups",
+            "memberships": {
+              "name": "memberships",
               "isArray": true,
               "type": {
-                "model": "UserGroup"
+                "model": "Member"
               },
               "isRequired": false,
               "attributes": [],
@@ -200,14 +200,21 @@
               "name": "logo",
               "isArray": false,
               "type": "String",
+              "isRequired": true,
+              "attributes": []
+            },
+            "super_admin_user_id": {
+              "name": "super_admin_user_id",
+              "isArray": false,
+              "type": "String",
               "isRequired": false,
               "attributes": []
             },
-            "users": {
-              "name": "users",
+            "members": {
+              "name": "members",
               "isArray": true,
               "type": {
-                "model": "UserGroup"
+                "model": "Member"
               },
               "isRequired": false,
               "attributes": [],
@@ -267,8 +274,8 @@
             "sortKeyFieldNames": []
           }
         },
-        "UserGroup": {
-          "name": "UserGroup",
+        "Member": {
+          "name": "Member",
           "fields": {
             "id": {
               "name": "id",
@@ -281,18 +288,81 @@
               "name": "userId",
               "isArray": false,
               "type": "ID",
-              "isRequired": false,
+              "isRequired": true,
               "attributes": []
             },
             "groupId": {
               "name": "groupId",
               "isArray": false,
               "type": "ID",
+              "isRequired": true,
+              "attributes": []
+            },
+            "firstname": {
+              "name": "firstname",
+              "isArray": false,
+              "type": "String",
               "isRequired": false,
               "attributes": []
             },
-            "user_status": {
-              "name": "user_status",
+            "middlename": {
+              "name": "middlename",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false,
+              "attributes": []
+            },
+            "lastname": {
+              "name": "lastname",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false,
+              "attributes": []
+            },
+            "gender": {
+              "name": "gender",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false,
+              "attributes": []
+            },
+            "phone": {
+              "name": "phone",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false,
+              "attributes": []
+            },
+            "image_url": {
+              "name": "image_url",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false,
+              "attributes": []
+            },
+            "regno": {
+              "name": "regno",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false,
+              "attributes": []
+            },
+            "role": {
+              "name": "role",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false,
+              "attributes": []
+            },
+            "address": {
+              "name": "address",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false,
+              "attributes": []
+            },
+            "status": {
+              "name": "status",
               "isArray": false,
               "type": "String",
               "isRequired": true,
@@ -347,7 +417,7 @@
               "association": {
                 "connectionType": "HAS_MANY",
                 "associatedWith": [
-                  "userGroupId"
+                  "memberId"
                 ]
               }
             },
@@ -369,7 +439,7 @@
             }
           },
           "syncable": true,
-          "pluralName": "UserGroups",
+          "pluralName": "Members",
           "attributes": [
             {
               "type": "model",
@@ -409,25 +479,25 @@
               "isRequired": true,
               "attributes": []
             },
-            "userGroupId": {
-              "name": "userGroupId",
+            "memberId": {
+              "name": "memberId",
               "isArray": false,
               "type": "ID",
               "isRequired": false,
               "attributes": []
             },
-            "userGroup": {
-              "name": "userGroup",
+            "member": {
+              "name": "member",
               "isArray": false,
               "type": {
-                "model": "UserGroup"
+                "model": "Member"
               },
               "isRequired": false,
               "attributes": [],
               "association": {
                 "connectionType": "BELONGS_TO",
                 "targetNames": [
-                  "userGroupId"
+                  "memberId"
                 ]
               }
             },

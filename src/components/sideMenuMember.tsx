@@ -2,28 +2,15 @@ import React, { useEffect, useState } from "react";
 import { IonContent, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonIcon, IonButton, IonNote, IonText, IonImg } from "@ionic/react";
 import { briefcase, calendar, calendarClear, heart, home, informationCircle, mail, newspaper, people, wallet, logOut, chevronForward } from "ionicons/icons";
 import { useHistory, useLocation } from "react-router-dom";
-import { getItem } from "@/utils/storage";
-import logoPlaceholder from '@/assets/images/logo_placeholder.png';
+import icon from '@/assets/images/icon.png';
+import { selectedGroupAtom } from "@/store/store";
+import { useAtom } from "jotai";
 
 const SideMenuMember: React.FC = () => {
     const history = useHistory();
     const location = useLocation();  // Get the current location
-    const [group, setGroup] = useState<any>(null);
 
-    useEffect(() => {
-        // Function to get selected group asynchronously
-        const fetchGroup = async () => {
-            try {
-                const selectedGroup = await getItem("selectedGroup"); // Await if getItem is async
-                setGroup(selectedGroup);
-            } catch (error) {
-                console.error("Error fetching group:", error);
-            }
-        };
-
-        fetchGroup();
-
-    }, [history]); // Added history to dependencies
+    const [group] = useAtom(selectedGroupAtom); // Explicit type for better clarity
 
     const handleLogout = () => {
         alert("hi");
@@ -46,24 +33,18 @@ const SideMenuMember: React.FC = () => {
         { title: "About Us", icon: informationCircle, path: "/member/about-us" }
     ];
 
+
     return (
         <IonMenu type="reveal" contentId="member" menuId="main-menu">
             <IonContent>
                 {/* Big picture */}
                 <IonImg
-                    src={group ? group.logo : ""}
+                    src={(() =>((group?.logo=="default_logo")?icon:group?.logo))()}
                     style={{
                         padding: "5rem",
                         width: '100%', // Or any fixed width you want, like '15rem'
                         height: 'auto',
                         objectFit: 'contain', // or 'cover' depending on your needs
-                    }}
-                    onIonImgDidLoad={() => {
-                        console.log('Image loaded successfully');
-                    }}
-                    onIonError={(e: any) => {
-                        console.log('Failed to load image, setting fallback');
-                        e.currentTarget.src = logoPlaceholder; // Replace with fallback
                     }}
                 />
 
