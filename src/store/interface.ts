@@ -7,7 +7,7 @@ import type { Schema } from "@/data-schema";
 // export type Member = Schema['Member']['type'];
 // export type Group = Schema['Group']['type'];
 
-//froms
+//forms
 const groupFormSelectionSet = ['long_name', 'short_name', 'location', 'category', 'logo', 'super_admin_user_id'] as const;
 export type GroupForm = SelectionSet<Schema['Group']['type'], typeof groupFormSelectionSet>
 
@@ -41,7 +41,7 @@ export interface Member {
     //-------
     userId: string;
     groupId: string;
-    firstname: string;
+    firstname?: string;
     middlename: string;
     lastname: string;
     gender: string;
@@ -51,8 +51,8 @@ export interface Member {
     role: string;
     address: string;
     status: UserStatus; // Status of the user within that 
-    group: Group;
-    user: User;
+    group?: Group;
+    user?: User;
 }
 
 

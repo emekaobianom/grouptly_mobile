@@ -13,6 +13,7 @@ import { Route, Redirect } from "react-router";
 import SideMenuAdmin from "./sideMenuAdmin";
 import AdminInbox from "@/pages/admin/inbox";
 import QuillEditorPage from "@/pages/admin/about";
+import AdminMembersDetail from "@/pages/admin/members/detail";
 
 const RouteAdmin: React.FC = () => {
 
@@ -30,7 +31,10 @@ const RouteAdmin: React.FC = () => {
         <Route path="/admin/donations-support" component={AdminDonationsSupport} exact />
         <Route path="/admin/news" component={AdminNews} exact />
         <Route path="/admin/calendar" component={AdminCalendar} exact />
+
         <Route path="/admin/members" component={AdminMembers} exact />
+        <Route path={`/admin/members/:id`} component={AdminMembersDetail} />
+
         <Route path="/admin/executives" component={AdminExecutives} exact />
         <Route path="/admin/about" component={QuillEditorPage} exact />
       </IonRouterOutlet>

@@ -47,7 +47,7 @@ const MainJoinRequest: React.FC<MainJoinRequestProps> = ({ match }) => {
   const [userFirstname, setUserFirstname] = useState('');
   const [userMiddlename, setUserMiddlename] = useState('');
   const [userLastname, setUserLastname] = useState('');
-  const [userGender, setUserGender] = useState('');
+  const [userGender, setUserGender] = useState('male');
   const [userPhone, setUserPhone] = useState('');
   const [userImageUrl, setUserImageUrl] = useState('');
   const [description, setDescription] = useState('');
@@ -63,7 +63,7 @@ const MainJoinRequest: React.FC<MainJoinRequestProps> = ({ match }) => {
       setUserFirstname(user.firstname);
       setUserMiddlename(user.middlename ?? "");
       setUserLastname(user.lastname);
-      // setUserGender(user.);
+      // setUserGender(user.gender);
       setUserPhone(user.phone ?? "");
       setUserImageUrl(user.image ?? "");
     }
@@ -289,7 +289,7 @@ const MainJoinRequest: React.FC<MainJoinRequestProps> = ({ match }) => {
           onClick={handleSubmit}
           className={submitting ? 'disabled-button' : ''}
         >
-          {submitting ? <IonSpinner name="lines" /> : 'Submit Request'}
+          {submitting ? <IonSpinner name="lines" /> : group?.super_admin_user_id === user?.id ? 'Join' : 'Submit Request'}
         </IonButton>
       </IonContent>
     </IonPage>

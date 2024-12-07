@@ -21,29 +21,34 @@ import {
   IonText,
   IonAlert,
   IonChip,
+  IonActionSheet,
 } from '@ionic/react';
 import { useEffect, useState } from 'react';
-import { add, checkmarkCircle, closeCircle, handLeft, people, timer } from 'ionicons/icons';
+import { add, checkmarkCircle, closeCircle, ellipsisVertical, handLeft, people, timer } from 'ionicons/icons';
 import { RouteComponentProps, useHistory } from 'react-router';
-import { GroupsWithMembersAtom, initializeGroupsAtom, userAtom } from '@/store/store';
-import { useAtom } from 'jotai';
+import { deleteGroupAtom, GroupsWithMembersAtom, initializeGroupsAtom, userAtom } from '@/store/store';
+import { useAtom, useSetAtom } from 'jotai';
 import { Group, Member, UserStatus } from '@/store/interface';
 import icon from '@/assets/images/icon.png';
-import { forEach } from 'cypress/types/lodash';
 
 const MainJoin: React.FC<RouteComponentProps> = ({ match }) => {
   const [user] = useAtom(userAtom);
   const history = useHistory();
+  const [actionSheetIsOpen, setActionSheetIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [alertOrangeIsOpen, setAlertOrangeIsOpen] = useState(false);
   const [alertGreenIsOpen, setAlertGreenIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState(''); // State for the search query
 
+  const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const deleteGroup = useSetAtom(deleteGroupAtom);
+
   const [, initializeGroups] = useAtom(initializeGroupsAtom);
 
   useEffect(() => {
     initializeGroups(); // Trigger initialization only once
-  }, [initializeGroups]);
+  }, []);
 
   // Sample group data
   const [groups] = useAtom(GroupsWithMembersAtom);
@@ -67,6 +72,11 @@ const MainJoin: React.FC<RouteComponentProps> = ({ match }) => {
     } else {
       history.push(`/main/join/request/${group.id}`);
     }
+  };
+
+  const openActionSheet = (group: Group) => {
+    setSelectedGroup(group); // Set the selected group
+    setActionSheetIsOpen(true); // Open the ActionSheet
   };
 
   // Filter groups based on the search query
@@ -108,44 +118,45 @@ const MainJoin: React.FC<RouteComponentProps> = ({ match }) => {
 
           let user_status: string = "";
           user?.memberships.map((m: Member) => {
-            if (m.group.id == group.id) {
+            if (m.group?.id == group.id) {
               user_status = m.status;
             }
-          }
-          );
+          });
 
           return (
             <IonCard
-              onClick={() => handleGroupClick(group, user_status)}
               style={{ cursor: 'pointer' }}
               key={index}
             >
               <IonCardContent>
                 <IonGrid>
                   <IonRow>
-                    <IonCol size="auto">
-                      {group.logo ? (
-                        <IonImg
-                          src={(() => ((group.logo == "default_logo") ? icon : group.logo))()}
-                          style={{
-                            width: '50px',
-                            height: 'auto',
-                            objectFit: 'contain',
-                            borderRadius: '50%',
-                          }}
-                        />
-                      ) : (
-                        <IonIcon icon={people} style={{ color: 'black', fontSize: '24px' }} />
-                      )}
-                    </IonCol>
-                    <IonCol>
-                      <p className="bold-text">{group.long_name}</p>
-                      <IonText color="medium">
-                        <small>{group.location}</small><br />
-                      </IonText>
-                      {(group.super_admin_user_id == user?.id) ? <IonChip color="secondary">You are super Admin</IonChip> : ""}
+                    <>
+                      <IonCol size="auto"
+                        onClick={() => handleGroupClick(group, user_status)}>
+                        {group.logo ? (
+                          <IonImg
+                            src={(() => ((group.logo == "default_logo") ? icon : group.logo))()}
+                            style={{
+                              width: '50px',
+                              height: 'auto',
+                              objectFit: 'contain',
+                              borderRadius: '50%',
+                            }}
+                          />
+                        ) : (
+                          <IonIcon icon={people} style={{ color: 'black', fontSize: '24px' }} />
+                        )}
+                      </IonCol>
+                      <IonCol onClick={() => handleGroupClick(group, user_status)}>
+                        <p className="bold-text">{group.long_name}</p>
+                        <IonText color="medium">
+                          <small>{group.location}</small><br />
+                        </IonText>
+                        {(group.super_admin_user_id == user?.id) ? <IonChip color="secondary">You are super Admin</IonChip> : ""}
 
-                    </IonCol>
+                      </IonCol>
+                    </>
                     <IonCol size="auto">
                       {(user_status === UserStatus.Active) && (
                         <IonIcon
@@ -172,6 +183,15 @@ const MainJoin: React.FC<RouteComponentProps> = ({ match }) => {
                         />
                       )}
                     </IonCol>
+                    {(user?.id == group.super_admin_user_id)
+                      ? <IonCol size="auto">
+                        <IonButton fill="clear" onClick={() => group && openActionSheet(group)}>
+                          <IonIcon icon={ellipsisVertical} />
+                        </IonButton>
+                      </IonCol>
+                      :
+                      ""
+                    }
                   </IonRow>
                 </IonGrid>
               </IonCardContent>
@@ -198,6 +218,42 @@ const MainJoin: React.FC<RouteComponentProps> = ({ match }) => {
         buttons={['Okay']}
         onDidDismiss={() => setAlertOrangeIsOpen(false)}
       ></IonAlert>
+      <IonActionSheet
+        isOpen={actionSheetIsOpen}
+        onDidDismiss={() => setActionSheetIsOpen(false)}
+        header={
+          deleting
+            ? "Leaving group..."
+            : selectedGroup?.long_name || "Unknown Group"
+        }
+        buttons={[
+          {
+            text: 'Delete this Group',
+            role: 'destructive',
+            data: { action: 'delete' },
+            handler: async () => {
+              if (!selectedGroup || !user) return; // Ensure all required fields are defined
+              setDeleting(true); // Set the submitting state to true              
+              try {
+                await deleteGroup(selectedGroup.id || "");
+                ///delete this group visually at this point
+                 // Update the visual state by filtering out the deleted group
+               groups.filter(group => group.id !== selectedGroup.id);
+                setDeleting(false);
+              } catch (error) {
+                console.error("Failed to leave group:", error);
+                setDeleting(false); // Reset submitting state in case of an error
+              }
+              return;
+            },
+          },
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            data: { action: 'cancel' },
+          },
+        ]}
+      />
     </IonPage>
   );
 };

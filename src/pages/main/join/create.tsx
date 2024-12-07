@@ -86,18 +86,19 @@ const MainJoinCreate: React.FC<MainJoinCreateProps> = ({ match }) => {
 
       setSubmitting(true); // Set the submitting state to true
       try {
-        await addGroup(formData);
-        await initializeUser(user?user.id:""); // Call initialize user atom
+        const groupId = await addGroup(formData);
+        history.replace(`/main/join/request/${groupId}`);
         setSubmitting(false);
-        history.replace("/main/choose");
       } catch (error) {
         console.error("Failed to initialize create:", error);
         setSubmitting(false); // Reset submitting state in case of an error
       }
-
-
-
     }
+
+
+    const handleGroupClick = (group: Group, user_status: string) => {      
+        
+    };
   };
 
   return (
@@ -217,7 +218,7 @@ const MainJoinCreate: React.FC<MainJoinCreateProps> = ({ match }) => {
           onClick={handleSubmit}
           disabled={!isFormValid || submitting}
         >
-          {submitting ? <IonSpinner name="dots"></IonSpinner> : "Create Group"}
+          {submitting ? <IonSpinner name="dots"></IonSpinner> : "Create & Join Group"}
         </IonButton>
 
       </IonContent>

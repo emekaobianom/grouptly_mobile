@@ -22,7 +22,7 @@ import { useState, useEffect } from 'react';
 import { initializeSelectedGroupAtom, initializeUserAtom, removeMemberAtom, userAtom } from '@/store/store';
 import { useAtom, useSetAtom } from 'jotai';
 import UserAvatar from '@/components/member/userAvatar';
-import { Member, UserStatus , User} from '@/store/interface';
+import { Member, UserStatus, User } from '@/store/interface';
 import logoPlaceholder from '@/assets/images/logo_placeholder.png';
 import icon from '@/assets/images/icon.png';
 
@@ -36,7 +36,7 @@ const Choose: React.FC = () => {
   const [user] = useAtom(userAtom);
   const [, initializeUser] = useAtom(initializeUserAtom);// Atom to initialize user data
   const [, initializeSelectedGroup] = useAtom(initializeSelectedGroupAtom);// Atom to initialize user data
-  
+
   const removeMember = useSetAtom(removeMemberAtom);
   const [loading, setLoading] = useState(false);
   const [deleting, setDeleting] = useState(false); // Atom to manage submitting state
@@ -92,18 +92,18 @@ const Choose: React.FC = () => {
 
             <IonCol size="12">
               {user?.memberships && user.memberships.length > 0 ? (
-                user.memberships.map((membership:Member) => (
+                user.memberships.map((membership: Member) => (
                   <IonCard key={membership.id} style={{ cursor: 'pointer' }}>
                     <IonCardContent className="ion-no-padding">
                       <IonGrid>
                         <IonRow>
                           <IonCol>
-                            <IonRow onClick={() => handleGroupClick(membership)}>
+                            <IonRow onClick={() => membership.group && handleGroupClick(membership)}>
                               <IonCol size="auto">
-                                {membership.group.logo ? (
+                                {membership.group?.logo ? (
                                   <IonImg
-                                    src={(() =>((membership.group.logo=="default_logo")?icon:membership.group.logo))()}
-                                   
+                                    src={(() =>
+                                      membership.group?.logo === "default_logo" ? icon : membership.group.logo)()}
                                     style={{
                                       width: '50px',
                                       height: 'auto',
@@ -120,9 +120,9 @@ const Choose: React.FC = () => {
                                 )}
                               </IonCol>
                               <IonCol>
-                                <p className="bold-text">{membership.group.long_name}</p>
+                                <p className="bold-text">{membership.group?.long_name || 'Unknown Group'}</p>
                                 <IonText color="medium">
-                                  <small>{membership.group.location}</small>
+                                  <small>{membership.group?.location || 'Unknown Location'}</small>
                                 </IonText>
                                 <br />
                                 {membership.status === UserStatus.Active && (
@@ -141,7 +141,7 @@ const Choose: React.FC = () => {
                             </IonRow>
                           </IonCol>
                           <IonCol size="auto">
-                            <IonButton fill="clear" onClick={() => openActionSheet(membership)}>
+                            <IonButton fill="clear" onClick={() => membership.group && openActionSheet(membership)}>
                               <IonIcon icon={ellipsisVertical} />
                             </IonButton>
                           </IonCol>
@@ -153,6 +153,7 @@ const Choose: React.FC = () => {
               ) : (
                 <IonText>No groups available</IonText>
               )}
+
             </IonCol>
 
             <IonCol size="12" style={{ textAlign: 'center' }}>
@@ -182,38 +183,42 @@ const Choose: React.FC = () => {
         onDidDismiss={() => setAlertIsOpen(false)}
       />
 
-      <IonActionSheet
-        isOpen={actionSheetIsOpen}
-        onDidDismiss={() => setActionSheetIsOpen(false)
+<IonActionSheet
+  isOpen={actionSheetIsOpen}
+  onDidDismiss={() => setActionSheetIsOpen(false)}
+  header={
+    deleting
+      ? "Leaving group..."
+      : selectedMembership?.group?.long_name || "Unknown Group"
+  }
+  buttons={[
+    {
+      text: 'Leave this Group',
+      role: 'destructive',
+      data: { action: 'delete' },
+      handler: async () => {
+        if (!selectedMembership || !selectedMembership.group || !user) return; // Ensure all required fields are defined
+        setDeleting(true); // Set the submitting state to true              
+        try {
+          console.log("Membership ID:", selectedMembership.id);
+          await removeMember(selectedMembership.id);
+          await initializeUser(user.id); // Call initialize user atom
+          setDeleting(false);
+          history.replace("/main/choose");
+        } catch (error) {
+          console.error("Failed to leave group:", error);
+          setDeleting(false); // Reset submitting state in case of an error
+        }
+      },
+    },
+    {
+      text: 'Cancel',
+      role: 'cancel',
+      data: { action: 'cancel' },
+    },
+  ]}
+/>
 
-        }header={deleting ? "Leaving group..." : selectedMembership?.group.long_name} 
-        buttons={[
-          {
-            text: 'Leave this Group',
-            role: 'destructive',
-            data: { action: 'delete' },
-            handler: async() => {
-              if (selectedMembership == null || user == null) return; // Ensure both user and selectedMembership are non-null
-              setDeleting(true); // Set the submitting state to true              
-              try { console.log("id ",selectedMembership)
-                await removeMember(selectedMembership.id);
-                await initializeUser(user.id); // Call initialize user atom
-                setDeleting(false);
-                history.replace("/main/choose");
-              } catch (error) {
-                console.error("Failed to initialize create:", error);
-                setDeleting(false); // Reset submitting state in case of an error
-              }
-            },
-          },
-
-          {
-            text: 'Cancel',
-            role: 'cancel',
-            data: { action: 'cancel' },
-          },
-        ]}
-      />
     </IonPage>
   );
 };

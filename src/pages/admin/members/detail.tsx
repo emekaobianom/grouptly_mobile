@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   IonButtons,
   IonHeader,
@@ -12,12 +12,18 @@ import {
   IonCol,
   IonRow,
   IonBackButton,
-  IonButton,
   IonImg,
+  IonItem,
+  IonList,
+  IonRadio,
+  IonRadioGroup,
+  IonIcon,
 } from '@ionic/react';
 import { RouteComponentProps } from 'react-router-dom';
-import { membersData } from '@/data/members_placeholder';
-import { User } from '@/store/interface';
+import { getMember, initializeMembersAtom, memberFullname, updateMemberStatusAtom, userAtom } from '@/store/store';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai/react';
+import { UserStatus } from '@/store/interface';
+import { call, man, phoneLandscape, woman } from 'ionicons/icons';
 
 interface AdminMembersDetailProps
   extends RouteComponentProps<{
@@ -25,63 +31,114 @@ interface AdminMembersDetailProps
   }> { }
 
 const AdminMembersDetail: React.FC<AdminMembersDetailProps> = ({ match }) => {
-  const [member, setItem] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [user] = useAtom(userAtom);
+  const [, initializeMembers] = useAtom(initializeMembersAtom);
+  // Retrieve the member data using the derived atom function
+  const getMemberFunc = useAtomValue(getMember);
+  const member = getMemberFunc(match.params.id);
 
-  const memberFullname = (user: User) => {
-    return user.firstname + " " + user.lastname
-  }
+  // Retrieve the function to update member status
+  const updateMemberStatusFunc = useSetAtom(updateMemberStatusAtom);
 
-  useEffect(() => {
-    const foundItem = membersData.find((data) => data.id === match.params.id);
-    setItem(foundItem || null);
-    setIsLoading(false);
+  // Handle membership status updates
+  const handleStatusUpdate = async (newStatus: UserStatus) => {
+    if (member) {
+      await updateMemberStatusFunc(match.params.id, newStatus);
+      initializeMembers();
+    }
+  };
 
-    return () => {
-      setItem(null);
-    };
-  }, [match.params.id]);
+  // Define available membership statuses
+  const membershipStatuses = [
+    {
+      id: 1,
+      description: 'Request to Join ( New Member )',
+      type: UserStatus.Pending,
+    },
+    {
+      id: 2,
+      description: 'Membership Active',
+      type: UserStatus.Active,
+    },
+    {
+      id: 3,
+      description: 'Membership Suspended',
+      type: UserStatus.Suspended,
+    },
+    {
+      id: 4,
+      description: 'Membership Rejected',
+      type: UserStatus.Rejected,
+    },
+  ];
 
   const renderContent = () => {
-    if (isLoading) {
-      return <IonText>Loading...</IonText>;
-    }
-
     if (!member) {
-      return <IonText>No member found</IonText>;
+      return (
+        <IonText color="medium">
+          <p>No member found.</p>
+        </IonText>
+      );
     }
 
     return (
-      <>
-        <IonGrid style={{ height: '100%', paddingTop: '4rem' }}>
-          <IonRow style={{ justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-            <IonCol size="12" style={{ textAlign: 'center' }}>
-              {/* Using IonAvatar to create a circular container for the image */}
-              <IonAvatar style={{ margin: '0 auto', width: '15rem', height: '15rem' }}>
-                <IonImg
-                  src={member.image}
-                  alt={memberFullname(member)}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    borderRadius: '50%',
-                  }}
-                />
-              </IonAvatar>
-              <IonText className="member-detail-name">
-                <h3>{memberFullname(member)}</h3>
-              </IonText>
+      <IonGrid style={{ height: '100%', paddingTop: '4rem' }}>
+        <IonRow
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100%',
+          }}
+        >
+          <IonCol size="12" style={{ textAlign: 'center' }}>
+            {/* Display member avatar */}
+            <IonAvatar style={{ margin: '0 auto', width: '15rem', height: '15rem' }}>
+              <IonImg
+                src={member.image_url}
+                alt={memberFullname(member)}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  borderRadius: '50%',
+                }}
+              />
+            </IonAvatar>
 
-              <IonText className="member-detail-role">
-                <p>{member.role}</p>
-              </IonText>
-            </IonCol>
+            {/* Display member name and role */}
+            <IonText className="member-detail-name">
+              <h3><IonIcon icon={(member.gender == "male") ? man : woman} slot="start" /> {memberFullname(member)}</h3>
+            </IonText>
+            <IonText className="member-detail-role">
+              <p>{member.role}</p>
+              <p> <IonIcon icon={call} slot="start" /> {member.phone}</p>
+            </IonText>
 
-          </IonRow>
-        </IonGrid>
-
-      </>
+            {/* Membership status toggles */}
+            {(user?.id !== member.userId) ?
+              <>
+                <IonList>
+                  <IonRadioGroup
+                    value={member.status} // Bind the current status
+                    onIonChange={(e) => handleStatusUpdate(e.detail.value)}
+                  >
+                    {membershipStatuses.map((detail) => (
+                      <IonItem key={detail.id} disabled={(detail.type == UserStatus.Pending)}>
+                        <IonRadio slot="start" value={detail.type} />
+                        <IonText>{detail.description}</IonText>
+                      </IonItem>
+                    ))}
+                  </IonRadioGroup>
+                </IonList>
+              </>
+              :
+              <>
+                <IonText>Me</IonText>
+              </>
+            }
+          </IonCol>
+        </IonRow>
+      </IonGrid>
     );
   };
 
@@ -90,15 +147,13 @@ const AdminMembersDetail: React.FC<AdminMembersDetailProps> = ({ match }) => {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonBackButton defaultHref="/member/members" /> {/* Reuse the back button */}
+            <IonBackButton defaultHref="/admin/members" />
           </IonButtons>
-          <IonTitle>{member ? memberFullname(member) : 'Member'}</IonTitle>
+          <IonTitle>{member ? memberFullname(member) : 'Member Details'}</IonTitle>
         </IonToolbar>
       </IonHeader>
 
-      <IonContent class="ion-padding">
-        {renderContent()}
-      </IonContent>
+      <IonContent class="ion-padding">{renderContent()}</IonContent>
     </IonPage>
   );
 };
