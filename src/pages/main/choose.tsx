@@ -15,6 +15,7 @@ import {
   IonToolbar,
   IonActionSheet,
   IonSpinner,
+  IonChip,
 } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
 import { checkmarkCircle, closeCircle, ellipsisVertical, handLeft, timer } from 'ionicons/icons';
@@ -59,12 +60,22 @@ const Choose: React.FC = () => {
     }
   };
 
-  const handleGroupClick = (membership: Member) => {
-    initializeSelectedGroup(String(membership.groupId))
-    if (membership.status === UserStatus.Active) {
-      history.push('/member/dashboard?openMenu=true');
-    } else {
-      setAlertIsOpen(true);
+  const [loadingCardId, setLoadingCardId] = useState<string | null>(null); // Track loading state for each card
+
+  const handleGroupClick = async (membership: Member) => {
+    setLoadingCardId(membership.id); // Set the current card as loading
+    try {
+      console.log("membership.groupId ", membership.group?.id);
+      await initializeSelectedGroup(String(membership.group?.id));
+      if (membership.status === UserStatus.Active) {
+        history.push('/member/dashboard?openMenu=true');
+      } else {
+        setAlertIsOpen(true);
+      }
+    } catch (error) {
+      console.error("Error navigating to group:", error);
+    } finally {
+      setLoadingCardId(null); // Reset the loading state
     }
   };
 
@@ -96,14 +107,25 @@ const Choose: React.FC = () => {
                   <IonCard key={membership.id} style={{ cursor: 'pointer' }}>
                     <IonCardContent className="ion-no-padding">
                       <IonGrid>
+
+                        {loadingCardId === membership.id ? ( // Show spinner if this card is loading
+                          <IonGrid>
+                            <IonRow>
+                              <IonCol style={{ textAlign: 'center' }}>
+                                <IonSpinner name="dots" />
+                              </IonCol>
+                            </IonRow>
+                          </IonGrid>
+                        ) : ("")}
+
                         <IonRow>
                           <IonCol>
-                            <IonRow onClick={() => membership.group && handleGroupClick(membership)}>
+                            <IonRow onClick={() => handleGroupClick(membership)}>
+                              {/* Group Logo or Placeholder */}
                               <IonCol size="auto">
-                                {membership.group?.logo ? (
+                                {membership.group?.logo && membership.group.logo !== "default_logo" ? (
                                   <IonImg
-                                    src={(() =>
-                                      membership.group?.logo === "default_logo" ? icon : membership.group.logo)()}
+                                    src={membership.group.logo}
                                     style={{
                                       width: '50px',
                                       height: 'auto',
@@ -119,27 +141,35 @@ const Choose: React.FC = () => {
                                   />
                                 )}
                               </IonCol>
+
+                              {/* Group Details */}
                               <IonCol>
                                 <p className="bold-text">{membership.group?.long_name || 'Unknown Group'}</p>
                                 <IonText color="medium">
                                   <small>{membership.group?.location || 'Unknown Location'}</small>
                                 </IonText>
                                 <br />
-                                {membership.status === UserStatus.Active && (
-                                  <IonIcon icon={checkmarkCircle} style={{ color: 'green', fontSize: '18px' }} />
-                                )}
-                                {membership.status === UserStatus.Pending && (
-                                  <IonIcon icon={timer} style={{ color: 'orange', fontSize: '18px' }} />
-                                )}
-                                {membership.status === UserStatus.Suspended && (
-                                  <IonIcon icon={handLeft} style={{ color: 'blue', fontSize: '18px' }} />
-                                )}
-                                {membership.status === UserStatus.Rejected && (
-                                  <IonIcon icon={closeCircle} style={{ color: 'darkred', fontSize: '18px' }} />
-                                )}
+                                {/* Membership Status Icon */}
+                                <IonChip color="tertiary">
+                                  <IonText>
+                                    {membership.status === UserStatus.Active && (
+                                      <IonIcon icon={checkmarkCircle} style={{ color: 'green' }} />
+                                    )}
+                                    {membership.status === UserStatus.Pending && (
+                                      <IonIcon icon={timer} style={{ color: 'orange' }} />
+                                    )}
+                                    {membership.status === UserStatus.Suspended && (
+                                      <IonIcon icon={handLeft} style={{ color: 'blue' }} />
+                                    )}
+                                    {membership.status === UserStatus.Rejected && (
+                                      <IonIcon icon={closeCircle} style={{ color: 'darkred' }} />
+                                    )}
+                                    {membership.status}</IonText></IonChip>
                               </IonCol>
                             </IonRow>
                           </IonCol>
+
+                          {/* Action Button */}
                           <IonCol size="auto">
                             <IonButton fill="clear" onClick={() => membership.group && openActionSheet(membership)}>
                               <IonIcon icon={ellipsisVertical} />
@@ -153,8 +183,8 @@ const Choose: React.FC = () => {
               ) : (
                 <IonText>No groups available</IonText>
               )}
-
             </IonCol>
+
 
             <IonCol size="12" style={{ textAlign: 'center' }}>
               <IonButton expand="block" color="light" shape="round" routerLink="/main/join">
@@ -183,41 +213,41 @@ const Choose: React.FC = () => {
         onDidDismiss={() => setAlertIsOpen(false)}
       />
 
-<IonActionSheet
-  isOpen={actionSheetIsOpen}
-  onDidDismiss={() => setActionSheetIsOpen(false)}
-  header={
-    deleting
-      ? "Leaving group..."
-      : selectedMembership?.group?.long_name || "Unknown Group"
-  }
-  buttons={[
-    {
-      text: 'Leave this Group',
-      role: 'destructive',
-      data: { action: 'delete' },
-      handler: async () => {
-        if (!selectedMembership || !selectedMembership.group || !user) return; // Ensure all required fields are defined
-        setDeleting(true); // Set the submitting state to true              
-        try {
-          console.log("Membership ID:", selectedMembership.id);
-          await removeMember(selectedMembership.id);
-          await initializeUser(user.id); // Call initialize user atom
-          setDeleting(false);
-          history.replace("/main/choose");
-        } catch (error) {
-          console.error("Failed to leave group:", error);
-          setDeleting(false); // Reset submitting state in case of an error
+      <IonActionSheet
+        isOpen={actionSheetIsOpen}
+        onDidDismiss={() => setActionSheetIsOpen(false)}
+        header={
+          deleting
+            ? "Leaving group..."
+            : selectedMembership?.group?.long_name || "Unknown Group"
         }
-      },
-    },
-    {
-      text: 'Cancel',
-      role: 'cancel',
-      data: { action: 'cancel' },
-    },
-  ]}
-/>
+        buttons={[
+          {
+            text: 'Leave this Group',
+            role: 'destructive',
+            data: { action: 'delete' },
+            handler: async () => {
+              if (!selectedMembership || !selectedMembership.group || !user) return; // Ensure all required fields are defined
+              setDeleting(true); // Set the submitting state to true              
+              try {
+                console.log("Membership ID:", selectedMembership.id);
+                await removeMember(selectedMembership.id);
+                await initializeUser(user.id); // Call initialize user atom
+                setDeleting(false);
+                history.replace("/main/choose");
+              } catch (error) {
+                console.error("Failed to leave group:", error);
+                setDeleting(false); // Reset submitting state in case of an error
+              }
+            },
+          },
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            data: { action: 'cancel' },
+          },
+        ]}
+      />
 
     </IonPage>
   );

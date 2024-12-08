@@ -49,6 +49,7 @@ export const memberFullname = (user: User | Member) => `${user.firstname} ${user
 export const initializeUserAtom = atom(
     null,
     async (get, set, id: string) => {
+        console.log("user to add ",id)
         try {
             if (!id) {
                 console.error("User ID is required to initialize the user.");
@@ -105,7 +106,7 @@ export const initializeMembersAtom = atom(
         try {
             const group = get(selectedGroupAtom);
             if (!group) throw new Error("No group selected for initializing members.");
-
+            console.log("member id ", group.id)
             const { data: members }: any = await client.models.Member.list({
                 filter: { groupId: { eq: group.id } },
                 selectionSet: [
@@ -129,11 +130,12 @@ export const initializeSelectedGroupAtom = atom(
     null,
     async (get, set, id: string) => {
         try {
+            console.log("selected 0 group",id);
             if (!id) {
                 console.error("User ID is required to initialize the user.");
                 return;
             }
-
+            console.log("selected 1 group",id);
             // Fetch user data using the provided ID
             const { data: group }: any = await client.models.Group.get(
                 { id },
@@ -144,6 +146,8 @@ export const initializeSelectedGroupAtom = atom(
                     ]
                 }
             );
+
+            console.log("selected group",group.id);
 
             if (group) {
                 // Update userAtom with fetched user data

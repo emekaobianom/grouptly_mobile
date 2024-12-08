@@ -116,7 +116,7 @@ const MainJoinCreate: React.FC<MainJoinCreateProps> = ({ match }) => {
           <IonInput
             label="Group Name (full)"
             labelPlacement="stacked"
-            placeholder="e.g Women And Men's Association Kenya Branch"
+            placeholder="e.g Apple Biscuits Community"
             value={groupName}
             onIonChange={(e) => setGroupName(e.detail.value!)}
             counter={true}
@@ -128,7 +128,7 @@ const MainJoinCreate: React.FC<MainJoinCreateProps> = ({ match }) => {
           <IonInput
             label="Group Name (abbreviation)"
             labelPlacement="stacked"
-            placeholder="e.g WAMA Kenya"
+            placeholder="e.g ABC"
             value={groupAbbreviation}
             onIonChange={(e) => setGroupAbbreviation(e.detail.value!)}
             counter={true}
@@ -138,9 +138,9 @@ const MainJoinCreate: React.FC<MainJoinCreateProps> = ({ match }) => {
 
         <IonItem lines="none">
           <IonTextarea
-            label="Description of group"
+            label="Description"
             labelPlacement="stacked"
-            placeholder="e.g We always gather to share tips on family growth."
+            placeholder="e.g a little info."
             value={groupDescription}
             onIonChange={(e) => setGroupDescription(e.detail.value!)}
             counter={true}
@@ -150,7 +150,7 @@ const MainJoinCreate: React.FC<MainJoinCreateProps> = ({ match }) => {
 
         <IonItem lines="none">
           <IonSelect
-            label="Which Category is your Group"
+            label="Which Category"
             labelPlacement="stacked"
             value={groupCategory}
             onIonChange={(e) => setGroupCategory(e.detail.value!)}

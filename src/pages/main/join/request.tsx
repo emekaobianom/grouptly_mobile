@@ -213,18 +213,18 @@ const MainJoinRequest: React.FC<MainJoinRequestProps> = ({ match }) => {
 
 
         <IonItem lines="none">
-  <IonLabel position="stacked">Gender</IonLabel>
-  <IonSelect
-    value={userGender}
-    onIonChange={(e) => setUserGender(e.detail.value)}
-    placeholder="Select your gender"
-    interface="popover" // This makes the modal a popover
-  >
-    <IonSelectOption value="male">Male</IonSelectOption>
-    <IonSelectOption value="female">Female</IonSelectOption>
-    <IonSelectOption value="other">Other</IonSelectOption>
-  </IonSelect>
-</IonItem>
+          <IonLabel position="stacked">Gender</IonLabel>
+          <IonSelect
+            value={userGender}
+            onIonChange={(e) => setUserGender(e.detail.value)}
+            placeholder="Select your gender"
+            interface="popover" // This makes the modal a popover
+          >
+            <IonSelectOption value="male">Male</IonSelectOption>
+            <IonSelectOption value="female">Female</IonSelectOption>
+            <IonSelectOption value="other">Other</IonSelectOption>
+          </IonSelect>
+        </IonItem>
 
 
         <IonItem lines="none">
@@ -232,6 +232,7 @@ const MainJoinRequest: React.FC<MainJoinRequestProps> = ({ match }) => {
             label="Phone"
             labelPlacement="stacked"
             value={userPhone}
+            type='number'
             onIonChange={(e) => setUserPhone(e.detail.value!)}
             counter={true}
             maxlength={15}
@@ -240,11 +241,20 @@ const MainJoinRequest: React.FC<MainJoinRequestProps> = ({ match }) => {
 
         {/* Image Upload */}
         <IonItem lines="none" onClick={handlePlaceholderClick} style={{ cursor: 'pointer' }}>
-          <IonLabel position="stacked">Tap to add Logo (white background)</IonLabel>
+          <IonLabel position="stacked">Tap to add profile (white background)</IonLabel>
           <IonImg
             src={selectedImage || logoPlaceholder}
             alt="Image Placeholder"
             style={{ width: '150px', height: '150px', objectFit: 'cover' }}
+          />
+        </IonItem>
+          {/* Description */}
+          <IonItem lines="none">
+          <IonTextarea
+            label="Any more info"
+            labelPlacement="stacked"
+            value={description}
+            onIonChange={(e) => setDescription(e.detail.value!)}
           />
         </IonItem>
         <input
@@ -272,15 +282,7 @@ const MainJoinRequest: React.FC<MainJoinRequestProps> = ({ match }) => {
           </IonLabel>
         </IonItem>
 
-        {/* Description */}
-        <IonItem lines="none">
-          <IonTextarea
-            label="Description"
-            labelPlacement="stacked"
-            value={description}
-            onIonChange={(e) => setDescription(e.detail.value!)}
-          />
-        </IonItem>
+      
 
         {/* Submit Button */}
         <IonButton
@@ -289,7 +291,7 @@ const MainJoinRequest: React.FC<MainJoinRequestProps> = ({ match }) => {
           onClick={handleSubmit}
           className={submitting ? 'disabled-button' : ''}
         >
-          {submitting ? <IonSpinner name="lines" /> : group?.super_admin_user_id === user?.id ? 'Join' : 'Submit Request'}
+          {submitting ? <IonSpinner name="dots" /> : group?.super_admin_user_id === user?.id ? 'Join' : 'Submit Request'}
         </IonButton>
       </IonContent>
     </IonPage>

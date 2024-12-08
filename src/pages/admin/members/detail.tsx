@@ -18,6 +18,7 @@ import {
   IonRadio,
   IonRadioGroup,
   IonIcon,
+  IonLabel,
 } from '@ionic/react';
 import { RouteComponentProps } from 'react-router-dom';
 import { getMember, initializeMembersAtom, memberFullname, updateMemberStatusAtom, userAtom } from '@/store/store';
@@ -124,8 +125,8 @@ const AdminMembersDetail: React.FC<AdminMembersDetailProps> = ({ match }) => {
                   >
                     {membershipStatuses.map((detail) => (
                       <IonItem key={detail.id} disabled={(detail.type == UserStatus.Pending)}>
-                        <IonRadio slot="start" value={detail.type} />
-                        <IonText>{detail.description}</IonText>
+                        <IonRadio role="radio" slot="start" value={detail.type}></IonRadio>
+                        <IonLabel>{detail.description}</IonLabel>
                       </IonItem>
                     ))}
                   </IonRadioGroup>
