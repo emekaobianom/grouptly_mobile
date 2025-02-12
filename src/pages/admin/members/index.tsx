@@ -5,8 +5,9 @@ import { useHistory } from 'react-router';
 import AdminMembersDetail from './detail';
 import { Member, User } from '@/store/interface';
 import UserAdminAvatar from '@/components/admin/userAvatar';
-import { getActiveMembersOfGroup, getNonActiveMembersOfGroup, initializeMembersAtom, memberFullname } from '@/store/store';
 import { useAtom } from 'jotai';
+import { getActiveMembersOfGroup, getNonActiveMembersOfGroup, initializeMembersAtom } from '@/store/atoms/memberAtoms';
+import { memberFullname } from '@/utils/simpleCases';
 
 // Main Members Component
 const AdminMembers: React.FC = () => {
@@ -101,10 +102,10 @@ const AdminMembers: React.FC = () => {
           </IonToolbar>
           <IonSegment value={segment} onIonChange={(e) => setSegment(e.detail.value as 'nonActiveMembers' | 'activeMembers')}>
             <IonSegmentButton value="nonActiveMembers">
-              <IonLabel>Not-Active (3)</IonLabel>
+              <IonLabel>Not-Active ({nonActiveMembers.length})</IonLabel>
             </IonSegmentButton>
             <IonSegmentButton value="activeMembers">
-              <IonLabel>Active (50)</IonLabel>
+              <IonLabel>Active ({activeMembers.length})</IonLabel>
             </IonSegmentButton>
           </IonSegment>
         </IonHeader>

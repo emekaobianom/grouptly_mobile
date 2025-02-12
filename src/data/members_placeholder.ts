@@ -1,9 +1,8 @@
 // Define the Member interface
 
-import { User } from "@/store/store";
 
 // Updated membersData with 'id' as string
-export const membersData: User[] = [
+export const membersData: any = [
   { id: '1', firstname: 'Emeka', lastname: 'Obianom', middlename: 'Sunday', phone:"08033806763", role: 'Chairman', image: 'https://randomuser.me/api/portraits/men/1.jpg', groups: [] },
   { id: '2', firstname: 'John', lastname: 'Doe', phone:"08033806763", role: 'Secretary', image: 'https://randomuser.me/api/portraits/men/2.jpg', groups: [] },
   { id: '3', firstname: 'Jane', lastname: 'Smith', phone:"08033806763", role: 'Treasurer', image: 'https://randomuser.me/api/portraits/women/1.jpg', groups: [] },

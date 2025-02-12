@@ -16,18 +16,24 @@ import {
   IonActionSheet,
   IonSpinner,
   IonChip,
+  IonLabel,
 } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
-import { checkmarkCircle, closeCircle, ellipsisVertical, handLeft, timer } from 'ionicons/icons';
+import { checkmarkCircle, closeCircle, ellipsisVertical, handLeft, personCircleOutline, personCircleSharp, timer } from 'ionicons/icons';
 import { useState, useEffect } from 'react';
-import { initializeSelectedGroupAtom, initializeUserAtom, removeMemberAtom, userAtom } from '@/store/store';
 import { useAtom, useSetAtom } from 'jotai';
 import UserAvatar from '@/components/member/userAvatar';
 import { Member, UserStatus, User } from '@/store/interface';
 import logoPlaceholder from '@/assets/images/logo_placeholder.png';
 import icon from '@/assets/images/icon.png';
+import { initializeSelectedGroupAtom } from '@/store/atoms/groupAtoms';
+import { removeMemberAtom } from '@/store/atoms/memberAtoms';
+import { userAtom, initializeUserAtom } from '@/store/atoms/userAtoms';
+import EmptyListIndicator from '@/components/emptyListIndicator';
+import { useAuthenticator } from '@aws-amplify/ui-react';
 
 const Choose: React.FC = () => {
+  const { signOut } = useAuthenticator((context) => [context.user]);
 
   const history = useHistory();
   const [alertIsOpen, setAlertIsOpen] = useState(false);
@@ -43,22 +49,34 @@ const Choose: React.FC = () => {
   const [deleting, setDeleting] = useState(false); // Atom to manage submitting state
 
   useEffect(() => {
-    if (!user) {
-      setLoading(false);
-      history.replace('/main/login');
-    }
-  }, [user, history, setLoading]);
+    // if (user) {
+    //   setLoading(false);
+    //   handleLogin(user.id);
+    // }
+  }, []);
 
-  const handleLogOut = async () => {
-    setLoading(true);
+  // Handle the login button click
+  const handleLogin = async (userId:string) => {
+    setLoading(true); // Set the loading state to true
     try {
-      history.replace('/main/login');
+      await initializeUser(userId); // Call initialize user atom
+      // history.replace('/main/choose');
     } catch (error) {
-      console.error('Failed to log out:', error);
-      setLoading(false);
-      setAlertIsOpen(true);
+      console.error("Failed to initialize user:", error);
+      setLoading(false); // Reset loading state in case of an error
     }
   };
+
+  // const handleLogOut = async () => {
+  //   setLoading(true);
+  //   try {
+  //     signOut();
+  //   } catch (error) {
+  //     console.error('Failed to log out:', error);
+  //     setLoading(false);
+  //     setAlertIsOpen(true);
+  //   }
+  // };
 
   const [loadingCardId, setLoadingCardId] = useState<string | null>(null); // Track loading state for each card
 
@@ -85,6 +103,16 @@ const Choose: React.FC = () => {
   };
 
   return (
+
+        // <Authenticator  socialProviders={['facebook', 'google']}>
+    <>
+    <style>
+        {`
+          .small-chip {
+          font-size:0.8rem;
+          }
+        `}
+      </style>
     <IonPage>
       <IonHeader>
         <IonToolbar>
@@ -104,43 +132,37 @@ const Choose: React.FC = () => {
             <IonCol size="12">
               {user?.memberships && user.memberships.length > 0 ? (
                 user.memberships.map((membership: Member) => (
-                  <IonCard key={membership.id} style={{ cursor: 'pointer' }}>
+                  <IonCard button={true} key={membership.id} style={{ cursor: 'pointer' }}>
                     <IonCardContent className="ion-no-padding">
                       <IonGrid>
-
-                        {loadingCardId === membership.id ? ( // Show spinner if this card is loading
-                          <IonGrid>
-                            <IonRow>
-                              <IonCol style={{ textAlign: 'center' }}>
-                                <IonSpinner name="dots" />
-                              </IonCol>
-                            </IonRow>
-                          </IonGrid>
-                        ) : ("")}
 
                         <IonRow>
                           <IonCol>
                             <IonRow onClick={() => handleGroupClick(membership)}>
                               {/* Group Logo or Placeholder */}
-                              <IonCol size="auto">
-                                {membership.group?.logo && membership.group.logo !== "default_logo" ? (
-                                  <IonImg
-                                    src={membership.group.logo}
-                                    style={{
-                                      width: '50px',
-                                      height: 'auto',
-                                      objectFit: 'contain',
-                                      borderRadius: '50%',
-                                    }}
-                                  />
-                                ) : (
-                                  <IonIcon
-                                    icon={logoPlaceholder}
-                                    className="status-icon"
-                                    style={{ color: 'black', fontSize: '18px' }}
-                                  />
-                                )}
-                              </IonCol>
+
+                              {loadingCardId === membership.id ? ( // Show spinner if this card is loading
+
+                                <IonCol size='3'>
+                                  <IonSpinner name="lines" style={{ width: '50px' }} />
+                                </IonCol>
+                              ) :
+                                <IonCol size="3">
+
+                                  {membership.group?.logo &&
+                                    <IonImg
+                                      src={(() => ((membership.group.logo == "default_logo") ? icon : membership.group.logo))()}
+                                      style={{
+                                        width: 'auto',
+                                        height: 'auto',
+                                        objectFit: 'contain',
+                                        borderRadius: '50%',
+                                      }}
+                                    />
+                                  }
+                                </IonCol>
+                              }
+
 
                               {/* Group Details */}
                               <IonCol>
@@ -150,27 +172,44 @@ const Choose: React.FC = () => {
                                 </IonText>
                                 <br />
                                 {/* Membership Status Icon */}
-                                <IonChip color="tertiary">
-                                  <IonText>
-                                    {membership.status === UserStatus.Active && (
-                                      <IonIcon icon={checkmarkCircle} style={{ color: 'green' }} />
-                                    )}
-                                    {membership.status === UserStatus.Pending && (
-                                      <IonIcon icon={timer} style={{ color: 'orange' }} />
-                                    )}
-                                    {membership.status === UserStatus.Suspended && (
-                                      <IonIcon icon={handLeft} style={{ color: 'blue' }} />
-                                    )}
-                                    {membership.status === UserStatus.Rejected && (
-                                      <IonIcon icon={closeCircle} style={{ color: 'darkred' }} />
-                                    )}
-                                    {membership.status}</IonText></IonChip>
+
+                                {membership.status === UserStatus.Active && (
+                                  <IonChip color="secondary" className='small-chip'>
+                                    <IonIcon icon={checkmarkCircle} />
+                                    <IonLabel>{membership.status}</IonLabel>
+                                  </IonChip>
+                                )}
+                                {membership.status === UserStatus.Pending && (
+                                  <IonChip color="tertiary" className='small-chip' >
+                                    <IonIcon icon={timer} />
+                                    <IonLabel>{membership.status}</IonLabel>
+                                  </IonChip>
+                                )}
+                                {membership.status === UserStatus.Suspended && (
+                                  <IonChip color="dark">
+                                    <IonIcon icon={handLeft} />
+                                    <IonLabel>{membership.status}</IonLabel>
+                                  </IonChip>
+                                )}
+                                {membership.status === UserStatus.Rejected && (
+                                  <IonChip color="danger" className='small-chip'>
+                                    <IonIcon icon={closeCircle} />
+                                    <IonLabel>{membership.status}</IonLabel>
+                                  </IonChip>
+                                )}
+
+                                {membership.group?.super_admin_user_id === user.id && (
+                                  <IonChip color="light" >
+                                    <IonIcon icon={personCircleOutline} />
+                                    {/* <IonLabel>Admin</IonLabel> */}
+                                  </IonChip>
+                                )}
                               </IonCol>
                             </IonRow>
                           </IonCol>
 
                           {/* Action Button */}
-                          <IonCol size="auto">
+                          <IonCol size="2">
                             <IonButton fill="clear" onClick={() => membership.group && openActionSheet(membership)}>
                               <IonIcon icon={ellipsisVertical} />
                             </IonButton>
@@ -181,10 +220,10 @@ const Choose: React.FC = () => {
                   </IonCard>
                 ))
               ) : (
-                <IonText>No groups available</IonText>
+                  <EmptyListIndicator pagename="groups" />
               )}
             </IonCol>
-
+            
 
             <IonCol size="12" style={{ textAlign: 'center' }}>
               <IonButton expand="block" color="light" shape="round" routerLink="/main/join">
@@ -194,8 +233,7 @@ const Choose: React.FC = () => {
                 style={{ marginTop: '2rem' }}
                 color="light"
                 shape="round"
-                routerLink="/main/login"
-                onClick={handleLogOut}
+                onClick={signOut}
               >
                 Log Out
               </IonButton>
@@ -250,6 +288,8 @@ const Choose: React.FC = () => {
       />
 
     </IonPage>
+    </>
+    // </Authenticator>
   );
 };
 

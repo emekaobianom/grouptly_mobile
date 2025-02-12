@@ -27,9 +27,11 @@ import {
   IonRow,
 } from '@ionic/react';
 import { RouteComponentProps, useHistory } from 'react-router-dom';
-import { addGroupAtom, addMemberAtom, getGroupAtom, initializeUserAtom, memberFullname, userAtom } from '@/store/store';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai/react';
 import { Group, MemberForm } from '@/store/interface';
+import { getGroupAtom } from '@/store/atoms/groupAtoms';
+import { addMemberAtom } from '@/store/atoms/memberAtoms';
+import { initializeUserAtom, userAtom } from '@/store/atoms/userAtoms';
 
 interface MainJoinRequestProps extends RouteComponentProps<{ id: string }> { }
 

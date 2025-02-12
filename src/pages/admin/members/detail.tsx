@@ -21,10 +21,12 @@ import {
   IonLabel,
 } from '@ionic/react';
 import { RouteComponentProps } from 'react-router-dom';
-import { getMember, initializeMembersAtom, memberFullname, updateMemberStatusAtom, userAtom } from '@/store/store';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai/react';
 import { UserStatus } from '@/store/interface';
 import { call, man, phoneLandscape, woman } from 'ionicons/icons';
+import { initializeMembersAtom, getMember, updateMemberStatusAtom } from '@/store/atoms/memberAtoms';
+import { userAtom } from '@/store/atoms/userAtoms';
+import { memberFullname } from '@/utils/simpleCases';
 
 interface AdminMembersDetailProps
   extends RouteComponentProps<{
@@ -124,10 +126,12 @@ const AdminMembersDetail: React.FC<AdminMembersDetailProps> = ({ match }) => {
                     onIonChange={(e) => handleStatusUpdate(e.detail.value)}
                   >
                     {membershipStatuses.map((detail) => (
-                      <IonItem key={detail.id} disabled={(detail.type == UserStatus.Pending)}>
-                        <IonRadio role="radio" slot="start" value={detail.type}></IonRadio>
-                        <IonLabel>{detail.description}</IonLabel>
+                      <IonItem disabled={(detail.type == UserStatus.Pending)}>
+                        <IonRadio slot="start" key={detail.id} value={detail.type}>
+                          {detail.description}
+                        </IonRadio>
                       </IonItem>
+                      
                     ))}
                   </IonRadioGroup>
                 </IonList>

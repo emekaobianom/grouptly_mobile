@@ -2,6 +2,8 @@ import { IonContent, IonPage, IonButton, IonText, IonCol, IonRow, IonGrid, IonIm
 import { Link, useHistory } from 'react-router-dom';
 import icon from '@/assets/images/icon.png';
 import IntroTerms from './intro_terms';
+import { useAuthenticator } from '@aws-amplify/ui-react';
+import { useEffect } from 'react';
 
 const Intro: React.FC = () => {
   const history = useHistory();
@@ -12,6 +14,16 @@ const Intro: React.FC = () => {
     // Navigate to signup page
     history.replace('/signup');
   };
+
+  //------------------- ui  ---------------------------------------------
+  const { user } = useAuthenticator((context) => [context.user]);
+
+  useEffect(() => {
+    if (user) {
+      console.log("user ", user)
+    }
+  }, [user]);
+  //----------------------------------------------------------------------
 
   return (
     <IonPage>

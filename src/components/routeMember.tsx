@@ -37,7 +37,7 @@ const RouteMember: React.FC = () => {
         <Route path={`/member/inbox/:id`} component={MemberInboxDetail} />
 
         <Route path="/member/payments" component={MemberPayments} exact />
-        <Route exact={true} path={`/member/payments/history`} component={MemberPaymentsHistory} />
+        <Route path={`/member/payments/history`} component={MemberPaymentsHistory} exact />
         <Route path={`/member/payments/history/:id`} component={MemberPaymentsHistoryDetail} exact={true} />
 
         <Route path="/member/meetings-events" component={MemberMeetingsEvents} exact />

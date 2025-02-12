@@ -7,7 +7,7 @@ const SideMenuBtn: React.FC = () => {
     return (
         <IonFab horizontal="start" vertical="bottom" slot="fixed">
             <IonFabButton>
-                <IonMenuButton><IonIcon aria-hidden="true" icon={grid} /></IonMenuButton>
+                <IonMenuButton><IonIcon icon={grid} /></IonMenuButton>
             </IonFabButton>
         </IonFab>
     );

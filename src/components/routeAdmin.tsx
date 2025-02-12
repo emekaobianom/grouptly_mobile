@@ -14,6 +14,7 @@ import SideMenuAdmin from "./sideMenuAdmin";
 import AdminInbox from "@/pages/admin/inbox";
 import QuillEditorPage from "@/pages/admin/about";
 import AdminMembersDetail from "@/pages/admin/members/detail";
+import AdminPaymentsCategory from "@/pages/admin/payments/category";
 
 const RouteAdmin: React.FC = () => {
 
@@ -24,9 +25,13 @@ const RouteAdmin: React.FC = () => {
 
         {/* admin */}
         <Route path="/admin/dashboard" component={AdminDashboard} exact />
+        
         <Route path="/admin/inbox" component={AdminInbox} exact />
         <Route path={`/admin/inbox/:id`} component={AdminInboxDetail} exact />
+
         <Route path="/admin/payments" component={AdminPayments} exact />
+        <Route path={`/admin/payments/category/:id`} component={AdminPaymentsCategory} exact />
+
         <Route path="/admin/meetings-events" component={AdminMeetingsEvents} exact />
         <Route path="/admin/donations-support" component={AdminDonationsSupport} exact />
         <Route path="/admin/news" component={AdminNews} exact />

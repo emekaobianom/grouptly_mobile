@@ -65,9 +65,27 @@ export interface Group {
     logo: string;
     super_admin_user_id: string; //super_admin that can delete this group
     members: Member[];
+    paycategories:PayCategory[];
+}
+
+export interface PayCategory {
+    id: string;
+    name: string;
+    description: string;
+    payitems:PayItem[];
 }
 
 
+export interface PayItem {
+    id: string;
+    payId: string; //code identifier
+    title: string;
+    description: string;
+    status: string; //open,closed for payment
+    paymentType:string; //perMember, freeDonation
+    groupId: string;
+    paycategoryId: string;
+}
 
 // Interface representing a message in a group
 export interface Message {

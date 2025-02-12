@@ -25,11 +25,11 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { menuController } from '@ionic/core/components';
 import SideMenuBtn from '../../../components/sideMenuBtn';
 import './dashboard.css';
-import { getItem } from '@/utils/storage';
+// import { getItem } from '@/utils/storage';
 import { calendar, chevronForward } from 'ionicons/icons';
 import UserAvatar from '@/components/member/userAvatar';
-import { userAtom } from '@/store/store';
 import { useAtom } from 'jotai';
+import { userAtom } from '@/store/atoms/userAtoms';
 
 const MemberDashboard: React.FC = () => {
   const [{ image , fullname, role}]:any = useAtom(userAtom);
@@ -46,8 +46,8 @@ const MemberDashboard: React.FC = () => {
     // Function to get selected group asynchronously
     const fetchGroup = async () => {
       try {
-        const selectedGroup = await getItem("selectedGroup"); // Await if getItem is async
-        setGroup(selectedGroup);
+        // const selectedGroup = await getItem("selectedGroup"); // Await if getItem is async
+        setGroup(null);
       } catch (error) {
         console.error("Error fetching group:", error);
       }

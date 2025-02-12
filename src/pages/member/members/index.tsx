@@ -1,28 +1,32 @@
-import React, { useState } from 'react';
-import { IonPage, IonHeader, IonContent, IonSearchbar, IonGrid, IonRow, IonCol, IonAvatar, IonCard, IonCardContent, IonItem, IonLabel, IonToolbar, IonSegment, IonSegmentButton, IonText, IonTitle, IonImg } from '@ionic/react';
+import React, { useEffect, useState } from 'react';
+import { IonPage, IonHeader, IonContent, IonSearchbar, IonGrid, IonRow, IonCol, IonAvatar, IonCard, IonCardContent, IonItem, IonLabel, IonToolbar, IonSegment, IonSegmentButton, IonText, IonTitle, IonImg, IonBackButton, IonButtons } from '@ionic/react';
 import './Members.css';
 import { membersData } from '@/data/members_placeholder';
 import { useHistory } from 'react-router';
 import MemberMembersDetail from './detail';
 import SideMenuBtn from '@/components/sideMenuBtn';
 import UserAvatar from '@/components/member/userAvatar';
-import { User } from '@/store/store';
+import { Member, User } from '@/store/interface';
+import members from '@/pages/admin/members';
+import { getExecutiveMembersOfGroup, getMembersOfGroup, initializeMembersAtom } from '@/store/atoms/memberAtoms';
+import { memberFullname } from '@/utils/simpleCases';
+import { useAtom } from 'jotai';
+import UserAdminAvatar from '@/components/member/userAvatar';
 
 // Main Members Component
 const MemberMembers: React.FC = () => {
-  const [segment, setSegment] = useState<'members' | 'executives'>('members'); // State for segment
+
+  const [segment, setSegment] = useState<'executiveMembers' | 'members'>('members'); // State for segment
   const [searchText, setSearchText] = useState(''); // State for search text
   const history = useHistory();
-  
-  const memberFullname = (user: User) => {
-    return user.firstname + " " + user.lastname
-  }
 
-  // Function to get records with roles other than 'member'
-  function getNonMemberRecords(members: User[]) {
-    return members.filter((member) => member.role !== 'member');
-  }
-  const executives = getNonMemberRecords(membersData);
+  const [, initializeMembers] = useAtom(initializeMembersAtom);
+  const [members] = useAtom(getMembersOfGroup);
+  const [executiveMembers] = useAtom(getExecutiveMembersOfGroup);
+
+  useEffect(() => {
+    initializeMembers(); // Trigger initialization only once
+  }, []);
 
   // Handle pull-to-refresh event
   const handleRefresh = (event: CustomEvent) => {
@@ -31,28 +35,23 @@ const MemberMembers: React.FC = () => {
     }, 2000);
   };
 
-  // Filter members based on search input
-  const filteredMembers = membersData.filter(member =>
-    member.lastname.toLowerCase().includes(searchText.toLowerCase())
-  );
-
   // Member Section
   const memberSection = () => (
     <>
       <IonSearchbar
-      className='ion-padding'
+        className='ion-padding'
         value={searchText}
         onIonInput={e => setSearchText(e.detail.value!)}
         placeholder="Search by name"
       />
       <IonGrid>
         <IonRow>
-          {filteredMembers.map((member, index) => (
+          {members.map((member: Member, index) => (
             <IonCol size="6" key={index}>
-              <IonCard className="member-card" routerLink={`/member/members/${member.id}`}>
+              <IonCard className="member-card" routerLink={`/admin/members/${member.id}`}>
                 <IonCardContent>
                   <IonAvatar className="member-avatar">
-                    <img src={member.image} alt={memberFullname(member)} />
+                    <img src={member.image_url} alt={memberFullname(member)} />
                   </IonAvatar>
                   <IonLabel className="member-name">{memberFullname(member)}</IonLabel>
                 </IonCardContent>
@@ -65,16 +64,23 @@ const MemberMembers: React.FC = () => {
   );
 
   // Executive Section
-  const executiveSection = () => (
-    <IonGrid>
-      {executives.map((executive) => (
-        <IonRow key={executive.id} className="ion-margin">
-          <IonCol size="12" className="ion-text-center" onClick={() => { history.push(`/member/members/${executive.id}`); }}>
-            {/* Profile Image */}
-            <IonAvatar style={{ margin: '0 auto', width: '10rem', height: '10rem' }}>
+  const executiveMemberSection = () => (
+    <>
+      {/* <IonSearchbar
+        className='ion-padding'
+        value={searchText}
+        onIonInput={e => setSearchText(e.detail.value!)}
+        placeholder="Search by name"
+      /> */}
+      <IonGrid>
+        {executiveMembers.map((executive) => (
+          <IonRow key={executive.id} className="ion-margin">
+            <IonCol size="12" className="ion-text-center" onClick={() => { history.push(`/member/members/${executive.id}`); }}>
+              {/* Profile Image */}
+              <IonAvatar style={{ margin: '0 auto', width: '10rem', height: '10rem' }}>
                 <IonImg
-                  src={executive.image} 
-                  alt={memberFullname(executive)} 
+                  src={executive.image_url}
+                  alt={memberFullname(executive)}
                   style={{
                     width: '100%',
                     height: '100%',
@@ -83,47 +89,53 @@ const MemberMembers: React.FC = () => {
                   }}
                 />
               </IonAvatar>
-            {/* Executive Name */}
-            <IonText className="executive-name">
-              <h3>{memberFullname(executive)} </h3>
-            </IonText>
-            {/* Executive Role */}
-            <IonText className="executive-role">
-              <p>{executive.role}</p>
-            </IonText>
-          </IonCol>
-        </IonRow>
-      ))}
-    </IonGrid>
+              {/* Executive Name */}
+              <IonText className="executive-name">
+                <h3>{memberFullname(executive)} </h3>
+              </IonText>
+              {/* Executive Role */}
+              <IonText className="executive-role">
+                <p>{executive.role}</p>
+              </IonText>
+            </IonCol>
+          </IonRow>
+        ))}
+      </IonGrid>
+    </>
   );
 
   return (
-    <>
-      <IonPage>
-        <IonHeader>
-          <IonToolbar>
-            <IonTitle>Members</IonTitle>
-            <UserAvatar/>
-          </IonToolbar>
-          <IonSegment value={segment} onIonChange={(e) => setSegment(e.detail.value as 'members' | 'executives')}>
-            <IonSegmentButton value="members">
-              <IonLabel>Members</IonLabel>
-            </IonSegmentButton>
-            <IonSegmentButton value="executives">
-              <IonLabel>Executives</IonLabel>
-            </IonSegmentButton>
-          </IonSegment>
-        </IonHeader>
+  <>
+    <IonPage>
+      <IonHeader>
+        <IonToolbar>
+          {/* <IonButtons slot="start">
+            <IonBackButton defaultHref='/admin/dashboard' />
+          </IonButtons> */}
+          <IonTitle>Members</IonTitle>
+          <UserAdminAvatar />
+        </IonToolbar>
+        <IonSegment value={segment} onIonChange={(e) => setSegment(e.detail.value as 'executiveMembers' | 'members')}>
+        <IonSegmentButton value="members">
+            <IonLabel>Members ({members.length})</IonLabel>
+          </IonSegmentButton>
+          <IonSegmentButton value="executiveMembers">
+            <IonLabel>Executives ({executiveMembers.length})</IonLabel>
+          </IonSegmentButton>
+         
+        </IonSegment>
+      </IonHeader>
 
-        <IonContent className='ion-padding-vertical'>
-          {/* Render based on the selected segment */}
-          {segment === 'members' ? memberSection() : executiveSection()}
-        </IonContent>
 
-        <SideMenuBtn />
-      </IonPage>
-    </>
-  );
+      <IonContent className='ion-padding-vertical'>
+        {/* Render based on the selected segment */}
+        {segment === 'executiveMembers' ? executiveMemberSection() : memberSection()}
+      </IonContent>
+
+      <SideMenuBtn />
+    </IonPage>
+  </>
+);
 };
 
 export default MemberMembers;

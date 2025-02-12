@@ -3,17 +3,20 @@ import { IonContent, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonIcon
 import { briefcase, calendar, calendarClear, heart, home, informationCircle, mail, newspaper, people, wallet, logOut, chevronForward } from "ionicons/icons";
 import { useHistory, useLocation } from "react-router-dom";
 import icon from '@/assets/images/icon.png';
-import { selectedGroupAtom } from "@/store/store";
 import { useAtom } from "jotai";
+import { userAtom } from "@/store/atoms/userAtoms";
+import { selectedGroupAtom } from "@/store/atoms/groupAtoms";
+import { useAuthenticator } from "@aws-amplify/ui-react";
 
 const SideMenuMember: React.FC = () => {
+  const { signOut } = useAuthenticator((context) => [context.user]);
     const history = useHistory();
     const location = useLocation();  // Get the current location
 
+    const [user] = useAtom(userAtom);
     const [group] = useAtom(selectedGroupAtom); // Explicit type for better clarity
 
     const handleLogout = () => {
-        alert("hi");
         history.replace("/login");
     };
 
@@ -39,7 +42,7 @@ const SideMenuMember: React.FC = () => {
             <IonContent>
                 {/* Big picture */}
                 <IonImg
-                    src={(() =>((group?.logo=="default_logo")?icon:group?.logo))()}
+                    src={(() => ((group?.logo == "default_logo") ? icon : group?.logo))()}
                     style={{
                         padding: "5rem",
                         width: '100%', // Or any fixed width you want, like '15rem'
@@ -48,22 +51,25 @@ const SideMenuMember: React.FC = () => {
                     }}
                 />
 
-                <IonList>
-                    <IonMenuToggle>
-                        <IonButton
-                            fill="outline"
-                            expand="full"
-                            shape="round"
-                            color="dark"
-                            // routerLink="/admin/dashboard?openMenu=true"
-                            routerLink="/admin/dashboard"
-                            style={{ margin: '16px' }}
-                        >
-                            <IonIcon icon={chevronForward} slot="start" />
-                            Admin Office
-                        </IonButton>
-                    </IonMenuToggle>
-                </IonList>
+                {(user?.id == group?.super_admin_user_id) ?
+                    <IonList>
+                        <IonMenuToggle>
+                            <IonButton
+                                fill="outline"
+                                expand="full"
+                                shape="round"
+                                color="dark"
+                                // routerLink="/admin/dashboard?openMenu=true"
+                                routerLink="/admin/dashboard"
+                                style={{ margin: '16px' }}
+                            >
+                                <IonIcon icon={chevronForward} slot="start" />
+                                <IonLabel>Admin Office</IonLabel>
+                            </IonButton>
+                        </IonMenuToggle>
+                    </IonList>
+                    : ""
+                }
 
                 <IonItem> <IonText color={"tertiary"}>My Account</IonText> </IonItem>
 
@@ -101,7 +107,7 @@ const SideMenuMember: React.FC = () => {
                             fill="clear"
                             shape="round"
                             color="dark"
-                            routerLink="/main/login"
+                            onClick={signOut}
                             style={{ margin: '16px' }}
                         >
                             <IonIcon icon={logOut} slot="start" />

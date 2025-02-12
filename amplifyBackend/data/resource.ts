@@ -2,6 +2,7 @@ import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 
 const schema = a.schema({
 
+  //------------------FOUNDATION----------------------------------
   // Define the User model
   User: a
     .model({
@@ -12,9 +13,10 @@ const schema = a.schema({
       image: a.string(),
       phone: a.string(),
       fullname: a.string(),
+      //----------------
       memberships: a.hasMany('Member', 'userId'), // Link to Member join table
     })
-    .authorization((allow) => [allow.guest()]),
+    .authorization(allow => [allow.authenticated()]),
 
 
   // ==== GROUP FEATURES ONLY
@@ -26,9 +28,12 @@ const schema = a.schema({
       category: a.string(),
       logo: a.string().default('default_logo').required(),
       super_admin_user_id: a.string(), //super_admin that can delete this group
+      //------------------
       members: a.hasMany('Member', 'groupId'), // Link to Member join table
+      paycategories: a.hasMany("PayCategory", "groupId"), // Relationship to Inbox
+      payitems: a.hasMany("PayItem", "groupId"), // Relationship to Inbox
     })
-    .authorization((allow) => [allow.guest()]),
+    .authorization(allow => [allow.authenticated()]),
 
   // ==== USER with GROUP FEATURES ONLY =======
   //this model is used for all features uniting the user with the group like - inbox, payments
@@ -54,15 +59,88 @@ const schema = a.schema({
       //-----------------------------
       user: a.belongsTo("User", "userId"), // Relationship to User model
       group: a.belongsTo("Group", "groupId"), // Relationship to Group model
-      inbox: a.hasMany("Inbox", "memberId"), // Relationship to Inbox
+      //--------------------------------------------
+      transactions: a.hasMany("Transaction", "memberId"), // Relationship to Inbox
+      pledges: a.hasMany("Pledge", "memberId"), // Relationship to Transaction
+      inboxes: a.hasMany("Inbox", "memberId"), // Relationship to Inbox
     })
     // .identifier(["userId", "groupId"]) // Composite key for userId and groupId
     // .secondaryIndexes((index) => [
     //   index("userId"), // Secondary index for querying by userId
     //   index("groupId"), // Secondary index for querying by groupId
     // ])
-    .authorization((allow) => [allow.guest()]),
-  //--------------------------------------------------------------------------
+    .authorization(allow => [allow.authenticated()]),
+
+  //---------------------------PAYMENTS-----------------------------------------------
+  PayCategory: a
+  .model({
+    name: a.string(),
+    description: a.string(),
+    groupId: a.id(),
+    //----------------------------
+    group: a.belongsTo('Group', 'groupId'),
+    //----------------------------
+    payitems: a.hasMany("PayItem", "paycategoryId"), // Relationship to PayItem
+  })
+  .authorization(allow => [allow.authenticated()]),
+
+  PayItem: a
+  .model({
+    payId: a.string(), //code identifier
+    title: a.string(),
+    description: a.string(),
+    status: a.string(), //open,closed for payment
+    paymentType:a.string(), //perMember, freeDonation
+    groupId: a.id(),
+    paycategoryId: a.id(),
+    //---------------------------------
+    totalPledged:a.integer(),
+    totalPaid: a.integer(),
+    //----------------------------------------
+    group: a.belongsTo('Group', 'groupId'),
+    paycategory: a.belongsTo('PayCategory', 'paycategoryId'),
+    //-----------------------------------------------------
+    transactions: a.hasMany("Transaction", "payitemId"), // Relationship to Transaction
+    pledges: a.hasMany("Pledge", "payitemId"), // Relationship to Transaction
+  })
+  .authorization(allow => [allow.authenticated()]),
+
+  Transaction: a
+  .model({
+    amount: a.string(),
+    member_fullname:  a.string(),
+    //---------
+    memberId: a.id(),
+    payitemId: a.id(),
+    pledgeId: a.id(),
+    //-------------
+    // createdDate
+    //-------------------
+    member: a.belongsTo('Member', 'memberId'),
+    payitem: a.belongsTo('PayItem', 'payitemId'),
+    pledge: a.belongsTo('Pledge', 'pledgeId'),
+  })
+  .authorization(allow => [allow.authenticated()]),
+
+  
+  Pledge: a
+  .model({
+    amount: a.string(),
+    member_fullname:  a.string(),
+    //---------
+    memberId: a.id(),
+    payitemId: a.id(),
+    //---------------
+    // createdDate
+    //----------------------------------
+    member: a.belongsTo('Member', 'memberId'),
+    payitem: a.belongsTo('PayItem', 'payitemId'),
+    //-----------------    
+    transactions: a.hasMany("Transaction", "pledgeId"), // Relationship to Transaction
+  })
+  .authorization(allow => [allow.authenticated()]),
+
+  //----------------------------------------------------------------------------------
 
   Inbox: a
     .model({
@@ -72,10 +150,8 @@ const schema = a.schema({
       message: a.string(),
       status: a.string()
     })
-    .authorization((allow) => [allow.guest()]),
-
+    .authorization(allow => [allow.authenticated()]),
 });
-
 
 
 export type Schema = ClientSchema<typeof schema>;
@@ -83,7 +159,7 @@ export type Schema = ClientSchema<typeof schema>;
 export const data = defineData({
   schema,
   authorizationModes: {
-    defaultAuthorizationMode: 'iam',
+    defaultAuthorizationMode: 'userPool',
   },
 });
 
@@ -145,7 +221,7 @@ const schema = a.schema({
       logo: a.string(),
       users: a.hasMany('Member', 'group') // Link to Member join table
     })
-    .authorization((allow) => [allow.guest()]),
+    .authorization(allow => [allow.authenticated()]),
 
   // Define the User model
   User: a

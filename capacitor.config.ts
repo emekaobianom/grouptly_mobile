@@ -1,10 +1,17 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
+  appId: 'com.example.grouptly',
   appName: 'Grouptly',
   webDir: 'dist',
+  bundledWebRuntime: false,
+  server: {
+    androidScheme: 'https'  // Optional for Android
+  },
   plugins: {
+    App: {
+      preferNative: true
+    },
     SplashScreen: {
       launchShowDuration: 2000,
       launchAutoHide: true,
@@ -22,6 +29,11 @@ const config: CapacitorConfig = {
       useDialog: true,
     },
   },
+  cordova: {
+    preferences: {
+      'AndroidLaunchMode': 'singleTask' // Ensures deep linking works properly
+    }
+  }
 };
 
 export default config;

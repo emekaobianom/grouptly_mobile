@@ -20,9 +20,10 @@ import {
   IonSpinner,
 } from '@ionic/react';
 import { RouteComponentProps, useHistory } from 'react-router-dom';
-import { addGroupAtom, initializeUserAtom, userAtom } from '@/store/store';
 import { useAtom, useSetAtom } from 'jotai/react';
 import { Group, GroupForm } from '@/store/interface';
+import { addGroupAtom } from '@/store/atoms/groupAtoms';
+import { userAtom, initializeUserAtom } from '@/store/atoms/userAtoms';
 
 interface MainJoinCreateProps
   extends RouteComponentProps<{

@@ -22,14 +22,17 @@ import {
   IonAlert,
   IonChip,
   IonActionSheet,
+  IonLabel,
 } from '@ionic/react';
 import { useEffect, useState } from 'react';
-import { add, checkmarkCircle, closeCircle, ellipsisVertical, handLeft, people, timer } from 'ionicons/icons';
+import { add, checkmarkCircle, closeCircle, ellipsisVertical, handLeft, people, personCircleOutline, timer } from 'ionicons/icons';
 import { RouteComponentProps, useHistory } from 'react-router';
-import { deleteGroupAtom, GroupsWithMembersAtom, initializeGroupsAtom, userAtom } from '@/store/store';
 import { useAtom, useSetAtom } from 'jotai';
 import { Group, Member, UserStatus } from '@/store/interface';
 import icon from '@/assets/images/icon.png';
+import { initializeGroupsAtom } from '@/store/atoms/groupAtoms';
+import { deleteGroupAtom, GroupsWithMembersAtom } from '@/store/atoms/memberAtoms';
+import { userAtom } from '@/store/atoms/userAtoms';
 
 const MainJoin: React.FC<RouteComponentProps> = ({ match }) => {
   const [user] = useAtom(userAtom);
@@ -134,7 +137,7 @@ const MainJoin: React.FC<RouteComponentProps> = ({ match }) => {
                     <>
                       <IonCol size="auto"
                         onClick={() => handleGroupClick(group, user_status)}>
-                        {group.logo ? (
+                        {group.logo &&
                           <IonImg
                             src={(() => ((group.logo == "default_logo") ? icon : group.logo))()}
                             style={{
@@ -143,17 +146,19 @@ const MainJoin: React.FC<RouteComponentProps> = ({ match }) => {
                               objectFit: 'contain',
                               borderRadius: '50%',
                             }}
-                          />
-                        ) : (
-                          <IonIcon icon={people} style={{ color: 'black', fontSize: '24px' }} />
-                        )}
+                          />}
                       </IonCol>
                       <IonCol onClick={() => handleGroupClick(group, user_status)}>
                         <p className="bold-text">{group.long_name}</p>
                         <IonText color="medium">
                           <small>{group.location}</small><br />
                         </IonText>
-                        {(group.super_admin_user_id == user?.id) ? <IonChip color="secondary">You are super Admin</IonChip> : ""}
+                        {(group.super_admin_user_id == user?.id) &&
+                          <IonChip color="dark">
+                            <IonIcon icon={personCircleOutline} />
+                            <IonLabel>Admin</IonLabel>
+                          </IonChip>
+                        }
 
                       </IonCol>
                     </>
@@ -183,14 +188,13 @@ const MainJoin: React.FC<RouteComponentProps> = ({ match }) => {
                         />
                       )}
                     </IonCol>
-                    {(user?.id == group.super_admin_user_id)
-                      ? <IonCol size="auto">
+                    {
+                      (user?.id == group.super_admin_user_id)
+                      && <IonCol size="auto">
                         <IonButton fill="clear" onClick={() => group && openActionSheet(group)}>
                           <IonIcon icon={ellipsisVertical} />
                         </IonButton>
                       </IonCol>
-                      :
-                      ""
                     }
                   </IonRow>
                 </IonGrid>
@@ -237,8 +241,8 @@ const MainJoin: React.FC<RouteComponentProps> = ({ match }) => {
               try {
                 await deleteGroup(selectedGroup.id || "");
                 ///delete this group visually at this point
-                 // Update the visual state by filtering out the deleted group
-               groups.filter(group => group.id !== selectedGroup.id);
+                // Update the visual state by filtering out the deleted group
+                groups.filter(group => group.id !== selectedGroup.id);
                 setDeleting(false);
               } catch (error) {
                 console.error("Failed to leave group:", error);

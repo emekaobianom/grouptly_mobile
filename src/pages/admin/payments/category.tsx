@@ -8,67 +8,69 @@ import { useHistory } from 'react-router';
 import { addOutline, cashOutline, ellipsisVertical } from 'ionicons/icons';
 import { useState } from 'react';
 import { useAtom, useSetAtom } from 'jotai';
-import { PayCategory, UserStatus } from '@/store/interface';
-import { initializeSelectedGroupAtom, selectedGroupAtom } from '@/store/atoms/groupAtoms';
-import { addPayCategoryAtom, initializeSelectedPayCategoryAtom, removePayCategoryAtom, updatePayCategoryAtom } from '@/store/atoms/paymentAtom';
+import { PayItem, UserStatus } from '@/store/interface';
+import { addPayItemAtom, initializeSelectedPayCategoryAtom, initializeSelectedPayItemAtom, removePayItemAtom, selectedPayCategoryAtom, updatePayItemAtom } from '@/store/atoms/paymentAtom';
 import EmptyListIndicator from '@/components/emptyListIndicator';
 
-const AdminPayments: React.FC = () => {
+type PayItemForm = Pick<PayItem, "id" | "title" | "description">;
+
+const AdminPaymentCategory: React.FC = () => {
   const history = useHistory();
-  const [group] = useAtom(selectedGroupAtom);
+  const [paycategory] = useAtom(selectedPayCategoryAtom);
+
 
   // State for modal management
   const [deleting, setDeleting] = useState(false);
   const [actionSheetIsOpen, setActionSheetIsOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
-  const [selectedPayCat, setSelectedPayCat] = useState<Omit<PayCategory, "payitems"> | null>(null);
-  const [editCategory, setEditCategory] = useState<Omit<PayCategory, "payitems"> | null>(null);
+  const [selectedPayItem, setSelectedPayItem] = useState<PayItemForm | null>(null);
+  const [editPayItem, setEditPayItem] = useState<PayItemForm | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [, initializeSelectedGroup] = useAtom(initializeSelectedGroupAtom);
-  const addPayCategory = useSetAtom(addPayCategoryAtom);
-  const updatePayCategory = useSetAtom(updatePayCategoryAtom);
-  const removePayCategory = useSetAtom(removePayCategoryAtom);
+  const [, initializeSelectedPayCategory] = useAtom(initializeSelectedPayCategoryAtom);
+  const addPayItem = useSetAtom(addPayItemAtom);
+  const updatePayItem = useSetAtom(updatePayItemAtom);
+  const removePayItem = useSetAtom(removePayItemAtom);
 
   // Form fields
-  const categoryName = editCategory?.name || '';
-  const categoryDescription = editCategory?.description || '';
-  const isFormValid = categoryName.trim() !== '' && categoryDescription.trim() !== '';
+  const itemTitle = editPayItem?.title || '';
+  const itemDescription = editPayItem?.description || '';
+  const isFormValid = itemTitle.trim() !== '' && itemDescription.trim() !== '';
 
-  const openActionSheet = (paycat: Omit<PayCategory, "payitems">) => {
-    setSelectedPayCat(paycat);
+  const openActionSheet = (payitem: PayItemForm) => {
+    setSelectedPayItem(payitem);
     setActionSheetIsOpen(true);
   };
 
   const handleCreateClick = () => {
     setModalMode('create');
-    setEditCategory(null);
+    setEditPayItem(null);
     setIsModalOpen(true);
   };
 
   const handleEditClick = () => {
     setModalMode('edit');
-    setEditCategory(selectedPayCat);
+    setEditPayItem(selectedPayItem);
     setIsModalOpen(true);
   };
 
   const handleSave = async () => {
     if (!isFormValid) return;
 
-    const formData = { name: categoryName, description: categoryDescription };
+    const formData = { title: itemTitle, description: itemDescription };
     setSubmitting(true);
 
     try {
       if (modalMode === 'create') {
         // Logic for creating a new category
-        await addPayCategory(formData);
+        await addPayItem(formData);
       } else if (modalMode === 'edit') {
         // Logic for updating an existing category
-        if (!selectedPayCat) return;
-        await updatePayCategory({ id: selectedPayCat.id, ...formData });
+        if (!selectedPayItem) return;
+        await updatePayItem({ id: selectedPayItem.id, ...formData });
       }
 
-      await initializeSelectedGroup(String(group?.id));
+      await initializeSelectedPayCategory(String(paycategory?.id));
     } catch (error) {
       console.error('Failed to save category:', error);
     } finally {
@@ -78,18 +80,18 @@ const AdminPayments: React.FC = () => {
   };
 
   const [loadingCardId, setLoadingCardId] = useState<string | null>(null); // Track loading state for each card
-  const [, initializeSelectedPayCategory] = useAtom(initializeSelectedPayCategoryAtom);// Atom to initialize user data
+  const [, initializeSelectedPayItem] = useAtom(initializeSelectedPayItemAtom);// Atom to initialize user data
 
 
-  const handleCategoryClick = async (category: PayCategory) => {
+  const handlePayItemClick = async (category: PayItem) => {
     setLoadingCardId(category.id); // Set the current card as loading
     try {
-      console.log("category.groupId ", category.id);
-      await initializeSelectedPayCategory(String(category.id));
+      console.log("category.paycategoryId ", category.id);
+      await initializeSelectedPayItem(String(category.id));
       history.push(`/admin/payments/category/${category.id}`);
 
     } catch (error) {
-      console.error("Error navigating to group:", error);
+      console.error("Error navigating to paycategory:", error);
     } finally {
       setLoadingCardId(null); // Reset the loading state
     }
@@ -100,9 +102,9 @@ const AdminPayments: React.FC = () => {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonBackButton defaultHref='/admin/dashboard' />
+            <IonBackButton defaultHref='/admin/payments' />
           </IonButtons>
-          <IonTitle>Payments</IonTitle>
+          <IonTitle>{paycategory?.name}</IonTitle>
         </IonToolbar>
       </IonHeader>
 
@@ -111,7 +113,7 @@ const AdminPayments: React.FC = () => {
           <IonRow className='ion-padding'>
             <IonCol>
               <IonText color="dark">
-                <h6 className="bold-text">Payment Categories</h6>
+                <h6 className="bold-text">Pay Items</h6>
               </IonText>
             </IonCol>
             <IonCol size='auto'>
@@ -121,27 +123,27 @@ const AdminPayments: React.FC = () => {
             </IonCol>
 
             <IonCol size="12">
-              {group?.paycategories.map((paycat: PayCategory) => (
-                <IonCard button={true} onClick={() => { handleCategoryClick(paycat) }} className='ion-no-margin ion-margin-bottom' key={paycat.id}>
+              {paycategory?.payitems.map((payitem: PayItem) => (
+                <IonCard onClick={() => { handlePayItemClick(payitem) }} className='ion-no-margin ion-margin-bottom' key={payitem.id}>
 
                   <IonCardContent>
                     <IonRow>
-                      {(loadingCardId === paycat.id) && ( // Show spinner if this card is loading
+                      {(loadingCardId === payitem.id) && ( // Show spinner if this card is loading
 
                         <IonCol size='auto'>
                           <IonSpinner name="lines" style={{ width: '50px' }} />
                         </IonCol>
                       )}
                       <IonCol>
-                        <IonCardTitle>{paycat.name}</IonCardTitle>
-                        <IonCardSubtitle>{paycat.description}</IonCardSubtitle>
+                        <IonCardTitle>{payitem.title}</IonCardTitle>
+                        <IonCardSubtitle>{payitem.description}</IonCardSubtitle>
                       </IonCol>
                       <IonCol size="auto">
                         <IonButton fill="clear"
                           onClick={(event) => {
                             event.preventDefault();
                             event.stopPropagation(); // Prevents the card's routerLink from being triggered
-                            openActionSheet(paycat);
+                            openActionSheet(payitem);
                           }}>
                           <IonIcon icon={ellipsisVertical} />
                         </IonButton>
@@ -150,36 +152,36 @@ const AdminPayments: React.FC = () => {
                   </IonCardContent>
                 </IonCard>
               ))}
-
+              {(paycategory?.payitems.length === 0) &&
+                <EmptyListIndicator pagename="payment" />
+              }
             </IonCol>
           </IonRow>
         </IonGrid>
-        {(group?.paycategories.length == 0) &&
-         <EmptyListIndicator pagename="payment" />
-        }
+
         <IonActionSheet
           isOpen={actionSheetIsOpen}
           onDidDismiss={() => setActionSheetIsOpen(false)}
           header={
             deleting
               ? "Deleting category..."
-              : selectedPayCat?.name || "Unknown Category"
+              : selectedPayItem?.title || "Unknown PayItem"
           }
           buttons={[
             {
-              text: 'Edit this Category',
+              text: 'Edit this PayItem',
               role: 'destructive',
               handler: () => { handleEditClick() },
             },
             {
-              text: 'Delete this Category',
+              text: 'Delete this PayItem',
               role: 'destructive',
               handler: async () => {
-                if (!selectedPayCat) return;
+                if (!selectedPayItem) return;
                 setDeleting(true);
                 try {
-                  await removePayCategory(selectedPayCat.id);
-                  await initializeSelectedGroup(String(group?.id));
+                  await removePayItem(selectedPayItem.id);
+                  await initializeSelectedPayCategory(String(paycategory?.id));
                 } catch (error) {
                   console.error("Failed to delete category:", error);
                 } finally {
@@ -202,7 +204,7 @@ const AdminPayments: React.FC = () => {
           breakpoints={[0, 1]}
         >
           <div className='ion-padding'>
-            <h3>{modalMode === 'create' ? 'Add Payment Category' : 'Edit Payment Category'}</h3>
+            <h3>{modalMode === 'create' ? 'Add Payment PayItem' : 'Edit Payment PayItem'}</h3>
 
             <IonItem lines="none">
               <IonInput
@@ -210,12 +212,12 @@ const AdminPayments: React.FC = () => {
                 label="Name"
                 labelPlacement="stacked"
                 placeholder="Enter name"
-                value={categoryName}
+                value={itemTitle}
                 onIonInput={(e) =>
-                  setEditCategory((prev) =>
+                  setEditPayItem((prev) =>
                     prev
-                      ? { ...prev, name: e.detail.value! }
-                      : { id: '', name: e.detail.value!, description: '' }
+                      ? { ...prev, title: e.detail.value! }
+                      : { id: '', title: e.detail.value!, description: '' }
                   )
                 }
               ></IonInput>
@@ -227,12 +229,12 @@ const AdminPayments: React.FC = () => {
                 label="Description"
                 labelPlacement="stacked"
                 placeholder="Enter description"
-                value={categoryDescription}
+                value={itemDescription}
                 onIonInput={(e) =>
-                  setEditCategory((prev) =>
+                  setEditPayItem((prev) =>
                     prev
                       ? { ...prev, description: e.detail.value! }
-                      : { id: '', name: '', description: e.detail.value! }
+                      : { id: '', title: '', description: e.detail.value! }
                   )
                 }
               ></IonInput>
@@ -249,4 +251,4 @@ const AdminPayments: React.FC = () => {
   );
 };
 
-export default AdminPayments;
+export default AdminPaymentCategory;
