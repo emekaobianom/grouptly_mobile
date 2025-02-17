@@ -9,7 +9,7 @@ import { selectedGroupAtom } from "@/store/atoms/groupAtoms";
 import { useAuthenticator } from "@aws-amplify/ui-react";
 
 const SideMenuMember: React.FC = () => {
-  const { signOut } = useAuthenticator((context) => [context.user]);
+//   const { signOut } = useAuthenticator((context) => [context.user]);
     const history = useHistory();
     const location = useLocation();  // Get the current location
 
@@ -92,7 +92,7 @@ const SideMenuMember: React.FC = () => {
 
                 <IonList>
                     <IonMenuToggle>
-                        <IonButton
+                        {/* <IonButton
                             expand="full"
                             shape="round"
                             color="tertiary"
@@ -100,18 +100,17 @@ const SideMenuMember: React.FC = () => {
                             style={{ margin: '16px' }}
                         >
                             <IonIcon icon={people} slot="start" />
-                            Change Group
-                        </IonButton>
+                            Exit Group
+                        </IonButton> */}
                         <IonButton
                             expand="full"
-                            fill="clear"
                             shape="round"
-                            color="dark"
-                            onClick={signOut}
+                            color="tertiary"
+                            routerLink="/main/choose"
                             style={{ margin: '16px' }}
                         >
                             <IonIcon icon={logOut} slot="start" />
-                            Log Out
+                            Exit
                         </IonButton>
                     </IonMenuToggle>
                 </IonList>

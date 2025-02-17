@@ -128,6 +128,7 @@ const MainJoin: React.FC<RouteComponentProps> = ({ match }) => {
 
           return (
             <IonCard
+             className='my-card'
               style={{ cursor: 'pointer' }}
               key={index}
             >

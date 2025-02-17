@@ -1,5 +1,5 @@
 import { Redirect, Route, useLocation } from 'react-router-dom';
-import { IonApp,IonImg,IonRouterOutlet, IonText, setupIonicReact } from '@ionic/react';
+import { IonApp, IonImg, IonRouterOutlet, IonText, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import icon from '@/assets/images/icon.png';
 
@@ -32,6 +32,7 @@ import '@ionic/react/css/palettes/high-contrast-dark.class.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import './theme/personal.css';
 
 import RouteMain from './components/routeMain';
 import RouteMember from './components/routeMember';
@@ -40,8 +41,8 @@ import RouteAdmin from './components/routeAdmin';
 setupIonicReact();
 
 //-----------------------------------------------
-import { Authenticator, Button, Heading, useAuthenticator, useTheme, View } from '@aws-amplify/ui-react';
-// import { Amplify } from 'aws-amplify';
+import { Authenticator, Button, Heading, useAuthenticator, useTheme, View, withAuthenticator } from '@aws-amplify/ui-react';
+
 // import outputs from '../amplify_outputs.json';
 import '@aws-amplify/ui-react/styles.css';
 
@@ -55,15 +56,15 @@ const components = {
 
     return (
       <View textAlign="center" padding={tokens.space.large}>
-       <IonImg
-                src={icon}
-                style={{
-                  margin: '0 auto',
-                  width: '5rem',
-                  height: '5rem'
-                }}
-                alt="Grouptly Icon"
-              />
+        <IonImg
+          src={icon}
+          style={{
+            margin: '0 auto',
+            width: '5rem',
+            height: '5rem'
+          }}
+          alt="Grouptly Icon"
+        />
       </View>
     );
   },
@@ -282,24 +283,35 @@ const formFields = {
   },
 };
 
+import { signUp, SignInInput, signIn } from 'aws-amplify/auth';
+
+
+const services = {
+
+
+  async handleSignIn(formData: SignInInput) {
+    // do something with the form data
+    console.log('Sign In:', formData);
+    return signIn(formData)
+  },
+  
+};
 //--------------------------------------------
 
 
 const App: React.FC = () => {
-  
+
   return (
-    <Authenticator  formFields={formFields} components={components} signUpAttributes={['nickname']} >                  
-    <IonApp>
-      <IonReactRouter>
-        <IonRouterOutlet>
-          <Route path="/main" component={RouteMain} />
-          <Route path="/admin" component={RouteAdmin} />
-          <Route path="/member" component={RouteMember} />
-          <Redirect exact from="/" to="/main/welcome" />
-        </IonRouterOutlet>
-      </IonReactRouter>
-    </IonApp>
-</Authenticator>
+      <IonApp>
+        <IonReactRouter>
+          <IonRouterOutlet>
+            <Route path="/main" component={RouteMain} />
+            <Route path="/admin" component={RouteAdmin} />
+            <Route path="/member" component={RouteMember} />
+            <Redirect exact from="/" to="/main/choose" />
+          </IonRouterOutlet>
+        </IonReactRouter>
+      </IonApp>
   );
 };
 

@@ -42,6 +42,7 @@ console.log("user in db ",user)
                 });
                 console.log("User initialized:", user);
             }
+
         } catch (error) {
             console.error("Failed to initialize user:", error);
         }

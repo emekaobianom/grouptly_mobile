@@ -75,7 +75,7 @@ const AdminDashboard: React.FC = () => {
               {/* Display 2 columns per row */}
               {buttons.slice(index * 2, index * 2 + 2).map((btn, colIndex) => (
                 <IonCol size="6" key={colIndex} style={{ padding: '4px' }}>
-                  <IonCard button routerLink={btn.path} style={{ margin: '0', textAlign: 'center' }}>
+                  <IonCard  className='my-card' button routerLink={btn.path} style={{ margin: '0', textAlign: 'center' }}>
                     <IonCardContent>
                       <IonLabel>
                         <h2 style={{ fontSize: '1.2em', marginBottom: '8px' }}>{btn.name}</h2>

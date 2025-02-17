@@ -1,0 +1,18 @@
+/* Amplify Authenticator Modal */
+[data-amplify-authenticator][data-variation=modal] {
+    background: white !important;
+  }
+
+  .amplify-tabs__list {
+    display: none !important;
+  }
+
+  [data-amplify-authenticator] [data-amplify-router]{
+  border: unset !important;
+  box-shadow: unset !important;
+  }
+
+  /* my adjustments */
+  .my-card {
+  border-radius: 20px; /* Increase curvature */
+  }

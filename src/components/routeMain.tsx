@@ -6,7 +6,6 @@ import IntroTerms from "@/pages/main/intro_terms";
 import MainJoin from "@/pages/main/join";
 import MainJoinCreate from "@/pages/main/join/create";
 import MainJoinRequest from "@/pages/main/join/request";
-import Welcome from "@/pages/main/welcome";
 import { IonRouterOutlet } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import { Route, Redirect } from "react-router";
@@ -21,7 +20,6 @@ const RouteMain: React.FC = () => {
             <Route path="/main/intro" component={Intro} exact />
             <Route path="/main/intro-terms" component={IntroTerms} exact />
             <Route path="/main/choose" component={Choose} exact />
-            <Route path="/main/welcome" component={Welcome} exact />
             <Route path="/main/create_user" component={CreateUser} exact />
             <Route path="/main/join" component={MainJoin} exact />
             <Route path="/main/join/create" component={MainJoinCreate} exact />

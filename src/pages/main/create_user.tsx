@@ -6,35 +6,35 @@ import {
   IonCol,
   IonRow,
   IonGrid,
-  IonImg,
-  IonIcon,
-  IonSpinner
+  IonImg
 } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
 import icon from '@/assets/images/icon.png';
-import { logoGoogle, logoFacebook } from 'ionicons/icons';
-import { useAtom, useSetAtom } from 'jotai';
+import { useSetAtom } from 'jotai';
 import { useEffect, useState } from 'react';
 import React from 'react';
-import { logoutUserAtom, initializeUserAtom, userAtom } from '@/store/atoms/userAtoms';
-import { client } from '@/store';
-import { useAuthenticator } from '@aws-amplify/ui-react';
+import { logoutUserAtom, initializeUserAtom } from '@/store/atoms/userAtoms';
 
 const CreateUser: React.FC = () => {
-  const { user } = useAuthenticator((context) => [context.user]);
   const history = useHistory();
+  // Access Jotai atoms correctly
+  const logoutUser = useSetAtom(logoutUserAtom);
+  const initializeUser = useSetAtom(initializeUserAtom);
+  const [loading, setLoading] = useState(false);
 
-  // Access Jotai atoms    
-  const [, logoutUser] = useAtom(logoutUserAtom);// Atom to initialize user data
-  const [, initializeUser] = useAtom(initializeUserAtom);// Atom to initialize user data
-  const [loading, setLoading] = useState(false); // Atom to manage loading state
+    // Handle the login button click
+    const handleLogin = async (userId: string) => {
+      setLoading(true); // Set the loading state to true
+      try {
+        await initializeUser(userId); // Call initialize user atom
+        // history.replace('/main/choose');
+      } catch (error) {
+        console.error("Failed to initialize user:", error);
+        setLoading(false); // Reset loading state in case of an error
+      }
+    };
 
-  // Monitor the user state
-  useEffect(() => { //run once on startup
-    
-  }, []);
 
-  
   return (
     <IonPage>
       <IonContent className="ion-padding" fullscreen>
@@ -61,12 +61,15 @@ const CreateUser: React.FC = () => {
             </IonCol>
 
             <IonCol size="12" style={{ textAlign: 'center' }}>
-
-              {loading ? <IonSpinner name="dots"></IonSpinner> :
-                <>
-          
-                </>
-              }
+              <IonButton
+                style={{ marginTop: '2rem' }}
+                color="light"
+                shape="round"
+                routerLink='/main/choose'
+                
+              >
+                Log Out
+              </IonButton>
             </IonCol>
           </IonRow>
         </IonGrid>
