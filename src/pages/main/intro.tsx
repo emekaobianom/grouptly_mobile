@@ -6,7 +6,7 @@ function Intro() {
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
-      setFile(event.target.files[0]); // Get the selected file
+      setFile(event.target.files[0]); // Store selected file
     }
   };
 
@@ -17,12 +17,16 @@ function Intro() {
     }
 
     try {
+      // Ensure the correct content type
+      const contentType = file.type || "image/jpeg"; // Default to JPEG if unknown
+
       // Upload file to S3
       const result = await uploadData({
-        path: `profile-pictures/${file.name}`, // File path in S3
+        path: `profile-pictures/${file.name}`,
         data: file,
         options: {
-          contentType: file.type, // Ensure correct content type
+          contentType, // Set correct MIME type
+          metadata: { customType: contentType }, // Additional metadata (optional)
         },
       });
 
