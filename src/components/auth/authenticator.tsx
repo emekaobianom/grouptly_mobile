@@ -61,7 +61,7 @@ const components = {
         );
       },
       Footer() {
-        const { toForgotPassword } = useAuthenticator();
+        const { toForgotPassword, toSignUp } = useAuthenticator();
   
         return (
           <View textAlign="center">
@@ -72,6 +72,14 @@ const components = {
               variation="link"
             >
               Forgot Password
+            </Button>
+            <Button
+              fontWeight="normal"
+              onClick={toSignUp}
+              size="large"
+              variation="link"
+            >
+              Create Account
             </Button>
           </View>
         );
@@ -302,3 +310,6 @@ const components = {
       },
     },
   };
+
+
+  export { components, formFields };

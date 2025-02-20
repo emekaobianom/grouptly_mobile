@@ -20,7 +20,7 @@ export interface User {
     firstname: string;
     middlename?: string;
     lastname: string;
-    role: string;
+    gender: string;
     image?: string;
     phone?: string;
     fullname?: string; // Computed full name of the user

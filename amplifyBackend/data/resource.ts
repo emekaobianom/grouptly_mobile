@@ -9,7 +9,7 @@ const schema = a.schema({
       firstname: a.string().required(),
       middlename: a.string(),
       lastname: a.string().required(),
-      role: a.string().required(),
+      gender: a.string().required(),
       image: a.string(),
       phone: a.string(),
       fullname: a.string(),

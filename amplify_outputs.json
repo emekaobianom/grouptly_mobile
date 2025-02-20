@@ -66,8 +66,8 @@
               "isRequired": true,
               "attributes": []
             },
-            "role": {
-              "name": "role",
+            "gender": {
+              "name": "gender",
               "isArray": false,
               "type": "String",
               "isRequired": true,
@@ -1193,6 +1193,31 @@
       "enums": {},
       "nonModels": {}
     }
+  },
+  "storage": {
+    "aws_region": "us-east-1",
+    "bucket_name": "amplify-d3v0vo7pzfe19p-ma-grouptlystoragebucket011-rll6dfjwfmo5",
+    "buckets": [
+      {
+        "name": "grouptlystorage",
+        "bucket_name": "amplify-d3v0vo7pzfe19p-ma-grouptlystoragebucket011-rll6dfjwfmo5",
+        "aws_region": "us-east-1",
+        "paths": {
+          "profile-pictures/*": {
+            "authenticated": [
+              "get",
+              "list",
+              "write",
+              "delete"
+            ],
+            "guest": [
+              "get",
+              "list"
+            ]
+          }
+        }
+      }
+    ]
   },
   "version": "1.3"
 }
