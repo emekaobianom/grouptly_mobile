@@ -1,30 +1,40 @@
-import React from 'react';
-import { uploadData } from 'aws-amplify/storage';
+import React from "react";
+import { uploadData } from "aws-amplify/storage";
 
 function Intro() {
-  const [file, setFile] = React.useState<File | undefined>(undefined);
+  const [file, setFile] = React.useState<File | null>(null);
 
-  interface FileInputEvent extends React.ChangeEvent<HTMLInputElement> {
-    target: HTMLInputElement & EventTarget;
-  }
-
-  const handleChange = (event: FileInputEvent): void => {
-    setFile(event.target.files?.[0]);
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      setFile(event.target.files[0]); // Get the selected file
+    }
   };
 
-  const handleClick = () => {
+  const handleClick = async () => {
     if (!file) {
+      console.error("No file selected!");
       return;
     }
-    uploadData({
-      path: `profile-pictures/${file.name}`,
-      data: file,
-    });
+
+    try {
+      // Upload file to S3
+      const result = await uploadData({
+        path: `profile-pictures/${file.name}`, // File path in S3
+        data: file,
+        options: {
+          contentType: file.type, // Ensure correct content type
+        },
+      });
+
+      console.log("File uploaded successfully!", result);
+    } catch (error) {
+      console.error("Error uploading file:", error);
+    }
   };
 
   return (
     <div>
-      <input type="file" onChange={handleChange} />
+      <input type="file" accept="image/*" onChange={handleChange} />
       <button onClick={handleClick}>Upload</button>
     </div>
   );
