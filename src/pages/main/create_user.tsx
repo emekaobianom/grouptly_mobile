@@ -15,7 +15,7 @@ import {
 import { useHistory } from 'react-router-dom';
 import icon from '@/assets/images/icon.png';
 import { useSetAtom } from 'jotai';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import React from 'react';
 import { logoutUserAtom, initializeUserAtom, createUserAtom } from '@/store/atoms/userAtoms';
 import { useAuthenticator } from '@aws-amplify/ui-react';
@@ -24,8 +24,12 @@ const CreateUser: React.FC = () => {
   const history = useHistory();
   const { user: signedInUser, signOut } = useAuthenticator((context) => [context.user]);
 
-  const logoutUser = useSetAtom(logoutUserAtom);
-  const initializeUser = useSetAtom(initializeUserAtom);
+
+    useEffect(() => { //run once on startup  
+  
+        console.log("resultUser ", signedInUser);
+    }, []);
+    
   const createUser = useSetAtom(createUserAtom);
   const [loading, setLoading] = useState(false);
   const [userFirstname, setUserFirstname] = useState('');
@@ -64,7 +68,7 @@ const CreateUser: React.FC = () => {
         phone: userPhone,
       };
       await createUser(userData);
-      history.replace('/main/choose');
+      history.replace('/main/welcome');
     } catch (error) {
       console.error("Failed to create user:", error);
     } finally {

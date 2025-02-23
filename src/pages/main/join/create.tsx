@@ -184,6 +184,7 @@ const MainJoinCreate: React.FC<MainJoinCreateProps> = ({ match }) => {
 
         <IonItem lines="none" onClick={handlePlaceholderClick} style={{ cursor: 'pointer' }}>
           <IonLabel position="stacked">Tap to add Picture (white background)</IonLabel>
+          <br />
           <IonImg
             src={selectedImage || logoPlaceholder}
             alt="Image Placeholder"

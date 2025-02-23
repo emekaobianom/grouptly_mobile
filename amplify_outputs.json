@@ -1203,7 +1203,7 @@
         "bucket_name": "amplify-d3v0vo7pzfe19p-ma-grouptlystoragebucket011-rll6dfjwfmo5",
         "aws_region": "us-east-1",
         "paths": {
-          "profile-pictures/*": {
+          "public/*": {
             "authenticated": [
               "get",
               "list",

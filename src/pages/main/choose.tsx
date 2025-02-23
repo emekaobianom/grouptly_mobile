@@ -25,7 +25,7 @@ import { useHistory } from 'react-router-dom';
 import { checkmarkCircle, closeCircle, ellipsisVertical, handLeft, personCircleOutline, personCircleSharp, timer } from 'ionicons/icons';
 import { useState, useEffect } from 'react';
 import { useAtom, useSetAtom } from 'jotai';
-import UserAvatar from '@/components/member/userAvatar';
+import UserAvatar from '@/components/main/userAvatar';
 import { Member, UserStatus, User } from '@/store/interface';
 import logoPlaceholder from '@/assets/images/logo_placeholder.png';
 import icon from '@/assets/images/icon.png';
@@ -33,15 +33,11 @@ import { initializeSelectedGroupAtom } from '@/store/atoms/groupAtoms';
 import { removeMemberAtom } from '@/store/atoms/memberAtoms';
 import { userAtom, initializeUserAtom, logoutUserAtom } from '@/store/atoms/userAtoms';
 import EmptyListIndicator from '@/components/emptyListIndicator';
-import { Button, Heading, useAuthenticator, useTheme, View, withAuthenticator } from '@aws-amplify/ui-react';
-import { ConfirmSignUpInput, ConfirmSignUpOutput, confirmSignUp } from 'aws-amplify/auth';
-import { isObject } from 'cypress/types/lodash';
+import { Button, Heading, useAuthenticator} from '@aws-amplify/ui-react';
 
 
 const Choose: React.FC = () => {
-  const { user: signedInUser } = useAuthenticator((context) => [context.user]);
   const { signOut, route } = useAuthenticator((context) => [context.route]);
-  const [, logoutUser] = useAtom(logoutUserAtom);// Atom to initialize user data
 
   const history = useHistory();
   const [alertIsOpen, setAlertIsOpen] = useState(false);
@@ -53,27 +49,7 @@ const Choose: React.FC = () => {
   const [, initializeSelectedGroup] = useAtom(initializeSelectedGroupAtom);// Atom to initialize user data
 
   const removeMember = useSetAtom(removeMemberAtom);
-  const [loading, setLoading] = useState(false);
   const [deleting, setDeleting] = useState(false); // Atom to manage submitting state
-
-  const [loaded, setLoaded] = useState(false);
-
-  // Monitor the user state
-  useEffect(() => { //run once on startup  
-
-    const initialize = async () => {
-      const resultUser = await initializeUser(signedInUser.userId);
-      console.log("resultUser ", resultUser);     
-           if (resultUser == null) {
-            history.replace('/main/create_user');
-           }
-      setLoaded(true);
-    };
-    initialize();
-  }, []);
-
-
-
 
   const [loadingCardId, setLoadingCardId] = useState<string | null>(null); // Track loading state for each card
 
@@ -104,7 +80,7 @@ const Choose: React.FC = () => {
   return (
 
     <>
-      {loaded && (<>
+      
         <style>
           {`
           .small-chip {
@@ -113,7 +89,7 @@ const Choose: React.FC = () => {
         `}
         </style>
         <IonPage>
-          <IonHeader>
+          <IonHeader className="ion-no-border">
             <IonToolbar>
               <UserAvatar />
             </IonToolbar>
@@ -131,7 +107,7 @@ const Choose: React.FC = () => {
                 <IonCol size="12">
                   {user?.memberships && user.memberships.length > 0 ? (
                     user.memberships.map((membership: Member) => (
-                      <IonCard button={true} key={membership.id} className='my-card' style={{ cursor: 'pointer'}}>
+                      <IonCard button={true} key={membership.id} className='my-card' style={{ cursor: 'pointer' }}>
                         <IonCardContent className="ion-no-padding">
                           <IonGrid>
 
@@ -143,7 +119,7 @@ const Choose: React.FC = () => {
                                   {loadingCardId === membership.id ? ( // Show spinner if this card is loading
 
                                     <IonCol size='3'>
-                                      <IonSpinner style={{ width: '40px' ,height:'40px'}} />
+                                      <IonSpinner style={{ width: '40px', height: '40px' }} />
                                     </IonCol>
                                   ) :
                                     <IonCol size="3">
@@ -287,27 +263,7 @@ const Choose: React.FC = () => {
           />
 
         </IonPage>
-      </>)}
-
-      {!loaded && (
-         <IonPage>
-         <IonContent className="ion-padding" fullscreen>
-           <IonGrid style={{ height: '100%', paddingTop: '4rem' }}> 
-             <IonRow style={{ justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-               <IonCol size="12" style={{ textAlign: 'center' }}>
-              <IonImg
-                src={icon}
-                style={{ margin: '0 auto', width: '15rem', height: '15rem' }}
-                alt="Grouptly Icon"
-              />
-                 <br />
-                 <IonSpinner name="dots"></IonSpinner>
-               </IonCol>
-             </IonRow>
-           </IonGrid>
-         </IonContent>
-       </IonPage>
-      )}
+          
     </>
   );
 };

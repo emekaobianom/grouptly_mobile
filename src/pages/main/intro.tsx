@@ -1,47 +1,99 @@
-import React from "react";
-import { uploadData } from "aws-amplify/storage";
+import React, { useState } from "react";
+import {
+  IonButton,
+  IonContent,
+  IonHeader,
+  IonInput,
+  IonItem,
+  IonLabel,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+} from "@ionic/react";
+import { ImageUploadComponent } from "@/components/image/ImageUploadComponent";
+import { useImageUpload } from "@/components/image/useImageUpload";
 
-function Intro() {
-  const [file, setFile] = React.useState<File | null>(null);
+const Intro: React.FC = () => {
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    imageUrl: "",
+  });
+  const { preview, selectImage, uploadImage } = useImageUpload();
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files.length > 0) {
-      setFile(event.target.files[0]); // Store selected file
-    }
-  };
-
-  const handleClick = async () => {
-    if (!file) {
-      console.error("No file selected!");
-      return;
-    }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
     try {
-      // Ensure the correct content type
-      const contentType = file.type || "image/jpeg"; // Default to JPEG if unknown
+      // Upload the image if one is selected
+      // const imageUrl = await uploadImage("profile-pictures_how it should be");
+      const imageUrl = await uploadImage();
+      
+      // Update form data with the uploaded image URL
+      const finalFormData = {
+        ...formData,
+        imageUrl: imageUrl || "", // Use empty string if no image was uploaded
+      };
 
-      // Upload file to S3
-      const result = await uploadData({
-        path: `profile-pictures/${file.name}`,
-        data: file,
-        options: {
-          contentType, // Set correct MIME type
-          metadata: { customType: contentType }, // Additional metadata (optional)
-        },
-      });
-
-      console.log("File uploaded successfully!", result);
+      console.log("Submitting form with data:", finalFormData);
+      // Your database submission logic here
+      // await api.post('/your-endpoint', finalFormData);
+      
+      // Reset form
+      setFormData({ title: "", description: "", imageUrl: "" });
     } catch (error) {
-      console.error("Error uploading file:", error);
+      console.error("Error submitting form:", error);
     }
   };
 
   return (
-    <div>
-      <input type="file" accept="image/*" onChange={handleChange} />
-      <button onClick={handleClick}>Upload</button>
-    </div>
+    <IonPage>
+      <IonHeader>
+        <IonToolbar>
+          <IonTitle>Intro</IonTitle>
+        </IonToolbar>
+      </IonHeader>
+      <IonContent>
+        <form onSubmit={handleSubmit}>
+          <IonItem>
+            <IonLabel position="floating">Title</IonLabel>
+            <IonInput
+              value={formData.title}
+              onIonChange={(e) =>
+                setFormData({ ...formData, title: e.detail.value! })
+              }
+            />
+          </IonItem>
+          <IonItem>
+            <IonLabel position="floating">Description</IonLabel>
+            <IonInput
+              value={formData.description}
+              onIonChange={(e) =>
+                setFormData({ ...formData, description: e.detail.value! })
+              }
+            />
+          </IonItem>
+          <ImageUploadComponent preview={preview} selectImage={selectImage} />
+          <IonButton
+            type="submit"
+            style={{ marginTop: "2rem" }}
+            color="primary"
+            shape="round"
+          >
+            Submit Form
+          </IonButton>
+          <IonButton
+            style={{ marginTop: "2rem" }}
+            color="secondary"
+            shape="round"
+            routerLink="/main/choose"
+          >
+            Go to Choose
+          </IonButton>
+        </form>
+      </IonContent>
+    </IonPage>
   );
-}
+};
 
 export default Intro;
