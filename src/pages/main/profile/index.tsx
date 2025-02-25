@@ -15,10 +15,11 @@ import {
     IonBackButton,
     IonImg,
     IonIcon,
+    IonButton,
 } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
 import { useAtom } from 'jotai/react';
-import { call, closeOutline, man, woman } from 'ionicons/icons';
+import { call, closeOutline, closeSharp, createOutline, createSharp, ellipsisVerticalOutline, ellipsisVerticalSharp, man, woman } from 'ionicons/icons';
 import { userAtom } from '@/store/atoms/userAtoms';
 import maleIcon from '@/assets/images/male.png';
 import femaleIcon from '@/assets/images/female.png';
@@ -33,14 +34,22 @@ const MainProfile: React.FC = () => {
         <IonPage>
             <IonHeader className="ion-no-border">
                 <IonToolbar>
+                    <IonButtons slot="start">
+                        <IonBackButton icon={closeSharp} />
+                    </IonButtons>
                     <IonButtons slot="end">
-                        <IonBackButton icon={closeOutline} />
+                        <IonButton onClick={() => history.push('/main/profile/edit')}>
+                            <IonIcon icon={createSharp} />
+                        </IonButton>
+                        <IonButton>
+                            <IonIcon icon={ellipsisVerticalSharp} />
+                        </IonButton>
                     </IonButtons>
                 </IonToolbar>
             </IonHeader>
 
             <IonContent class="ion-padding">
-                <IonGrid style={{ height: '100%'}}>
+                <IonGrid style={{ height: '100%' }}>
                     <IonRow
                         style={{
                             justifyContent: 'center',

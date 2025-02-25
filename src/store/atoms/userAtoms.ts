@@ -7,6 +7,9 @@ import { client } from "..";
 // Persistent atom for user data, synced with local storage
 export const userAtom = createPersistentAtom<User | null>("user", null);
 
+// Fetch existing user data
+export const getUserAtom = atom((get) => get(userAtom));
+
 export const initializeUserAtom = atom(
     null,
     async (get, set, id: string) => {
@@ -17,7 +20,7 @@ export const initializeUserAtom = atom(
                 return;
             }
 
-            //reset userAtom
+            // Reset userAtom
             set(userAtom, null);
 
             // Fetch user data using the provided ID
@@ -25,7 +28,7 @@ export const initializeUserAtom = atom(
                 { id },
                 {
                     selectionSet: [
-                        "id", "firstname", "middlename", "lastname","gender", "image","phone",
+                        "id", "firstname", "middlename", "lastname", "gender", "image", "phone",
                         "memberships.id",
                         "memberships.group.id", "memberships.group.short_name", "memberships.group.long_name",
                         "memberships.group.location", "memberships.status", "memberships.group.logo", "memberships.group.super_admin_user_id"
@@ -58,7 +61,7 @@ export const createUserAtom = atom(
                 userData,
                 {
                     selectionSet: [
-                        "id", "firstname", "middlename", "lastname", "image", "phone","gender"
+                        "id", "firstname", "middlename", "lastname", "image", "phone", "gender"
                     ],
                     authMode: 'userPool'
                 }
@@ -67,7 +70,7 @@ export const createUserAtom = atom(
             if (newUser) {
                 set(userAtom, {
                     ...newUser,
-                    image:"",
+                    image: "",
                     fullname: `${newUser.firstname} ${newUser.lastname}`.trim(),
                 });
             }
@@ -77,7 +80,42 @@ export const createUserAtom = atom(
     }
 );
 
-// Atom to set or update user data, with Immer to handle immutable state updates
+// Atom to update an existing user
+export const updateUserAtom = atom(
+    null,
+    async (get, set, userData: Partial<User> & { id: string }) => {
+        try {
+            const { id, ...updateFields } = userData;
+            console.log("User userData: ",userData);
+            const { data: updatedUser }: any = await client.models.User.update(
+                {
+                    id,
+                    ...updateFields
+                },
+                {
+                    selectionSet: [
+                        "id", "firstname", "middlename", "lastname", "image", "phone", "gender"
+                    ],
+                    authMode: 'userPool'
+                }
+            );
+            console.log("User updated: ", id, updatedUser);
+            if (updatedUser) {
+                set(userAtom, produce((draft: User | null) => {
+                    if (!draft) return;
+                    Object.assign(draft, updatedUser);
+                    draft.fullname = `${updatedUser.firstname} ${updatedUser.lastname}`.trim();
+                }));
+            }
+            return updatedUser;
+        } catch (error) {
+            console.error("Failed to update user:", error);
+            throw error; // Re-throw to allow component to handle the error
+        }
+    }
+);
+
+// Atom to set or update user data locally, with Immer to handle immutable state updates
 export const setUserAtom = atom(
     null,
     (get, set, userData: Partial<User>) => {
