@@ -85,7 +85,7 @@ const MemberDonationsSupportDetail: React.FC<MemberDonationsSupportDetailProps> 
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar>
+      <IonToolbar>
           <IonButtons slot="start">
             <IonBackButton defaultHref='/member/donations-support' />
           </IonButtons>

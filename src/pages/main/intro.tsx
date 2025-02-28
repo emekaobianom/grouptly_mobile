@@ -49,7 +49,7 @@ const Intro: React.FC = () => {
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar>
+      <IonToolbar>
           <IonTitle>Intro</IonTitle>
         </IonToolbar>
       </IonHeader>

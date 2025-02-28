@@ -57,7 +57,7 @@ const MemberPaymentsHistoryDetail: React.FC<MemberPaymentsHistoryDetailProps> = 
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar>
+      <IonToolbar>
         <IonButtons slot="start">
             <IonBackButton defaultHref='/member/payments/history'  />            
           </IonButtons>

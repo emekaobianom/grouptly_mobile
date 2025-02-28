@@ -50,7 +50,7 @@ const MemberMeetingsEventsAttendance: React.FC<MemberMeetingsEventsAttendancePro
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar>
+      <IonToolbar>
           <IonButtons slot="start">
             <IonBackButton defaultHref={`/member/meetings-events/detail/${match.params.id}`} /> {/* Reuse the back button */}
           </IonButtons>

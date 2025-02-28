@@ -4,7 +4,7 @@ import './event.css';
 import { eventsData, EventType } from '@/data/events_placeholder';
 import { useHistory } from 'react-router';
 import SideMenuBtn from '@/components/sideMenuBtn';
-import UserAvatar from '@/components/member/userAvatar';
+import UserAvatar from '@/components/main/userAvatar';
 
 // Main Events Component
 const MemberMeetingsEvents: React.FC = () => {
@@ -113,7 +113,7 @@ const MemberMeetingsEvents: React.FC = () => {
     <>
       <IonPage>
         <IonHeader>
-          <IonToolbar>
+        <IonToolbar>
             <IonTitle>Events</IonTitle>
             <UserAvatar/>
           </IonToolbar>

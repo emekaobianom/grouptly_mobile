@@ -3,6 +3,7 @@ import { createPersistentAtom } from "@/utils/createPersistentAtom";
 import { produce } from "immer";
 import type { User } from "../interface";
 import { client } from "..";
+import { getDynamicImageName } from "@/utils/simpleCases";
 
 // Persistent atom for user data, synced with local storage
 export const userAtom = createPersistentAtom<User | null>("user", null);
@@ -104,6 +105,7 @@ export const updateUserAtom = atom(
                 set(userAtom, produce((draft: User | null) => {
                     if (!draft) return;
                     Object.assign(draft, updatedUser);
+                    draft.image = getDynamicImageName(updatedUser.image); // Force image reload
                     draft.fullname = `${updatedUser.firstname} ${updatedUser.lastname}`.trim();
                 }));
             }

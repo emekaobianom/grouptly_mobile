@@ -22,7 +22,7 @@ import {
 } from '@ionic/react';
 import './dashboard.css';
 import { calendarOutline, cardOutline, chevronForward, heartOutline, informationCircleOutline, mailOutline, newspaperOutline, people } from 'ionicons/icons';
-import UserAdminAvatar from '@/components/admin/userAvatar';
+import UserAvatar from '@/components/main/userAvatar';
 
 const AdminDashboard: React.FC = () => {
   const buttons = [
@@ -48,8 +48,9 @@ const AdminDashboard: React.FC = () => {
     <IonPage>
       {/* Header */}
       <IonHeader className='header'>
-        <IonToolbar class='toolbar'>
-          <UserAdminAvatar/>
+        <IonToolbar class='toolbar ion-padding'>
+        <p slot="start">Admin</p>
+          <UserAvatar/>
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">

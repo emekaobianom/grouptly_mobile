@@ -27,12 +27,12 @@ import SideMenuBtn from '../../../components/sideMenuBtn';
 import './dashboard.css';
 // import { getItem } from '@/utils/storage';
 import { calendar, chevronForward } from 'ionicons/icons';
-import UserAvatar from '@/components/member/userAvatar';
+import UserAvatar from '@/components/main/userAvatar';
 import { useAtom } from 'jotai';
 import { userAtom } from '@/store/atoms/userAtoms';
 
 const MemberDashboard: React.FC = () => {
-  const [{ image , fullname, role}]:any = useAtom(userAtom);
+  const [{ image, fullname, role }]: any = useAtom(userAtom);
   const location = useLocation();
   const history = useHistory();
   const [group, setGroup] = useState<any>(null);
@@ -84,11 +84,11 @@ const MemberDashboard: React.FC = () => {
   }
 
   return (
-    <IonPage className='dashboard'>
+    <IonPage>
       {/* Header */}
-      <IonHeader className='header'>
-        <IonToolbar class='toolbar'>
-        <UserAvatar/>
+      <IonHeader className='ion-no-border'>
+        <IonToolbar>
+          <UserAvatar />
         </IonToolbar>
       </IonHeader>
 

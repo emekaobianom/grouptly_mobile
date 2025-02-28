@@ -59,7 +59,7 @@ const MemberPaymentsHistory: React.FC<RouteComponentProps> = ({ match }) => {
     <>
       <IonPage>
         <IonHeader>
-          <IonToolbar>
+        <IonToolbar>
             <IonButtons slot="start">
               <IonBackButton defaultHref='/member/payments' />
             </IonButtons>

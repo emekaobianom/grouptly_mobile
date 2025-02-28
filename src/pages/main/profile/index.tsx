@@ -16,6 +16,9 @@ import {
     IonImg,
     IonIcon,
     IonButton,
+    IonPopover,
+    IonItem,
+    IonList,
 } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
 import { useAtom } from 'jotai/react';
@@ -23,12 +26,15 @@ import { call, closeOutline, closeSharp, createOutline, createSharp, ellipsisVer
 import { userAtom } from '@/store/atoms/userAtoms';
 import maleIcon from '@/assets/images/male.png';
 import femaleIcon from '@/assets/images/female.png';
+import { getDynamicImageName } from '@/utils/simpleCases';
+import { useAuthenticator } from '@aws-amplify/ui-react';
 
 
 
 const MainProfile: React.FC = () => {
     const history = useHistory();
     const [user] = useAtom(userAtom);
+    const { signOut, route } = useAuthenticator((context) => [context.route]);
 
     return (
         <IonPage>
@@ -41,9 +47,21 @@ const MainProfile: React.FC = () => {
                         <IonButton onClick={() => history.push('/main/profile/edit')}>
                             <IonIcon icon={createSharp} />
                         </IonButton>
-                        <IonButton>
+                        <IonButton id="side-menu-profile-index-button">
                             <IonIcon icon={ellipsisVerticalSharp} />
                         </IonButton>
+
+                        <IonPopover trigger="side-menu-profile-index-button" dismissOnSelect={true} side="bottom" alignment="start">
+                            <IonContent>
+                                <IonList>
+                                    <IonItem button={true} detail={false}>
+                                        Help
+                                    </IonItem>
+                                </IonList>
+                            </IonContent>
+                        </IonPopover>
+
+
                     </IonButtons>
                 </IonToolbar>
             </IonHeader>
@@ -77,6 +95,17 @@ const MainProfile: React.FC = () => {
                                 <h3> {user?.fullname}</h3>
                             </IonText>
 
+                        </IonCol>
+
+                        <IonCol size="12" style={{ textAlign: 'center' }}>
+                            <IonButton
+                                style={{ marginTop: '2rem' }}
+                                color="light"
+                                shape="round"
+                                onClick={signOut}
+                            >
+                                Log Out
+                            </IonButton>
                         </IonCol>
                     </IonRow>
                 </IonGrid>

@@ -1,4 +1,4 @@
-import UserAvatar from '@/components/member/userAvatar';
+import UserAvatar from '@/components/main/userAvatar';
 import SideMenuBtn from '@/components/sideMenuBtn';
 import { IonPage, IonSegment, IonSegmentButton, IonLabel, IonText, IonAvatar, IonHeader, IonTitle, IonToolbar, IonContent } from '@ionic/react';
 import { useState } from 'react';
@@ -10,7 +10,7 @@ const MemberAbout: React.FC<RouteComponentProps> = ({ match }) => {
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar>
+      <IonToolbar>
           <IonTitle>About Us</IonTitle>
           <UserAvatar />
         </IonToolbar>

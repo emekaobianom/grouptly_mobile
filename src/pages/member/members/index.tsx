@@ -5,13 +5,12 @@ import { membersData } from '@/data/members_placeholder';
 import { useHistory } from 'react-router';
 import MemberMembersDetail from './detail';
 import SideMenuBtn from '@/components/sideMenuBtn';
-import UserAvatar from '@/components/member/userAvatar';
 import { Member, User } from '@/store/interface';
 import members from '@/pages/admin/members';
 import { getExecutiveMembersOfGroup, getMembersOfGroup, initializeMembersAtom } from '@/store/atoms/memberAtoms';
 import { memberFullname } from '@/utils/simpleCases';
 import { useAtom } from 'jotai';
-import UserAdminAvatar from '@/components/member/userAvatar';
+import UserAvatar from '@/components/main/userAvatar';
 
 // Main Members Component
 const MemberMembers: React.FC = () => {
@@ -108,12 +107,12 @@ const MemberMembers: React.FC = () => {
   <>
     <IonPage>
       <IonHeader>
-        <IonToolbar>
+      <IonToolbar>
           {/* <IonButtons slot="start">
             <IonBackButton defaultHref='/admin/dashboard' />
           </IonButtons> */}
           <IonTitle>Members</IonTitle>
-          <UserAdminAvatar />
+          <UserAvatar />
         </IonToolbar>
         <IonSegment value={segment} onIonChange={(e) => setSegment(e.detail.value as 'executiveMembers' | 'members')}>
         <IonSegmentButton value="members">

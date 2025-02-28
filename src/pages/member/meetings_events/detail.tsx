@@ -41,7 +41,7 @@ const MemberMeetingsEventsDetail: React.FC<MemberMeetingsEventsDetailProps> = ({
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar>
+      <IonToolbar>
           <IonButtons slot="start">
             <IonBackButton defaultHref="/member/meetings-events" /> {/* Reuse the back button */}
           </IonButtons>

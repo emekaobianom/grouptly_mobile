@@ -2,7 +2,7 @@ import React from 'react';
 import { IonContent, IonCard, IonCardContent, IonGrid, IonRow, IonCol, IonPage, IonAvatar, IonHeader, IonTitle, IonToolbar } from '@ionic/react';
 import './calendar.css';
 import SideMenuBtn from '@/components/sideMenuBtn';
-import UserAvatar from '@/components/member/userAvatar';
+import UserAvatar from '@/components/main/userAvatar';
 
 // Define types for day details
 interface Day {
@@ -24,7 +24,7 @@ const MemberCalendar: React.FC = () => {
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar>
+      <IonToolbar>
           <IonTitle>Calendar</IonTitle>
           <UserAvatar/>
         </IonToolbar>

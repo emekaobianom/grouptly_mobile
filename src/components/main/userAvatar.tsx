@@ -12,6 +12,7 @@ const UserAvatar: React.FC = () => {
 
   return (
     <>
+            <p slot="end">Hi, {user?.firstname}</p>
       <IonAvatar slot="end" className="ion-padding" onClick={()=> history.push('/main/profile')}>
        
           <img src={user?.image || ((user?.gender == "male") ? maleIcon : femaleIcon)} alt="User Avatar" />

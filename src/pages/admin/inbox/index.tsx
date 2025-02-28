@@ -5,7 +5,7 @@ import { Route, RouteComponentProps } from 'react-router';
 import AdminInboxDetail from './detail';
 import './inbox.css';
 import { inboxItemsData } from '@/data/inbox_placeholder';
-import UserAdminAvatar from '@/components/admin/userAvatar';
+import UserAvatar from '@/components/main/userAvatar';
 
 const AdminInbox: React.FC<RouteComponentProps> = ({ match }) => {
 
@@ -48,8 +48,9 @@ const AdminInbox: React.FC<RouteComponentProps> = ({ match }) => {
             <IonButtons slot="start">
               <IonBackButton defaultHref='/admin/dashboard' />
             </IonButtons>
-            <IonTitle>Inbox</IonTitle> 
-            <UserAdminAvatar/>
+            <IonTitle>Inbox</IonTitle>
+            <p slot="end">Admin</p>
+            <UserAvatar />
           </IonToolbar>
         </IonHeader>
 

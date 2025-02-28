@@ -4,7 +4,7 @@ import { IonPage, IonContent, IonGrid, IonRow, IonCol, IonAvatar, IonText, IonHe
 import SideMenuBtn from "@/components/sideMenuBtn";
 import { useHistory } from "react-router";
 import { newsData, NewsType } from "@/data/news_placeholder";
-import UserAvatar from "@/components/member/userAvatar";
+import UserAvatar from '@/components/main/userAvatar';
 
 interface NewsCardProps {
   news: NewsType;
@@ -54,7 +54,7 @@ const MemberNews: React.FC = () => {
     <>
       <IonPage>
         <IonHeader>
-          <IonToolbar>
+        <IonToolbar>
             <IonTitle>News</IonTitle>
             <UserAvatar/>
           </IonToolbar>

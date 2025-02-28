@@ -4,7 +4,7 @@ import './Members.css';
 import { useHistory } from 'react-router';
 import AdminMembersDetail from './detail';
 import { Member, User } from '@/store/interface';
-import UserAdminAvatar from '@/components/admin/userAvatar';
+import UserAvatar from '@/components/main/userAvatar';
 import { useAtom } from 'jotai';
 import { getActiveMembersOfGroup, getNonActiveMembersOfGroup, initializeMembersAtom } from '@/store/atoms/memberAtoms';
 import { memberFullname } from '@/utils/simpleCases';
@@ -98,7 +98,7 @@ const AdminMembers: React.FC = () => {
               <IonBackButton defaultHref='/admin/dashboard' />
             </IonButtons>
             <IonTitle>Members</IonTitle>
-            <UserAdminAvatar/>
+            <UserAvatar/>
           </IonToolbar>
           <IonSegment value={segment} onIonChange={(e) => setSegment(e.detail.value as 'nonActiveMembers' | 'activeMembers')}>
             <IonSegmentButton value="nonActiveMembers">

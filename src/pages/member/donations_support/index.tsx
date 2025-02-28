@@ -6,7 +6,7 @@ import './donations.css';
 import SideMenuBtn from '../../../components/sideMenuBtn';
 import { donationsItemsData } from '@/data/donations_placeholder';
 import MemberDonationsSupportDetail from './detail';
-import UserAvatar from '@/components/member/userAvatar';
+import UserAvatar from '@/components/main/userAvatar';
 
 const MemberDonationsSupport: React.FC<RouteComponentProps> = ({ match }) => {
 
@@ -54,7 +54,7 @@ const MemberDonationsSupport: React.FC<RouteComponentProps> = ({ match }) => {
 
       <IonPage>
         <IonHeader>
-          <IonToolbar>
+        <IonToolbar>
             <IonTitle>Donations & Support</IonTitle>
             <UserAvatar/>
           </IonToolbar>

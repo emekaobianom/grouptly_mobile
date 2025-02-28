@@ -102,7 +102,7 @@ const MemberMembersDetail: React.FC<MemberMembersDetailProps> = ({ match }) => {
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar>
+      <IonToolbar>
           <IonButtons slot="start">
             <IonBackButton defaultHref="/admin/members" />
           </IonButtons>

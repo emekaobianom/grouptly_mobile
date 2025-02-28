@@ -40,7 +40,7 @@ const MemberNewsDetail: React.FC<MemberNewsDetailProps> = ({ match }) => {
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar>
+      <IonToolbar>
           <IonButtons slot="start">
             <IonBackButton defaultHref='/member/news' /> {/* Reuse the back button */}
           </IonButtons>

@@ -6,7 +6,7 @@ import MemberInboxDetail from './detail';
 import './inbox.css';
 import { inboxItemsData } from '@/data/inbox_placeholder';
 import SideMenuBtn from '../../../components/sideMenuBtn';
-import UserAvatar from '@/components/member/userAvatar';
+import UserAvatar from '@/components/main/userAvatar';
 
 const MemberInbox: React.FC<RouteComponentProps> = ({ match }) => {
 

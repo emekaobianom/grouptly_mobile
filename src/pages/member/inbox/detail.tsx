@@ -58,7 +58,7 @@ const MemberInboxDetail: React.FC<MemberInboxDetailProps> = ({ match }) => {
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar>
+      <IonToolbar>
           <IonButtons slot="start">
             <IonBackButton defaultHref='/member/inbox' />
           </IonButtons>

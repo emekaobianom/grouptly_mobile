@@ -5,7 +5,7 @@ import './payments.css';
 import MemberPaymentsHistoryDetail from './history_detail';
 import SideMenuBtn from '@/components/sideMenuBtn';
 import { time, wallet } from 'ionicons/icons';
-import UserAvatar from '@/components/member/userAvatar';
+import UserAvatar from '@/components/main/userAvatar';
 
 const MemberPayments: React.FC<RouteComponentProps> = ({ match }) => {
 
@@ -14,7 +14,7 @@ const MemberPayments: React.FC<RouteComponentProps> = ({ match }) => {
 
       <IonPage>
         <IonHeader>
-          <IonToolbar>
+        <IonToolbar>
             <IonTitle>To Pay</IonTitle>
             <UserAvatar/>
           </IonToolbar>
