@@ -34,9 +34,11 @@ import { removeMemberAtom } from '@/store/atoms/memberAtoms';
 import { userAtom, initializeUserAtom, logoutUserAtom } from '@/store/atoms/userAtoms';
 import EmptyListIndicator from '@/components/emptyListIndicator';
 import { Button, Heading, useAuthenticator} from '@aws-amplify/ui-react';
+import { registerPushNotifications } from '@/utils/pushNotifications';
 
 
 const Choose: React.FC = () => {
+
   const { signOut, route } = useAuthenticator((context) => [context.route]);
 
   const history = useHistory();

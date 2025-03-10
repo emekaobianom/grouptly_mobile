@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1085120584895", 
+    "project_id": "grouptly-69eec",
+    "storage_bucket": "grouptly-69eec.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1085120584895:android:f5806e13002696b728fa0a",
+        "android_client_info": {
+          "package_name": "com.grouptly.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_5N3KB-rCbz51BXHi5D9cfs_McKIhVtU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

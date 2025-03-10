@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.example.grouptly',
+  appId: 'com.grouptly.app',
   appName: 'Grouptly',
   webDir: 'dist',
   bundledWebRuntime: false,

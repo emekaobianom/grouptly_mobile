@@ -21,7 +21,7 @@ export const initializeMembersAtom = atom(
             const { data: members }: any = await client.models.Member.list({
                 filter: { groupId: { eq: group.id } },
                 selectionSet: [
-                    "id", "userId", "groupId", "firstname", "middlename", "lastname", "gender",
+                    "id", "userId", "groupId", "firstname", "middlename", "lastname", "gender", "fcmToken",
                     "phone", "image_url", "regno", "role", "address", "status",
                 ],
                     authMode: 'userPool'

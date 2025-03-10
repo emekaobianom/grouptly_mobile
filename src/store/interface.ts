@@ -11,7 +11,7 @@ import type { Schema } from "@/data-schema";
 const groupFormSelectionSet = ['long_name', 'short_name', 'location', 'category', 'logo', 'super_admin_user_id'] as const;
 export type GroupForm = SelectionSet<Schema['Group']['type'], typeof groupFormSelectionSet>
 
-const memberFormSelectionSet = ['userId', 'groupId', 'firstname', 'middlename', 'lastname', 'gender', 'phone', 'image_url', 'status'] as const;
+const memberFormSelectionSet = ['userId', 'groupId', 'firstname', 'middlename', 'lastname', 'gender','fcmToken', 'phone', 'image_url', 'status'] as const;
 export type MemberForm = SelectionSet<Schema['Member']['type'], typeof memberFormSelectionSet>
 
 
@@ -24,6 +24,7 @@ export interface User {
     image?: string;
     phone?: string;
     fullname?: string; // Computed full name of the user
+    fcmToken?: string;
     memberships: Member[]; // List of groups the user is part of with statuses
 }
 
@@ -46,6 +47,7 @@ export interface Member {
     lastname: string;
     gender: string;
     phone: string;
+    fcmToken: string;
     image_url: string;
     regno: string;
     role: string;

@@ -117,6 +117,7 @@ const MainJoinRequest: React.FC<MainJoinRequestProps> = ({ match }) => {
         phone: userPhone,
         image_url: userImageUrl,
         status: group.super_admin_user_id === user?.id ? 'active' : 'pending',
+        fcmToken: String(user?.fcmToken),
       };
 
       setSubmitting(true);

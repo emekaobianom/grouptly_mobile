@@ -29,7 +29,7 @@ export const initializeUserAtom = atom(
                 { id },
                 {
                     selectionSet: [
-                        "id", "firstname", "middlename", "lastname", "gender", "image", "phone",
+                        "id", "firstname", "middlename", "lastname", "gender", "fcmToken", "image", "phone",
                         "memberships.id",
                         "memberships.group.id", "memberships.group.short_name", "memberships.group.long_name",
                         "memberships.group.location", "memberships.status", "memberships.group.logo", "memberships.group.super_admin_user_id"
@@ -62,7 +62,7 @@ export const createUserAtom = atom(
                 userData,
                 {
                     selectionSet: [
-                        "id", "firstname", "middlename", "lastname", "image", "phone", "gender"
+                        "id", "firstname", "middlename", "lastname", "image", "phone", "gender", "fcmToken"
                     ],
                     authMode: 'userPool'
                 }
@@ -95,7 +95,7 @@ export const updateUserAtom = atom(
                 },
                 {
                     selectionSet: [
-                        "id", "firstname", "middlename", "lastname", "image", "phone", "gender"
+                        "id", "firstname", "middlename", "lastname", "image", "phone", "gender", "fcmToken"
                     ],
                     authMode: 'userPool'
                 }
@@ -128,6 +128,76 @@ export const setUserAtom = atom(
         }));
     }
 );
+
+
+
+export const updateUserFcmTokenAtom = atom(
+    null,
+    async (get, set, { userId, newFcmToken }: { userId: string; newFcmToken: string }) => {
+        try {
+            if (!userId || !newFcmToken) {
+                console.error("userId and newFcmToken are required to update FCM token.");
+                return;
+            }
+
+            // Step 1: Update the User's fcmToken in the User model
+            const { data: updatedUser }: any = await client.models.User.update(
+                {
+                    id: userId,
+                    fcmToken: newFcmToken,
+                },
+                {
+                    selectionSet: [
+                        "id", "firstname", "middlename", "lastname", "image", "phone", "gender", "fcmToken",
+                        "memberships.id", "memberships.groupId", "memberships.fcmToken",
+                    ],
+                    authMode: "userPool",
+                }
+            );
+
+            if (!updatedUser) {
+                alert("Failed to update User FCM token: User not found.");
+                return;
+            }
+
+           alert("Updated User FCM token: "+updatedUser);
+
+            // Step 2: Update the fcmToken in all related Member records
+            // Fetch all memberships for the user
+            const memberships = updatedUser.memberships || [];
+            if (memberships.length > 0) {
+                // Update each Member record's fcmToken
+                await Promise.all(
+                    memberships.map(async (membership: any) => {
+                        const { data: updatedMember }: any = await client.models.Member.update(
+                            {
+                                id: membership.id, // Assuming Member has an 'id' field
+                                fcmToken: newFcmToken,
+                            },
+                            {
+                                selectionSet: ["id", "userId", "groupId", "fcmToken"],
+                                authMode: "userPool",
+                            }
+                        );
+                        console.log(`Updated Member FCM token for membership ${membership.id}:`, updatedMember);
+                    })
+                );
+            }
+
+            // Step 3: Update the local userAtom state
+            set(userAtom, produce((draft: User | null) => {
+                if (!draft || draft.id !== userId) return;
+                draft.fcmToken = newFcmToken; // Update the FCM token in the local state
+                draft.fullname = `${draft.firstname} ${draft.lastname}`.trim(); // Ensure fullname stays consistent
+            }));
+
+            return updatedUser;
+        } catch (error) {
+            console.error("Failed to update user FCM token and memberships:", error);
+            throw error; // Re-throw to allow the caller to handle the error
+        }
+    }
+);               
 
 // Atom to log out the user by resetting the user state to `null`
 export const logoutUserAtom = atom(null, (get, set) => set(userAtom, null));

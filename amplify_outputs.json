@@ -94,6 +94,13 @@
               "isRequired": false,
               "attributes": []
             },
+            "fcmToken": {
+              "name": "fcmToken",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false,
+              "attributes": []
+            },
             "memberships": {
               "name": "memberships",
               "isArray": true,
@@ -358,6 +365,13 @@
             },
             "phone": {
               "name": "phone",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false,
+              "attributes": []
+            },
+            "fcmToken": {
+              "name": "fcmToken",
               "isArray": false,
               "type": "String",
               "isRequired": false,

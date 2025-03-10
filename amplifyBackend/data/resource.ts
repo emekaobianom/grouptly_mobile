@@ -13,6 +13,7 @@ const schema = a.schema({
       image: a.string(),
       phone: a.string(),
       fullname: a.string(),
+      fcmToken: a.string(),//user device token for push notification
       //----------------
       memberships: a.hasMany('Member', 'userId'), // Link to Member join table
     })
@@ -47,6 +48,7 @@ const schema = a.schema({
       lastname: a.string(),
       gender: a.string(),
       phone: a.string(),
+      fcmToken: a.string(),//user device token for push notification
       image_url: a.string(),
       regno: a.string(),
       role: a.string(),
